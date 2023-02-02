@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlserver"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -8,96 +8,94 @@ generator client {
 }
 
 model Student {
-  id          Int        @id(map: "PK_Student") @default(autoincrement())
-  firstName   String     @db.NVarChar(255)
-  lastName    String     @db.NVarChar(255)
-  email       String     @unique(map: "IX_Student") @db.VarChar(50)
-  password    String?    @db.NVarChar(255)
-  isRequested Boolean    @default(false, map: "DF_Student_isRequested")
-  isConfirmed Boolean    @default(false, map: "DF_Student_IsRegistered")
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  email       String     @unique @db.VarChar(50)
+  password    String?
+  isRequested Boolean    @default(false)
+  isConfirmed Boolean    @default(false)
   groupId     Int?
-  isSenior    Boolean    @default(false, map: "DF_Student_IsSenior")
+  isSenior    Boolean    @default(false)
   marks       Mark[]
-  group       Group?     @relation(fields: [groupId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Student_Group")
+  group       Group?     @relation(fields: [groupId], references: [id])
   subGroups   SubGroup[]
 }
 
 model Teacher {
-  id          Int     @id(map: "PK_Teacher") @default(autoincrement())
-  firstName   String  @db.NVarChar(255)
-  lastName    String  @db.NVarChar(255)
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(255)
   email       String  @db.VarChar(50)
-  password    String? @db.NVarChar(255)
-  isRequested Boolean @default(false, map: "DF_Teacher_IsRequested")
-  isConfirmed Boolean @default(false, map: "DF_Teacher_IsConfirmed")
-  isAdmin     Boolean @default(false, map: "DF_Teacher_IsAdmin")
+  password    String?
+  isRequested Boolean @default(false)
+  isConfirmed Boolean @default(false)
+  isAdmin     Boolean @default(false)
   classes     Class[]
   handlerOf   Group?
   marks       Mark[]
 }
 
 model Faculty {
-  id     Int     @id(map: "PK_Faculty") @default(autoincrement())
-  title  String  @db.NVarChar(255)
+  id     Int     @id @default(autoincrement())
+  title  String  @db.VarChar(255)
   groups Group[]
 }
 
 model Group {
-  id        Int        @id(map: "PK_Group") @default(autoincrement())
-  name      String     @db.NVarChar(255)
-  handlerId Int?       @unique(map: "IX_Group_1")
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(255)
+  handlerId Int?       @unique
   facultyId Int
-  faculty   Faculty    @relation(fields: [facultyId], references: [id], onUpdate: NoAction, map: "FK_Group_Faculty")
-  handler   Teacher?   @relation(fields: [handlerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Group_Teacher")
+  faculty   Faculty    @relation(fields: [facultyId], references: [id])
+  handler   Teacher?   @relation(fields: [handlerId], references: [id])
   students  Student[]
   subGroups SubGroup[]
 }
 
 model SubGroup {
-  id       Int       @id(map: "PK_SubGroup") @default(autoincrement())
-  name     String    @db.NVarChar(255)
+  id       Int       @id @default(autoincrement())
+  name     String    @db.VarChar(255)
   groupId  Int
-  isFull   Boolean   @default(false, map: "DF_SubGroup_IsFull")
-  group    Group     @relation(fields: [groupId], references: [id], onUpdate: NoAction, map: "FK_SubGroup_Group")
+  isFull   Boolean   @default(false)
+  group    Group     @relation(fields: [groupId], references: [id])
   students Student[]
   classes  Class[]
 }
 
 model Subject {
-  id      Int     @id(map: "PK_Subject") @default(autoincrement())
-  title   String  @db.NVarChar(255)
+  id      Int     @id @default(autoincrement())
+  title   String  @db.VarChar(255)
   classes Class[]
 }
 
 model Class {
-  id         Int      @id(map: "PK_Class") @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   subGroupId Int
   teacherId  Int
   subjectId  Int
-  subGroup   SubGroup @relation(fields: [subGroupId], references: [id], onUpdate: NoAction, map: "FK_Class_Group")
-  subject    Subject  @relation(fields: [subjectId], references: [id], onUpdate: NoAction, map: "FK_Class_Subject")
-  teacher    Teacher  @relation(fields: [teacherId], references: [id], onUpdate: NoAction, map: "FK_Class_Teacher")
+  subGroup   SubGroup @relation(fields: [subGroupId], references: [id])
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+  teacher    Teacher  @relation(fields: [teacherId], references: [id])
   Task       Task[]
 }
 
 model Task {
-  id          Int      @id(map: "PK_Task") @default(autoincrement())
-  dateCreated DateTime @default(now(), map: "DF_Task_DateCreated") @db.DateTime
-  title       String?  @db.NVarChar(255)
+  id          Int      @id @default(autoincrement())
+  dateCreated DateTime @default(now())
+  title       String?  @db.VarChar(255)
   classId     Int
   markes      Mark[]
-  class       Class    @relation(fields: [classId], references: [id], onUpdate: NoAction, map: "FK_Task_SubClass")
+  class       Class    @relation(fields: [classId], references: [id])
 }
 
 model Mark {
-  id          Int       @id(map: "PK_Mark") @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   taskId      Int
   teacherId   Int?
   studentId   Int
-  dateCreated DateTime  @default(now(), map: "DF_Mark_Date") @db.DateTime
-  isNew       Boolean   @default(false, map: "DF_Mark_isNew")
-  dateEdited  DateTime? @db.DateTime
-  student     Student   @relation(fields: [studentId], references: [id], onUpdate: NoAction, map: "FK_Mark_Student")
-  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade, map: "FK_Mark_Task")
-  teacher     Teacher?  @relation(fields: [teacherId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Mark_Teacher")
+  dateCreated DateTime  @default(now())
+  editedAt    DateTime?
+  isNew       Boolean   @default(false)
+  student     Student   @relation(fields: [studentId], references: [id])
+  task        Task      @relation(fields: [taskId], references: [id])
+  teacher     Teacher?  @relation(fields: [teacherId], references: [id])
 }
