@@ -15,21 +15,27 @@ const NavBar = ({ session }: NavBarType) => {
       <Navbar
         fluid={true}
         rounded={false}
-        className="sticky top-0 z-40 mx-auto w-full flex-none"
+        theme={{
+          inner: {
+            base: "mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between",
+          },
+        }}
       >
+        <Navbar.Toggle />
         <Navbar.Brand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Emark
           </span>
         </Navbar.Brand>
-
-        <div className="flex md:order-2">
-          <Navbar.Toggle />
-          <DarkThemeToggle />
-        </div>
-        <Navbar.Collapse>
+        <DarkThemeToggle className="md:hidden" />
+        <Navbar.Collapse
+          theme={{
+            list: "mt-4 flex flex-col md:mt-0 md:flex-row md:space-x-8 md:text-sm md:font-medium md:items-center",
+          }}
+        >
           <RouteLinks routes={UserRoutes.basic} />
           <SessionNav session={session} />
+          <DarkThemeToggle className="hidden md:block" />
         </Navbar.Collapse>
       </Navbar>
     </>

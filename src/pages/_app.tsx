@@ -16,7 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SessionProvider session={session}>
         <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
           <Navbar session={session} />
-          <main>
+          <main className="mx-auto w-full max-w-7xl p-2.5">
             <Component {...pageProps} />
           </main>
           <Footer />
