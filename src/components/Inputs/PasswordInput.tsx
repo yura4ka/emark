@@ -12,21 +12,31 @@ type Props = {
   setValue: (value: TPasswordConfirm) => void;
   label: string;
   type: "value" | "confirm";
-  disabled: boolean;
+  disabled?: boolean;
+  additionalText?: string;
+  validationFunction?: (value: string, confirm: string) => boolean;
 };
 
-const PasswordInput = ({ input, setValue, label, type, disabled }: Props) => {
+const PasswordInput = ({
+  input,
+  setValue,
+  label,
+  type,
+  disabled,
+  additionalText,
+  validationFunction,
+}: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const id = useId();
+  validationFunction ??= () => true;
   const isValid =
     (type === "confirm" && input.isCorrect) ||
-    (type === "value" &&
-      (input.value.length === 0 || input.value.trim().length >= 4));
+    (type === "value" && validationFunction(input.value, input.confirm));
 
   const checkValid = (value: string) => {
     const field = type === "value" ? "confirm" : "value";
     return (
-      value.length === 0 || input[field].length === 0 || input[field] === value
+      value.length === 0 || input[field]?.length === 0 || input[field] === value
     );
   };
 
@@ -99,12 +109,7 @@ const PasswordInput = ({ input, setValue, label, type, disabled }: Props) => {
           }`}
         />
       </div>
-      {type === "value" && (
-        <AdditionalInfo text="Пароль має містити мінімум 4 символи." />
-      )}
-      {type === "confirm" && !isValid && (
-        <AdditionalInfo text="Паролі не співпадають." />
-      )}
+      {!!additionalText && <AdditionalInfo text={additionalText} />}
     </div>
   );
 };

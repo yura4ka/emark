@@ -4,12 +4,12 @@ import StudentNav from "./StudentNav";
 import TeacherNav from "./TeacherNav";
 import { UserRoutes } from "../../utils/routes";
 import RouteLinks from "./RouteLinks";
+import { useSession, signOut } from "next-auth/react";
+import { HiLogout } from "react-icons/hi";
 
-type NavBarType = {
-  session: Session | null;
-};
+const NavBar = () => {
+  const { data: session, status } = useSession();
 
-const NavBar = ({ session }: NavBarType) => {
   return (
     <>
       <Navbar
@@ -34,7 +34,7 @@ const NavBar = ({ session }: NavBarType) => {
           }}
         >
           <RouteLinks routes={UserRoutes.basic} />
-          <SessionNav session={session} />
+          {status !== "loading" && <SessionNav session={session} />}
           <DarkThemeToggle className="hidden md:block" />
         </Navbar.Collapse>
       </Navbar>
@@ -49,7 +49,18 @@ function UserNav({ user }: { user: User }) {
 
 function SessionNav({ session }: { session: Session | null }) {
   if (!session) return <RouteLinks routes={UserRoutes.unauthorized} />;
-  return <UserNav user={session.user} />;
+  return (
+    <>
+      <UserNav user={session.user} />
+      <button
+        onClick={() => void signOut()}
+        className="flex items-center py-2 pr-4 pl-3 text-black hover:text-red-600  dark:text-white md:bg-transparent md:p-0"
+      >
+        Вийти
+        <HiLogout className="ml-2 h-5 w-5" />
+      </button>
+    </>
+  );
 }
 
 export default NavBar;

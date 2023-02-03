@@ -1,14 +1,8 @@
 import type { GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type NextAuthOptions,
-  type DefaultSession,
-} from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { getServerSession, type NextAuthOptions } from "next-auth";
 import { prisma } from "./db";
 import Credentials from "next-auth/providers/credentials";
 import type { Teacher } from ".prisma/client";
-import type { DefaultJWT } from "next-auth/jwt";
 import * as argon2 from "argon2";
 
 /**
@@ -19,31 +13,30 @@ import * as argon2 from "argon2";
  **/
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: number;
-      email: string;
-      isTeacher: boolean;
-    };
-  }
-
   interface User {
     id: number;
     email: string;
     isTeacher: boolean;
+    isConfirmed: boolean;
+    isRequested: boolean;
+  }
+
+  interface Session {
+    user: User;
   }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT extends Record<string, unknown>, DefaultJWT {
+  interface JWT {
     id: number;
     email: string;
     isTeacher: boolean;
+    isConfirmed: boolean;
+    isRequested: boolean;
   }
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       name: "credentials",
@@ -68,8 +61,7 @@ export const authOptions: NextAuthOptions = {
 
         const user = student || teacher;
         if (!user) return null;
-        if (!user.isConfirmed || user.isRequested || !user.password)
-          return null;
+        if (!user.password) return null;
 
         if (!(await argon2.verify(user.password, credentials.password)))
           return null;
@@ -78,6 +70,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           isTeacher: !!teacher,
+          isConfirmed: user.isConfirmed,
+          isRequested: user.isRequested,
         };
       },
     }),
@@ -97,13 +91,16 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.isTeacher = token.isTeacher;
       }
-
       return session;
+    },
+    signIn: ({ user }) => {
+      if (user.isRequested && !user.isConfirmed) return false;
+      return true;
     },
   },
   pages: {
-    signIn: "sign-in",
-    newUser: "sign-up",
+    signIn: "/auth/sign-in",
+    newUser: "/auth/sign-up",
   },
   jwt: {
     maxAge: 15 * 24 * 60 * 60,

@@ -9,18 +9,22 @@ export class NavRoute {
 }
 
 export const UserRoutes = {
-  basic: [new NavRoute("/", "Головна")],
+  basic: [],
   unauthorized: [
-    new NavRoute("/sign-in", "Увійти"),
-    new NavRoute("/sign-up", "Реєстрація"),
+    new NavRoute("/", "Головна"),
+    new NavRoute("/auth/sign-in", "Увійти"),
+    new NavRoute("/auth/sign-up", "Реєстрація"),
   ],
   authorized: [],
 };
 
 export const StudentRoutes = {
   basic: [new NavRoute("/", "Оцінки"), new NavRoute("/subjects", "Предмети")],
+  senior: [],
 };
 
 export const TeacherRoutes = {
   basic: [new NavRoute("/", "Групи"), new NavRoute("/subjects", "Предмети")],
+  handler: [],
+  admin: [],
 };

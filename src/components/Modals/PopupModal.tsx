@@ -1,5 +1,4 @@
 import { Button, Modal } from "flowbite-react";
-import React from "react";
 
 type Props = {
   text: string;
@@ -7,7 +6,7 @@ type Props = {
   isVisible: boolean;
   onClose: () => unknown;
   Icon: JSX.Element;
-  color: "success" | "failure";
+  color: "success" | "failure" | "warning";
 };
 
 const PopupModal = ({
@@ -18,17 +17,26 @@ const PopupModal = ({
   Icon,
   color,
 }: Props) => {
+  let textColor = "";
+  switch (color) {
+    case "success":
+      textColor = "text-green-700 dark:[&_svg]:text-green-500";
+      break;
+    case "failure":
+      textColor = "text-red-700 dark:[&_svg]:text-red-600";
+      break;
+    case "warning":
+      textColor = "text-yellow-400";
+      break;
+  }
+
   return (
     <Modal show={isVisible} size="md" popup={true} onClose={onClose}>
       <Modal.Header />
       <Modal.Body>
         <div className="flex flex-col gap-7 text-center">
           <div
-            className={`[&_svg]:mx-auto [&_svg]:h-14 [&_svg]:w-14 ${
-              color === "success"
-                ? "text-green-700 dark:[&_svg]:text-green-500"
-                : "text-red-700 dark:[&_svg]:text-red-600"
-            }`}
+            className={`[&_svg]:mx-auto [&_svg]:h-14 [&_svg]:w-14 ${textColor}`}
           >
             {Icon}
           </div>

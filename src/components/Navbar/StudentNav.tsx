@@ -6,7 +6,7 @@ const StudentNav = ({ user }: { user: User }) => {
   return (
     <>
       <RouteLinks routes={StudentRoutes.basic} />
-      {!user.isTeacher && <span>Test 2</span>}
+      {!user.isTeacher && <RouteLinks routes={StudentRoutes.senior} />}
     </>
   );
 };
