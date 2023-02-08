@@ -24,7 +24,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   });
 };
 
-
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
@@ -42,8 +41,8 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+const requireStudent = t.middleware(({ ctx, next }) => {
+  if (!ctx.session?.user.isConfirmed || !ctx.session.user.role.isStudent) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -53,5 +52,16 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const requireSenior = t.middleware(({ ctx, next }) => {
+  if (!ctx.session?.user.role.isSenior) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
 
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const userProcedure = t.procedure.use(requireStudent);
+export const seniorProcedure = userProcedure.use(requireSenior);

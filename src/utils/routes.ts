@@ -20,7 +20,7 @@ export const UserRoutes = {
 
 export const StudentRoutes = {
   basic: [new NavRoute("/", "Оцінки"), new NavRoute("/subjects", "Предмети")],
-  senior: [],
+  senior: [new NavRoute("/my-class", "Мій клас")],
 };
 
 export const TeacherRoutes = {

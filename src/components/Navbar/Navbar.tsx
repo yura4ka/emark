@@ -43,8 +43,9 @@ const NavBar = () => {
 };
 
 function UserNav({ user }: { user: User }) {
-  if (user.isTeacher) return <TeacherNav user={user} />;
-  return <StudentNav user={user} />;
+  if (user.role.isTeacher) return <TeacherNav user={user} />;
+  else if (user.role.isStudent) return <StudentNav user={user} />;
+  return <></>;
 }
 
 function SessionNav({ session }: { session: Session | null }) {
@@ -54,7 +55,7 @@ function SessionNav({ session }: { session: Session | null }) {
       <UserNav user={session.user} />
       <button
         onClick={() => void signOut()}
-        className="flex items-center py-2 pr-4 pl-3 text-black hover:text-red-600  dark:text-white md:bg-transparent md:p-0"
+        className="flex items-center py-2 pr-4 pl-3 text-black hover:text-red-600 dark:text-gray-400  hover:dark:text-red-500 md:bg-transparent md:p-0"
       >
         Вийти
         <HiLogout className="ml-2 h-5 w-5" />

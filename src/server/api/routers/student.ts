@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure, seniorProcedure } from "../trpc";
 import * as argon2 from "argon2";
 
 export const studentRouter = createTRPCRouter({
@@ -22,9 +22,40 @@ export const studentRouter = createTRPCRouter({
         },
       });
 
-      return await ctx.prisma.student.update({
+      return ctx.prisma.student.update({
         where: { id: student.id },
         data: { password, isRequested: true },
       });
+    }),
+
+  getClassList: seniorProcedure.query(({ ctx }) => {
+    return ctx.prisma.group.findFirst({
+      where: { seniorId: ctx.session.user.id },
+      include: { students: { orderBy: { name: "asc" } } },
+    });
+  }),
+
+  confirmStudent: seniorProcedure
+    .input(z.number().positive().int())
+    .mutation(async ({ ctx, input }) => {
+      const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
+        where: { seniorId: ctx.session.user.id },
+        select: { id: true },
+      });
+      await ctx.prisma.student.findFirstOrThrow({
+        where: {
+          id: input,
+          groupId,
+          isRequested: true,
+          isConfirmed: false,
+        },
+      });
+
+      await ctx.prisma.student.update({
+        data: { isRequested: false, isConfirmed: true },
+        where: { id: input },
+      });
+
+      return true;
     }),
 });

@@ -15,10 +15,10 @@ model Student {
   isRequested Boolean    @default(false)
   isConfirmed Boolean    @default(false)
   groupId     Int?
-  isSenior    Boolean    @default(false)
   marks       Mark[]
   group       Group?     @relation(fields: [groupId], references: [id])
   subGroups   SubGroup[]
+  seniorOf    Group?     @relation("Senior")
 }
 
 model Teacher {
@@ -45,10 +45,12 @@ model Group {
   name      String     @db.VarChar(255)
   handlerId Int?       @unique
   facultyId Int
+  seniorId  Int?       @unique
   faculty   Faculty    @relation(fields: [facultyId], references: [id])
   handler   Teacher?   @relation(fields: [handlerId], references: [id])
   students  Student[]
   subGroups SubGroup[]
+  senior    Student?   @relation("Senior", fields: [seniorId], references: [id])
 }
 
 model SubGroup {
@@ -95,6 +97,8 @@ model Mark {
   dateCreated DateTime  @default(now())
   editedAt    DateTime?
   isNew       Boolean   @default(false)
+  comment     String?
+  maxScore    Int
   student     Student   @relation(fields: [studentId], references: [id])
   task        Task      @relation(fields: [taskId], references: [id])
   teacher     Teacher?  @relation(fields: [teacherId], references: [id])

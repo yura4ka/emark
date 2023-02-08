@@ -1,4 +1,4 @@
-import type { GetServerSidePropsContext } from "next";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import { prisma } from "./db";
 import Credentials from "next-auth/providers/credentials";
@@ -12,13 +12,23 @@ import * as argon2 from "argon2";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  **/
 
+interface Role {
+  isStudent?: boolean;
+  isTeacher?: boolean;
+  isSenior?: boolean;
+  isHandler?: boolean;
+  isAdmin?: boolean;
+}
+
 declare module "next-auth" {
   interface User {
     id: number;
     email: string;
-    isTeacher: boolean;
+    name: string;
     isConfirmed: boolean;
     isRequested: boolean;
+    role: Role;
+    image: null;
   }
 
   interface Session {
@@ -30,9 +40,10 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: number;
     email: string;
-    isTeacher: boolean;
+    name: string;
     isConfirmed: boolean;
     isRequested: boolean;
+    role: Role;
   }
 }
 
@@ -49,13 +60,21 @@ export const authOptions: NextAuthOptions = {
 
         const student = await prisma.student.findFirst({
           where: { email: credentials.email },
+          include: { seniorOf: { select: { id: true } } },
         });
 
-        let teacher: Teacher | null = null;
+        let teacher:
+          | (Teacher & {
+              handlerOf: {
+                id: number;
+              } | null;
+            })
+          | null = null;
 
         if (!student) {
           teacher = await prisma.teacher.findFirst({
             where: { email: credentials?.email },
+            include: { handlerOf: { select: { id: true } } },
           });
         }
 
@@ -66,34 +85,43 @@ export const authOptions: NextAuthOptions = {
         if (!(await argon2.verify(user.password, credentials.password)))
           return null;
 
-        return {
+        const toReturn = {
           id: user.id,
           email: user.email,
-          isTeacher: !!teacher,
+          name: user.name,
           isConfirmed: user.isConfirmed,
           isRequested: user.isRequested,
+          role: {
+            isStudent: !!student,
+            isTeacher: !!teacher,
+            isSenior: !!student?.seniorOf,
+            isHandler: !!teacher?.handlerOf,
+            isAdmin: teacher?.isAdmin,
+          },
+          image: null,
         };
+
+        return toReturn;
       },
     }),
   ],
   callbacks: {
     jwt: ({ token, user }) => {
+      // console.log("in jwt", "token :", token, "user: ", user);
       if (user) {
-        token.id = +user.id;
-        token.email = user.email;
-        token.isTeacher = user.isTeacher;
+        token = { ...token, ...user, id: +user.id };
       }
       return token;
     },
     session: ({ session, token }) => {
+      // console.log("in session", "session: ", session, "token :", token);
       if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.isTeacher = token.isTeacher;
+        session.user = { ...session.user, ...token };
       }
       return session;
     },
     signIn: ({ user }) => {
+      // console.log("in sign in", user);
       if (user.isRequested && !user.isConfirmed) return false;
       return true;
     },
@@ -118,3 +146,11 @@ export const getServerAuthSession = (ctx: {
 }) => {
   return getServerSession(ctx.req, ctx.res, authOptions);
 };
+
+export const requireStudentAuth =
+  (func: GetServerSideProps) => async (ctx: GetServerSidePropsContext) => {
+    const session = await getServerAuthSession(ctx);
+    if (!session || session.user.role.isStudent)
+      return { redirect: { destination: "/", permanent: false } };
+    return await func(ctx);
+  };

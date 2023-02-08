@@ -4,7 +4,10 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const facultyRouter = createTRPCRouter({
   get: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.faculty.findMany({ select: { id: true, title: true } });
+    return ctx.prisma.faculty.findMany({
+      select: { id: true, title: true },
+      orderBy: { title: "asc" },
+    });
   }),
   getGroups: publicProcedure
     .input(z.object({ id: z.number().int().positive() }))
@@ -12,6 +15,7 @@ export const facultyRouter = createTRPCRouter({
       return ctx.prisma.group.findMany({
         where: { facultyId: input.id },
         select: { id: true, name: true },
+        orderBy: { name: "asc" },
       });
     }),
 });
