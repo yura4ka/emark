@@ -36,7 +36,7 @@ model Teacher {
 
 model Faculty {
   id     Int     @id @default(autoincrement())
-  title  String  @db.VarChar(255)
+  title  String  @unique @db.VarChar(255)
   groups Group[]
 }
 
@@ -84,6 +84,7 @@ model Task {
   id          Int      @id @default(autoincrement())
   dateCreated DateTime @default(now())
   title       String?  @db.VarChar(255)
+  maxScore    Int
   classId     Int
   markes      Mark[]
   class       Class    @relation(fields: [classId], references: [id])
@@ -98,7 +99,6 @@ model Mark {
   editedAt    DateTime?
   isNew       Boolean   @default(false)
   comment     String?
-  maxScore    Int
   student     Student   @relation(fields: [studentId], references: [id])
   task        Task      @relation(fields: [taskId], references: [id])
   teacher     Teacher?  @relation(fields: [teacherId], references: [id])

@@ -11,7 +11,7 @@ const RouteLinks = ({ routes }: { routes: NavRoute[] }) => {
       {routes.map((r) => (
         <Navbar.Link
           as={Link}
-          key={r.path}
+          key={r.path + r.name}
           href={r.path}
           active={pathname === r.path}
         >

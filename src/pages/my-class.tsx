@@ -15,7 +15,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const MyClass: NextPage = () => {
-  const utils = api.useContext();
+  const apiUtils = api.useContext();
   const myGroup = api.student.getClassList.useQuery();
   const confirmStudent = api.student.confirmStudent.useMutation();
 
@@ -30,13 +30,11 @@ const MyClass: NextPage = () => {
     confirmStudent.mutate(id, {
       onSuccess: () => {
         const updateStudents = (students: Student[]) =>
-          students.map((s) => {
-            if (s.id === id)
-              return { ...s, isRequested: false, isConfirmed: true };
-            return s;
-          });
+          students.map((s) =>
+            s.id === id ? { ...s, isRequested: false, isConfirmed: true } : s
+          );
 
-        utils.student.getClassList.setData(undefined, (oldData) =>
+        apiUtils.student.getClassList.setData(undefined, (oldData) =>
           oldData
             ? { ...oldData, students: updateStudents(oldData.students) }
             : oldData
@@ -78,6 +76,7 @@ const MyClass: NextPage = () => {
             <Table.Cell>
               {s.isRequested && (
                 <Button
+                  disabled={confirmStudent.isLoading}
                   size="xs"
                   onClick={() => {
                     setModalData({
