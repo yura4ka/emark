@@ -35,9 +35,7 @@ const MyClass: NextPage = () => {
           );
 
         apiUtils.student.getClassList.setData(undefined, (oldData) =>
-          oldData
-            ? { ...oldData, students: updateStudents(oldData.students) }
-            : oldData
+          oldData ? { ...oldData, students: updateStudents(oldData.students) } : oldData
         );
       },
     });
@@ -57,18 +55,12 @@ const MyClass: NextPage = () => {
             <Table.Cell>{s.email}</Table.Cell>
             <Table.Cell>
               {s.isRequested && (
-                <Badge
-                  color="failure"
-                  theme={{ root: { base: "font-semibold" } }}
-                >
+                <Badge color="failure" theme={{ root: { base: "font-semibold" } }}>
                   Запит
                 </Badge>
               )}
               {s.isConfirmed && (
-                <Badge
-                  color="success"
-                  theme={{ root: { base: "font-semibold" } }}
-                >
+                <Badge color="success" theme={{ root: { base: "font-semibold" } }}>
                   Підтверджений
                 </Badge>
               )}

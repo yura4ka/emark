@@ -1,6 +1,8 @@
-import { Spinner, Table } from "flowbite-react";
+import { Spinner } from "flowbite-react";
 import { type GetServerSidePropsContext, type NextPage } from "next";
-import FacultyRow from "../../components/InteractiveRows/FacultyRow";
+import Head from "next/head";
+import { useMemo } from "react";
+import DataTable, { createTableProps } from "../../components/DataTable/DataTable";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
 
@@ -13,8 +15,55 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
 const Faculties: NextPage = () => {
   const { isLoading, data: faculties } = api.faculty.get.useQuery();
+  const renameFaculty = api.faculty.rename.useMutation();
+  const apiUtils = api.useContext();
 
-  if (isLoading)
+  const tableProps = useMemo(
+    () =>
+      createTableProps({
+        data: faculties || [],
+        options: { header: "Факультети", showActions: true },
+        columnDefinitions: [
+          {
+            header: "Назва",
+            key: "title",
+            editType: "text",
+            validationFunction(row, newValue) {
+              return faculties?.some(
+                (f) => f.title === newValue.trim() && f.id !== row.id
+              )
+                ? "CONFLICT"
+                : true;
+            },
+            errorMessages: { CONFLICT: "Факультет з таким іменем вже існує!" },
+            linkTo: (row) => `faculties/${row.id}`,
+          },
+        ],
+        onRowChange: ({ id, title }, setIsLoading, setValidation) => {
+          title = title.trim();
+          setIsLoading(true);
+          renameFaculty.mutate(
+            { id, newName: title },
+            {
+              onError(error) {
+                if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
+                else void apiUtils.faculty.get.invalidate();
+                setIsLoading(false);
+              },
+              onSuccess() {
+                apiUtils.faculty.get.setData(undefined, (old) =>
+                  old ? old.map((f) => (f.id === id ? { ...f, title } : f)) : old
+                );
+                setIsLoading(false);
+              },
+            }
+          );
+        },
+      }),
+    [apiUtils.faculty.get, faculties, renameFaculty]
+  );
+
+  if (isLoading || !faculties)
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size={"xl"} />
@@ -22,20 +71,12 @@ const Faculties: NextPage = () => {
     );
 
   return (
-    <div className="container my-3">
-      <h2 className="mb-6 text-2xl font-bold">Факультети</h2>
-      <Table>
-        <Table.Head>
-          <Table.HeadCell>Назва</Table.HeadCell>
-          <Table.HeadCell>Дії</Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {(faculties || []).map((f) => (
-            <FacultyRow key={f.id} id={f.id} title={f.title} />
-          ))}
-        </Table.Body>
-      </Table>
-    </div>
+    <>
+      <Head>
+        <title>Факультети</title>
+      </Head>
+      <DataTable {...tableProps} />
+    </>
   );
 };
 export default Faculties;
