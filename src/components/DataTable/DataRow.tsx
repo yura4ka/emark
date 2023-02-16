@@ -8,6 +8,7 @@ export default function DataRow<TData extends IRowData>({
   row,
   definitions,
   onRowChange,
+  options,
 }: RowProps<TData>) {
   const initNewRowData = () => ({ ...row });
   const initValidations = (value: ValidationResult) =>
@@ -52,35 +53,40 @@ export default function DataRow<TData extends IRowData>({
     setIsEditing(validation.length !== 0 || validation.some((r) => r !== true));
   }
 
+  function EditAction() {
+    return !isEditing ? (
+      <button onClick={() => setIsEditing(true)} className="p-1 hover:underline">
+        Редагувати
+      </button>
+    ) : (
+      <>
+        <Button
+          onClick={() => save()}
+          disabled={isLoading || isError}
+          size="xs"
+          color="success"
+        >
+          <HiCheck className="mr-1 h-4 w-4" />
+          Зберегти
+        </Button>
+        <Button onClick={() => discard()} disabled={isLoading} size="xs" color="failure">
+          <HiX className="mr-1 h-4 w-4" />
+          Скасувати
+        </Button>
+      </>
+    );
+  }
+
   function RowActions() {
+    if (!options?.showActions) return null;
     return (
       <Table.Cell className="w-[25%] font-medium text-blue-600 dark:text-blue-500">
-        {!isEditing ? (
-          <button onClick={() => setIsEditing(true)} className="p-1 hover:underline">
-            Редагувати
-          </button>
-        ) : (
-          <div className="inline-flex gap-2">
-            <Button
-              onClick={() => save()}
-              disabled={isLoading || isError}
-              size="xs"
-              color="success"
-            >
-              <HiCheck className="mr-1 h-4 w-4" />
-              Зберегти
-            </Button>
-            <Button
-              onClick={() => discard()}
-              disabled={isLoading}
-              size="xs"
-              color="failure"
-            >
-              <HiX className="mr-1 h-4 w-4" />
-              Скасувати
-            </Button>
-          </div>
-        )}
+        <div className="inline-flex gap-2">
+          <>
+            {options.canEdit && <EditAction />}
+            {options.customActions?.(row)}
+          </>
+        </div>
       </Table.Cell>
     );
   }
@@ -96,7 +102,7 @@ export default function DataRow<TData extends IRowData>({
           definition={d}
           isEditing={isEditing}
           validation={rowValidations[d.key] || true}
-          linkTo={d.linkTo ? d.linkTo(row) : undefined}
+          customElement={d.customElement ? d.customElement(row) : undefined}
         />
       ))}
       <RowActions />

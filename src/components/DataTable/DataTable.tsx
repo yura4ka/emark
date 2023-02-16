@@ -29,6 +29,7 @@ function DataTable<TData extends IRowData>({
               row={row}
               definitions={columnDefinitions}
               onRowChange={onRowChange}
+              options={options}
             />
           ))}
         </Table.Body>

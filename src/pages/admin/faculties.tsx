@@ -1,7 +1,7 @@
 import { Spinner } from "flowbite-react";
 import { type GetServerSidePropsContext, type NextPage } from "next";
 import Head from "next/head";
-import { useMemo } from "react";
+import Link from "next/link";
 import DataTable, { createTableProps } from "../../components/DataTable/DataTable";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
@@ -18,50 +18,48 @@ const Faculties: NextPage = () => {
   const renameFaculty = api.faculty.rename.useMutation();
   const apiUtils = api.useContext();
 
-  const tableProps = useMemo(
-    () =>
-      createTableProps({
-        data: faculties || [],
-        options: { header: "Факультети", showActions: true },
-        columnDefinitions: [
-          {
-            header: "Назва",
-            key: "title",
-            editType: "text",
-            validationFunction(row, newValue) {
-              return faculties?.some(
-                (f) => f.title === newValue.trim() && f.id !== row.id
-              )
-                ? "CONFLICT"
-                : true;
-            },
-            errorMessages: { CONFLICT: "Факультет з таким іменем вже існує!" },
-            linkTo: (row) => `faculties/${row.id}`,
-          },
-        ],
-        onRowChange: ({ id, title }, setIsLoading, setValidation) => {
-          title = title.trim();
-          setIsLoading(true);
-          renameFaculty.mutate(
-            { id, newName: title },
-            {
-              onError(error) {
-                if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-                else void apiUtils.faculty.get.invalidate();
-                setIsLoading(false);
-              },
-              onSuccess() {
-                apiUtils.faculty.get.setData(undefined, (old) =>
-                  old ? old.map((f) => (f.id === id ? { ...f, title } : f)) : old
-                );
-                setIsLoading(false);
-              },
-            }
-          );
+  const tableProps = createTableProps({
+    data: faculties || [],
+    options: { header: "Факультети", showActions: true, canEdit: true },
+    columnDefinitions: [
+      {
+        header: "Назва",
+        key: "title",
+        editType: "text",
+        validationFunction(row, newValue) {
+          return faculties?.some((f) => f.title === newValue.trim() && f.id !== row.id)
+            ? "CONFLICT"
+            : true;
         },
-      }),
-    [apiUtils.faculty.get, faculties, renameFaculty]
-  );
+        errorMessages: { CONFLICT: "Факультет з таким іменем вже існує!" },
+        customElement: (row) => (
+          <Link href={`faculties/${row.id}`} className="hover:underline">
+            {row.title}
+          </Link>
+        ),
+      },
+    ],
+    onRowChange: ({ id, title }, setIsLoading, setValidation) => {
+      title = title.trim();
+      setIsLoading(true);
+      renameFaculty.mutate(
+        { id, newName: title },
+        {
+          onError(error) {
+            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
+            else void apiUtils.faculty.get.invalidate();
+            setIsLoading(false);
+          },
+          onSuccess() {
+            apiUtils.faculty.get.setData(undefined, (old) =>
+              old ? old.map((f) => (f.id === id ? { ...f, title } : f)) : old
+            );
+            setIsLoading(false);
+          },
+        }
+      );
+    },
+  });
 
   if (isLoading || !faculties)
     return (

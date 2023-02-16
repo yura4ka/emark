@@ -31,7 +31,20 @@ export const studentRouter = createTRPCRouter({
   getClassList: seniorProcedure.query(({ ctx }) => {
     return ctx.prisma.group.findFirst({
       where: { seniorId: ctx.session.user.id },
-      include: { students: { orderBy: { name: "asc" } } },
+      select: {
+        id: true,
+        name: true,
+        students: {
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            isRequested: true,
+            isConfirmed: true,
+          },
+        },
+      },
     });
   }),
 

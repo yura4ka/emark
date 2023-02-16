@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { CellProps, IRowData } from "./types";
 
 export default function DataCell<TData extends IRowData>({
@@ -8,7 +7,7 @@ export default function DataCell<TData extends IRowData>({
   newValue,
   setNewValue,
   validation,
-  linkTo,
+  customElement,
 }: CellProps<TData>) {
   const isError = validation !== true;
 
@@ -23,10 +22,8 @@ export default function DataCell<TData extends IRowData>({
       }`}
     >
       {!isEditing ? (
-        linkTo ? (
-          <Link href={linkTo} className="hover:underline">
-            {value}
-          </Link>
+        customElement ? (
+          customElement
         ) : (
           value
         )
@@ -34,7 +31,7 @@ export default function DataCell<TData extends IRowData>({
         <>
           {definition.editType === "text" ? (
             <input
-              value={newValue}
+              value={String(newValue)}
               onChange={(e) => onNewValueChange(e.target.value)}
               autoFocus={true}
               type={"text"}
