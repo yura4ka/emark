@@ -106,7 +106,7 @@ const MyClass: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Факультети</title>
+        <title>Мій клас</title>
       </Head>
       <ConfirmModal
         text={modalData.text}

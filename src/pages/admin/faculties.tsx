@@ -16,17 +16,24 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const Faculties: NextPage = () => {
   const { isLoading, data: faculties } = api.faculty.get.useQuery();
   const renameFaculty = api.faculty.rename.useMutation();
+  const createFaculty = api.faculty.create.useMutation();
   const apiUtils = api.useContext();
 
   const tableProps = createTableProps({
     data: faculties || [],
-    options: { header: "Факультети", showActions: true, canEdit: true },
+    options: {
+      header: "Факультети",
+      showActions: true,
+      canEdit: true,
+      defaultRow: { id: -1, title: "" },
+    },
     columnDefinitions: [
       {
         header: "Назва",
         key: "title",
         editType: "text",
         validationFunction(row, newValue) {
+          if (newValue.trim().length === 0) return false;
           return faculties?.some((f) => f.title === newValue.trim() && f.id !== row.id)
             ? "CONFLICT"
             : true;
@@ -39,25 +46,39 @@ const Faculties: NextPage = () => {
         ),
       },
     ],
-    onRowChange: ({ id, title }, setIsLoading, setValidation) => {
+    onRowChange: ({ id, title }, setLoading, setValidation) => {
       title = title.trim();
-      setIsLoading(true);
+      setLoading(true);
       renameFaculty.mutate(
         { id, newName: title },
         {
           onError(error) {
             if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
             else void apiUtils.faculty.get.invalidate();
-            setIsLoading(false);
+            setLoading(false);
           },
           onSuccess() {
             apiUtils.faculty.get.setData(undefined, (old) =>
               old ? old.map((f) => (f.id === id ? { ...f, title } : f)) : old
             );
-            setIsLoading(false);
+            setLoading(false);
           },
         }
       );
+    },
+    onNewRowCreate: (row, setLoading, setValidation) => {
+      setLoading(true);
+      createFaculty.mutate(row.title, {
+        onError(error) {
+          if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
+          else void apiUtils.faculty.get.invalidate();
+          setLoading(false);
+        },
+        onSuccess() {
+          setLoading(false);
+          void apiUtils.faculty.get.invalidate();
+        },
+      });
     },
   });
 

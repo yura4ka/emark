@@ -1,4 +1,5 @@
 import { Table } from "flowbite-react";
+import DataNewInstanceRow from "./DataNewInstanceRow";
 import DataRow from "./DataRow";
 import type { DataTableProps, IRowData } from "./types";
 
@@ -11,6 +12,7 @@ function DataTable<TData extends IRowData>({
   columnDefinitions,
   onRowChange,
   options,
+  onNewRowCreate,
 }: DataTableProps<TData>) {
   return (
     <div className="container my-3">
@@ -23,6 +25,13 @@ function DataTable<TData extends IRowData>({
           {options?.showActions && <Table.HeadCell>Дії</Table.HeadCell>}
         </Table.Head>
         <Table.Body className="divide-y">
+          {options?.defaultRow && (
+            <DataNewInstanceRow
+              definitions={columnDefinitions}
+              row={options?.defaultRow}
+              onSave={onNewRowCreate}
+            />
+          )}
           {data.map((row) => (
             <DataRow
               key={row.id}

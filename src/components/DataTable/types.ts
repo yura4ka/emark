@@ -5,7 +5,7 @@ export type ValidationErrors = "CONFLICT";
 export type ValidationResult = ValidationErrors | boolean;
 
 export interface IColumnDefinition<TData extends IRowData> {
-  key: string;
+  key: Extract<keyof TData, string>;
   header: string;
   editType?: "text" | "select";
   validationFunction?: (row: TData, newValue: string) => ValidationResult;
@@ -29,6 +29,7 @@ interface TableOptions<TData extends IRowData> {
   showActions?: boolean;
   canEdit?: boolean;
   customActions?: (row: TData) => ReactNode;
+  defaultRow?: TData;
 }
 
 export interface DataTableProps<TData extends IRowData> {
@@ -36,6 +37,7 @@ export interface DataTableProps<TData extends IRowData> {
   columnDefinitions: IColumnDefinition<TData>[];
   onRowChange?: TOnRowChangeFunction<TData>;
   options?: TableOptions<TData>;
+  onNewRowCreate?: TOnRowChangeFunction<TData>;
 }
 
 export interface RowProps<TData extends IRowData> {
@@ -53,4 +55,17 @@ export interface CellProps<TData extends IRowData> {
   isEditing: boolean;
   validation: ValidationResult;
   customElement?: JSX.Element;
+}
+
+export interface NewRowProps<TData extends IRowData> {
+  definitions: IColumnDefinition<TData>[];
+  row: TData;
+  onSave: TOnRowChangeFunction<TData> | undefined;
+}
+
+export interface HandleChangeButtonsProps {
+  isLoading: boolean;
+  isError: boolean;
+  handleSave: () => void;
+  handleCancel: () => void;
 }

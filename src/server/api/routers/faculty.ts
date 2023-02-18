@@ -23,7 +23,7 @@ export const facultyRouter = createTRPCRouter({
     }),
   rename: adminProcedure
     .input(
-      z.object({ id: z.number().positive().int(), newName: z.string().trim() })
+      z.object({ id: z.number().positive().int(), newName: z.string().trim().min(1) })
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -33,6 +33,18 @@ export const facultyRouter = createTRPCRouter({
           select: { id: true },
         });
         return true;
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          if (e.code === "P2002") throw new TRPCError({ code: "CONFLICT" });
+        }
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+  create: adminProcedure
+    .input(z.string().trim().min(1))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.faculty.create({ data: { title: input.trim() } });
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") throw new TRPCError({ code: "CONFLICT" });
