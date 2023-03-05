@@ -1,4 +1,5 @@
 import type { CellProps, IRowData } from "./types";
+import MySelect from "../../components/MySelect";
 
 export default function DataCell<TData extends IRowData>({
   value,
@@ -8,11 +9,12 @@ export default function DataCell<TData extends IRowData>({
   setNewValue,
   validation,
   customElement,
+  changeOptions,
 }: CellProps<TData>) {
   const isError = validation !== true;
 
-  function onNewValueChange(newValue: string) {
-    setNewValue(newValue);
+  function onNewValueChange(newValue: string, id = -1) {
+    setNewValue(newValue, id);
   }
 
   return (
@@ -21,7 +23,7 @@ export default function DataCell<TData extends IRowData>({
         isError ? "pt-4 pb-2" : "py-4"
       }`}
     >
-      {!isEditing ? (
+      {!isEditing || !definition.editType ? (
         customElement ? (
           customElement
         ) : (
@@ -29,7 +31,7 @@ export default function DataCell<TData extends IRowData>({
         )
       ) : (
         <>
-          {definition.editType === "text" ? (
+          {definition.editType === "text" && (
             <input
               value={String(newValue)}
               onChange={(e) => onNewValueChange(e.target.value)}
@@ -41,8 +43,15 @@ export default function DataCell<TData extends IRowData>({
                   : "focus:border-blue-600 focus:text-blue-600 dark:border-slate-300 dark:focus:border-blue-500 dark:focus:text-blue-500"
               }`}
             />
-          ) : (
-            <select></select>
+          )}
+          {definition.editType === "select" && (
+            <MySelect
+              value={{ id: -1, option: newValue }}
+              field="option"
+              options={changeOptions || []}
+              setValue={({ id, option }) => onNewValueChange(String(option), id)}
+              showBlank={true}
+            />
           )}
           {typeof validation === "string" && definition.errorMessages && (
             <span className="text-sm text-red-600 dark:text-red-500">

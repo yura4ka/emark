@@ -52,4 +52,22 @@ export const facultyRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
     }),
+  getById: publicProcedure.input(z.number().positive()).query(({ ctx, input }) => {
+    return ctx.prisma.faculty.findUnique({ where: { id: input } });
+  }),
+  getGroupsFull: adminProcedure
+    .input(z.number().int().positive())
+    .query(({ ctx, input }) => {
+      return ctx.prisma.group.findMany({
+        where: { facultyId: input },
+        select: {
+          id: true,
+          name: true,
+          students: { select: { id: true, name: true } },
+          senior: { select: { id: true, name: true } },
+          handler: { select: { id: true, name: true } },
+        },
+        orderBy: { name: "asc" },
+      });
+    }),
 });

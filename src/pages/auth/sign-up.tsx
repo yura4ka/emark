@@ -12,16 +12,19 @@ import SubmitButton from "../../components/SubmitButton";
 
 const SignUp: NextPage = () => {
   const { push } = useRouter();
-  const initialValue = { id: -1, value: "" };
+  const setInitialTitle = () => ({ id: -1, title: "" });
+  const setInitialName = () => ({ id: -1, name: "" });
   const initialPassword = {
     value: "",
     confirm: "",
     isCorrect: true,
   };
 
-  const [currentFaculty, setCurrentFaculty] = useState(initialValue);
-  const [currentGroup, setCurrentGroup] = useState(initialValue);
-  const [currentStudent, setCurrentStudent] = useState(initialValue);
+  const [currentFaculty, setCurrentFaculty] = useState<{ id: number; title: string }>(
+    () => setInitialTitle()
+  );
+  const [currentGroup, setCurrentGroup] = useState(() => setInitialName());
+  const [currentStudent, setCurrentStudent] = useState(() => setInitialName());
   const [password, setPassword] = useState(initialPassword);
 
   const faculties = api.faculty.get.useQuery();
@@ -41,9 +44,9 @@ const SignUp: NextPage = () => {
     onSuccess: () => setIsSuccessVisible(true),
     onError: () => setIsErrorVisible(true),
     onSettled: () => {
-      setCurrentFaculty(initialValue);
-      setCurrentGroup(initialValue);
-      setCurrentStudent(initialValue);
+      setCurrentFaculty(setInitialTitle());
+      setCurrentGroup(setInitialName());
+      setCurrentStudent(setInitialName());
       setPassword(initialPassword);
     },
   });
@@ -102,13 +105,14 @@ const SignUp: NextPage = () => {
               </h5>
 
               <MySelect
-                label="Виберіть факультет"
                 options={faculties.data || []}
+                field="title"
+                label="Виберіть факультет"
                 value={currentFaculty}
-                setValue={({ id, value }) => {
-                  setCurrentFaculty({ id, value });
-                  setCurrentGroup(initialValue);
-                  setCurrentStudent(initialValue);
+                setValue={({ id, title }) => {
+                  setCurrentFaculty({ id, title });
+                  setCurrentGroup(setInitialName());
+                  setCurrentStudent(setInitialName());
                   setPassword(initialPassword);
                 }}
                 isLoading={faculties.isLoading}
@@ -117,11 +121,12 @@ const SignUp: NextPage = () => {
 
               <MySelect
                 label="Виберіть групу"
+                field="name"
                 value={currentGroup}
                 options={facultyGroups.data || []}
-                setValue={({ id, value }) => {
-                  setCurrentGroup({ id, value });
-                  setCurrentStudent(initialValue);
+                setValue={({ id, name }) => {
+                  setCurrentGroup({ id, name });
+                  setCurrentStudent(setInitialName());
                   setPassword(initialPassword);
                 }}
                 isLoading={facultyGroups.isLoading}
@@ -131,9 +136,10 @@ const SignUp: NextPage = () => {
 
               <MySelect
                 label="Виберіть ПІБ"
+                field="name"
                 value={currentStudent}
                 options={freeStudents.data || []}
-                setValue={({ id, value }) => setCurrentStudent({ id, value })}
+                setValue={({ id, name }) => setCurrentStudent({ id, name })}
                 isLoading={freeStudents.isLoading}
                 showBlank={true}
                 isVisible={currentGroup.id !== -1}
@@ -165,9 +171,7 @@ const SignUp: NextPage = () => {
                   setValue={setPassword}
                   type="confirm"
                   disabled={currentStudent.id === -1}
-                  additionalText={
-                    password.isCorrect ? "" : "Паролі не співпадають."
-                  }
+                  additionalText={password.isCorrect ? "" : "Паролі не співпадають."}
                 />
 
                 <SubmitButton

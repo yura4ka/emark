@@ -1,41 +1,40 @@
 import { Label, Select, Spinner } from "flowbite-react";
 import { HiExclamation } from "react-icons/hi";
 import React, { useId } from "react";
+import type { IRowData } from "./DataTable/types";
 
-type TOption = {
-  id: number;
-  value: string;
-};
-
-interface SelectProps {
-  options: { id: number; name?: string; title?: string }[];
-  label: string;
-  value: TOption;
-  setValue: (option: TOption) => void;
+interface SelectProps<TData extends IRowData> {
+  options: TData[];
+  field: Extract<keyof TData, string>;
+  label?: string;
+  value: TData;
+  setValue: (option: TData) => void;
   errorText?: { title: string; text: string };
   isLoading?: boolean;
   showBlank?: boolean;
   isVisible?: boolean;
 }
 
-const MySelect = ({
+function MySelect<TData extends IRowData>({
   options,
+  field,
   value,
   setValue,
-  label,
+  label = "",
   errorText,
   isLoading,
   showBlank,
   isVisible,
-}: SelectProps) => {
+}: SelectProps<TData>) {
   const id = useId();
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const index = e.target.selectedIndex;
     const el = e.target.children[index];
     setValue({
+      ...value,
       id: +(el?.getAttribute("itemid") || -1),
-      value: e.target.value,
+      [field]: e.target.value,
     });
   };
 
@@ -43,13 +42,13 @@ const MySelect = ({
     <Select
       id={label + id}
       required={true}
-      value={value.value}
+      value={String(value[field])}
       onChange={handleSelect}
     >
-      {showBlank && <option itemID="-1">{""}</option>}
+      {showBlank && <option itemID="-2">{""}</option>}
       {options.map((o) => (
         <option key={o.id} itemID={o.id.toString()}>
-          {o.name || o.title}
+          {o[field]}
         </option>
       ))}
     </Select>
@@ -73,9 +72,11 @@ const MySelect = ({
 
   return (
     <div className={classes.join(" ")}>
-      <div className="mb-2 block">
-        <Label htmlFor={label + id} value={label} />
-      </div>
+      {label && (
+        <div className="mb-2 block">
+          <Label htmlFor={label + id} value={label} />
+        </div>
+      )}
       {isLoading ? (
         <Spinner />
       ) : (
@@ -86,6 +87,6 @@ const MySelect = ({
       )}
     </div>
   );
-};
+}
 
 export default MySelect;

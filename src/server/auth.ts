@@ -82,8 +82,7 @@ export const authOptions: NextAuthOptions = {
         if (!user) return null;
         if (!user.password) return null;
 
-        if (!(await argon2.verify(user.password, credentials.password)))
-          return null;
+        if (!(await argon2.verify(user.password, credentials.password))) return null;
 
         const toReturn = {
           id: user.id,

@@ -1,7 +1,7 @@
 import { Table } from "flowbite-react";
 import DataNewInstanceRow from "./DataNewInstanceRow";
 import DataRow from "./DataRow";
-import type { DataTableProps, IRowData } from "./types";
+import type { DataTableProps, IRowData, TCheckUniqueFunction } from "./types";
 
 export function createTableProps<TData extends IRowData>(props: DataTableProps<TData>) {
   return props;
@@ -14,6 +14,10 @@ function DataTable<TData extends IRowData>({
   options,
   onNewRowCreate,
 }: DataTableProps<TData>) {
+  const checkUniqueConstraint: TCheckUniqueFunction<TData> = (row, key, newValue) => {
+    return !data.some((r) => r[key] === newValue.trim() && r.id !== row.id);
+  };
+
   return (
     <div className="container my-3">
       {options?.header && <h2 className="mb-6 text-2xl font-bold">{options.header}</h2>}
@@ -30,6 +34,7 @@ function DataTable<TData extends IRowData>({
               definitions={columnDefinitions}
               row={options?.defaultRow}
               onSave={onNewRowCreate}
+              uniqueCheck={checkUniqueConstraint}
             />
           )}
           {data.map((row) => (
@@ -39,6 +44,7 @@ function DataTable<TData extends IRowData>({
               definitions={columnDefinitions}
               onRowChange={onRowChange}
               options={options}
+              uniqueCheck={checkUniqueConstraint}
             />
           ))}
         </Table.Body>

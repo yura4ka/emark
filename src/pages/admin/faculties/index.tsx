@@ -2,9 +2,9 @@ import { Spinner } from "flowbite-react";
 import { type GetServerSidePropsContext, type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import DataTable, { createTableProps } from "../../components/DataTable/DataTable";
-import { getServerAuthSession } from "../../server/auth";
-import { api } from "../../utils/api";
+import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
+import { getServerAuthSession } from "../../../server/auth";
+import { api } from "../../../utils/api";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -32,12 +32,7 @@ const Faculties: NextPage = () => {
         header: "Назва",
         key: "title",
         editType: "text",
-        validationFunction(row, newValue) {
-          if (newValue.trim().length === 0) return false;
-          return faculties?.some((f) => f.title === newValue.trim() && f.id !== row.id)
-            ? "CONFLICT"
-            : true;
-        },
+        isUnique: true,
         errorMessages: { CONFLICT: "Факультет з таким іменем вже існує!" },
         customElement: (row) => (
           <Link href={`faculties/${row.id}`} className="hover:underline">
@@ -46,8 +41,9 @@ const Faculties: NextPage = () => {
         ),
       },
     ],
-    onRowChange: ({ id, title }, setLoading, setValidation) => {
-      title = title.trim();
+    onRowChange: ({ newRow, setLoading, setValidation }) => {
+      const title = newRow.title.trim();
+      const { id } = newRow;
       setLoading(true);
       renameFaculty.mutate(
         { id, newName: title },
@@ -66,7 +62,7 @@ const Faculties: NextPage = () => {
         }
       );
     },
-    onNewRowCreate: (row, setLoading, setValidation) => {
+    onNewRowCreate: ({ newRow: row, setLoading, setValidation }) => {
       setLoading(true);
       createFaculty.mutate(row.title, {
         onError(error) {
