@@ -47,7 +47,7 @@ const Faculty: NextPage = () => {
         isUnique: true,
         errorMessages: { CONFLICT: "Група з такою назвою вже існує!" },
         customElement: (row) => (
-          <Link href={`groups/${row.id}`} className="hover:underline">
+          <Link href={`/admin/groups/${row.id}`} className="hover:underline">
             {row.name}
           </Link>
         ),

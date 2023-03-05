@@ -61,4 +61,26 @@ export const groupRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
     }),
+  get: publicProcedure.input(z.number().int().positive()).query(({ ctx, input }) => {
+    return ctx.prisma.group.findFirst({
+      where: { id: input },
+      select: {
+        id: true,
+        name: true,
+        senior: { select: { id: true, name: true } },
+        handler: { select: { id: true, name: true } },
+        faculty: { select: { title: true } },
+        students: {
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            isRequested: true,
+            isConfirmed: true,
+          },
+        },
+      },
+    });
+  }),
 });

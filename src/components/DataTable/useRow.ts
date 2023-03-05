@@ -80,7 +80,10 @@ export function useRow<TData extends IRowData>(
         validation = Object.values(result);
       },
     });
-    setIsEditing(validation.length !== 0 || validation.some((r) => r !== true));
+
+    const isSuccess = !(validation.length !== 0 || validation.some((r) => r !== true));
+    setIsEditing(!isSuccess);
+    if (isSuccess) setNewRow({ ...row });
   }
 
   return {

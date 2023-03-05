@@ -53,7 +53,7 @@ const requireStudent = t.middleware(({ ctx, next }) => {
 });
 
 const requireSenior = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user.role.isSenior) {
+  if (!ctx.session?.user.role.isSenior && !ctx.session?.user.role.isAdmin) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

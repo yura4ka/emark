@@ -1,8 +1,21 @@
+import { adminProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, seniorProcedure } from "../trpc";
 import * as argon2 from "argon2";
 
 export const studentRouter = createTRPCRouter({
+  createAdmin: publicProcedure.query(async ({ ctx }) => {
+    const password = await argon2.hash("admin");
+    return ctx.prisma.teacher.create({
+      data: {
+        name: "admin",
+        email: "admin@knu.ua",
+        password,
+        isConfirmed: true,
+        isAdmin: true,
+      },
+    });
+  }),
   makeRequest: publicProcedure
     .input(
       z.object({
@@ -69,6 +82,44 @@ export const studentRouter = createTRPCRouter({
         where: { id: input },
       });
 
+      return true;
+    }),
+
+  create: adminProcedure
+    .input(
+      z.object({
+        name: z.string().trim().min(1),
+        email: z.string().trim().min(1),
+        groupId: z.number().positive().int(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.student.create({
+        data: {
+          name: input.name.trim(),
+          email: input.email.trim(),
+          groupId: input.groupId,
+        },
+      });
+
+      return true;
+    }),
+  edit: adminProcedure
+    .input(
+      z.object({
+        id: z.number().positive().int(),
+        name: z.string().trim().min(1),
+        email: z.string().trim().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.student.update({
+        where: { id: input.id },
+        data: {
+          name: input.name.trim(),
+          email: input.email.trim(),
+        },
+      });
       return true;
     }),
 });
