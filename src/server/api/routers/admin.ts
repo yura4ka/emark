@@ -14,10 +14,14 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
-      await ctx.prisma.student.update({
+      console.log("admin confirm");
+
+      const temp = await ctx.prisma.student.update({
         data: { isRequested: false, isConfirmed: true },
         where: { id: input },
       });
+
+      console.log(temp);
 
       return true;
     }),

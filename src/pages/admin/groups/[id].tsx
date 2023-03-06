@@ -25,6 +25,7 @@ const Group: NextPage = () => {
   const createStudent = api.student.create.useMutation();
   const changeStudent = api.student.edit.useMutation();
   const assignSenior = api.admin.assignSenior.useMutation();
+  const resetPassword = api.student.resetPassword.useMutation();
   const apiUtils = api.useContext();
 
   const [senior, setSenior] = useState(() => data?.senior || { id: -1, name: "" });
@@ -44,23 +45,43 @@ const Group: NextPage = () => {
       showActions: true,
       canEdit: true,
       defaultRow: { id: -1, name: "", email: "", isRequested: false, isConfirmed: false },
-      customActions: (row) =>
-        row.isRequested && (
-          <Button
-            disabled={confirmStudent.isLoading}
-            size="xs"
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `підтвердити акаунт учня ${row.name}`,
-                onAccept: () => handleConfirm(row.id),
-              });
-            }}
-          >
-            <HiCheck className="mr-1 h-4 w-4" />
-            Підтвердити
-          </Button>
-        ),
+      customActions: (row) => (
+        <>
+          {row.isRequested && (
+            <Button
+              disabled={confirmStudent.isLoading}
+              size="xs"
+              onClick={() => {
+                setModalData({
+                  isVisible: true,
+                  text: `підтвердити акаунт учня ${row.name}`,
+                  onAccept: () => handleConfirm(row.id),
+                });
+              }}
+            >
+              <HiCheck className="mr-1 h-4 w-4" />
+              Підтвердити
+            </Button>
+          )}
+          {row.isConfirmed && (
+            <Button
+              disabled={resetPassword.isLoading}
+              color="failure"
+              size="xs"
+              onClick={() => {
+                setModalData({
+                  isVisible: true,
+                  text: `скинути пароль учня ${row.name}`,
+                  onAccept: () => handleResetPassword(row.id),
+                });
+              }}
+            >
+              <HiCheck className="mr-1 h-4 w-4" />
+              Скинути пароль
+            </Button>
+          )}
+        </>
+      ),
     },
     columnDefinitions: [
       {
@@ -150,6 +171,15 @@ const Group: NextPage = () => {
               }
             : old
         );
+      },
+    });
+  };
+
+  const handleResetPassword = (id: number) => {
+    setModalData((data) => ({ ...data, isVisible: false }));
+    resetPassword.mutate(id, {
+      onSuccess: () => {
+        void apiUtils.group.get.invalidate(data?.id);
       },
     });
   };

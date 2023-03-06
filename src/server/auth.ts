@@ -105,22 +105,59 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: ({ token, user }) => {
-      // console.log("in jwt", "token :", token, "user: ", user);
+    jwt: async ({ token, user }) => {
+      //console.log("in jwt", "token :", token, "user: ", user);
       if (user) {
         token = { ...token, ...user, id: +user.id };
+        return token;
       }
+
+      const student = await prisma.student.findFirst({
+        where: { id: token.id, email: token.email },
+        include: { seniorOf: { select: { id: true } } },
+      });
+
+      let teacher:
+        | (Teacher & {
+            handlerOf: {
+              id: number;
+            } | null;
+          })
+        | null = null;
+
+      if (!student) {
+        teacher = await prisma.teacher.findFirstOrThrow({
+          where: { id: token.id, email: token.email },
+          include: { handlerOf: { select: { id: true } } },
+        });
+      }
+
+      const dbUser = student || teacher;
+      if (!dbUser) return token;
+      if (dbUser.isRequested || !dbUser.isConfirmed) throw "not confirmed";
+
+      token.email = dbUser.email;
+      token.name = dbUser.name;
+      token.role = {
+        isStudent: !!student,
+        isTeacher: !!teacher,
+        isSenior: !!student?.seniorOf,
+        isHandler: !!teacher?.handlerOf,
+        isAdmin: !!teacher?.isAdmin,
+      };
+
+      //console.log("db update", token);
       return token;
     },
     session: ({ session, token }) => {
-      // console.log("in session", "session: ", session, "token :", token);
+      //console.log("in session", "session: ", session, "token :", token);
       if (token) {
         session.user = { ...session.user, ...token };
       }
       return session;
     },
     signIn: ({ user }) => {
-      // console.log("in sign in", user);
+      //console.log("in sign in", user);
       if (user.isRequested && !user.isConfirmed) return false;
       return true;
     },

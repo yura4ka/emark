@@ -30,11 +30,11 @@ const SignUp: NextPage = () => {
   const faculties = api.faculty.get.useQuery();
   const facultyGroups = api.faculty.getGroups.useQuery(
     { id: currentFaculty.id },
-    { enabled: currentFaculty.id !== -1 }
+    { enabled: currentFaculty.id > 0 }
   );
   const freeStudents = api.group.getFreeStudents.useQuery(
     { id: currentGroup.id },
-    { enabled: currentGroup.id !== -1 }
+    { enabled: currentGroup.id > 0 }
   );
 
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
@@ -97,7 +97,7 @@ const SignUp: NextPage = () => {
       </Head>
       <div className="flex h-full items-center justify-center">
         {modals}
-        <div className="w-full max-w-max">
+        <div className="w-full max-w-md">
           <Card>
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <h5 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -131,7 +131,11 @@ const SignUp: NextPage = () => {
                 }}
                 isLoading={facultyGroups.isLoading}
                 showBlank={true}
-                isVisible={currentFaculty.id !== -1}
+                isVisible={currentFaculty.id > 0}
+                errorText={{
+                  title: "На цьому факультеті немає жодної групи?",
+                  text: "",
+                }}
               />
 
               <MySelect
@@ -142,7 +146,7 @@ const SignUp: NextPage = () => {
                 setValue={({ id, name }) => setCurrentStudent({ id, name })}
                 isLoading={freeStudents.isLoading}
                 showBlank={true}
-                isVisible={currentGroup.id !== -1}
+                isVisible={currentGroup.id > 0}
                 errorText={{
                   title: "Всі учні цієї групи вже зареєстровані.",
                   text: "",
@@ -151,7 +155,7 @@ const SignUp: NextPage = () => {
 
               <div
                 className={`flex flex-col gap-4 transition-opacity duration-300 ${
-                  currentStudent.id === -1 ? "opacity-0" : "opacity-1"
+                  currentStudent.id <= 0 ? "opacity-0" : "opacity-1"
                 }`}
               >
                 <PasswordInput
@@ -159,7 +163,7 @@ const SignUp: NextPage = () => {
                   input={password}
                   setValue={setPassword}
                   type="value"
-                  disabled={currentStudent.id === -1}
+                  disabled={currentStudent.id <= 0}
                   validationFunction={(value) =>
                     value.length === 0 || value.trim().length >= 4
                   }

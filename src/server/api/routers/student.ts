@@ -122,4 +122,13 @@ export const studentRouter = createTRPCRouter({
       });
       return true;
     }),
+  resetPassword: adminProcedure
+    .input(z.number().positive().int())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.student.update({
+        where: { id: input },
+        data: { password: null, isConfirmed: false, isRequested: false },
+      });
+      return true;
+    }),
 });
