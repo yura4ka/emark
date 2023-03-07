@@ -9,7 +9,7 @@ import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../components/DataTable/DataTable";
 import ConfirmModal from "../components/Modals/ConfirmModal";
-import CustomAction from "../components/TableActions/CustomAction";
+import CustomAction from "../components/Buttons/CustomAction";
 import { useModal } from "../hooks/useModal";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {

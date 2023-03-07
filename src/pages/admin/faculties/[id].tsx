@@ -5,8 +5,10 @@ import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
 import Head from "next/head";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import MyInput from "../../../components/Inputs/MyInput";
+import CardButtons from "../../../components/Buttons/CardButtons";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -22,6 +24,7 @@ const Faculty: NextPage = () => {
   const { isLoading, data } = api.faculty.getGroupsFull.useQuery(id);
   const changeGroup = api.group.edit.useMutation();
   const createGroup = api.group.create.useMutation();
+  const changeFaculty = api.faculty.rename.useMutation();
   const apiUtils = api.useContext();
 
   const groupsData = useMemo(
@@ -70,7 +73,7 @@ const Faculty: NextPage = () => {
       { header: "Кількість студентів", key: "count" },
     ],
     options: {
-      header: faculty?.title || "",
+      header: "Групи",
       showActions: true,
       canEdit: true,
       defaultRow: {
@@ -128,7 +131,11 @@ const Faculty: NextPage = () => {
     },
   });
 
-  if (isLoading || !data)
+  const [name, setName] = useState(() => faculty?.title || "");
+  const [isError, setIsError] = useState(false);
+  const isChanged = name !== faculty?.title;
+
+  if (isLoading || !data || !faculty)
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size={"xl"} />
@@ -140,6 +147,42 @@ const Faculty: NextPage = () => {
       <Head>
         <title>{faculty?.title}</title>
       </Head>
+      <h1 className="mb-6 text-3xl font-bold">{faculty?.title}</h1>
+      <div className="my-6 flex max-w-xl flex-col gap-2">
+        <MyInput
+          label="Назва"
+          value={name}
+          setValue={(value) => {
+            setName(value);
+            setIsError(false);
+          }}
+          isValid={name.trim().length !== 0 && !isError}
+        />
+        {isChanged && (
+          <CardButtons
+            isError={isError}
+            isLoading={changeFaculty.isLoading}
+            isDisabled={name.trim().length === 0}
+            onConfirm={() => {
+              changeFaculty.mutate(
+                { id, newName: name },
+                {
+                  onSuccess() {
+                    void apiUtils.faculty.getById.invalidate(id);
+                  },
+                  onError() {
+                    setIsError(true);
+                  },
+                }
+              );
+            }}
+            onDiscard={() => {
+              setName(faculty.title);
+              setIsError(false);
+            }}
+          />
+        )}
+      </div>
       <DataTable {...tableProps} />
     </>
   );

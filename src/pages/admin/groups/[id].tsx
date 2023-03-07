@@ -5,15 +5,16 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 import { z } from "zod";
 import { api } from "../../../utils/api";
 import Head from "next/head";
-import { Badge, Button, Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
 import MySelect from "../../../components/MySelect";
 import MyInput from "../../../components/Inputs/MyInput";
 import ConfirmModal from "../../../components/Modals/ConfirmModal";
-import CustomAction from "../../../components/TableActions/CustomAction";
+import CustomAction from "../../../components/Buttons/CustomAction";
 import { useModal } from "../../../hooks/useModal";
+import CardButtons from "../../../components/Buttons/CardButtons";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -260,46 +261,31 @@ const Group: NextPage = () => {
             setIsError(false);
           }}
         />
-        {isGroupChanged && name.trim().length !== 0 && (
-          <div className="flex gap-1">
-            <Button
-              className="mt-2"
-              color={"success"}
-              disabled={changeGroup.isLoading || isError}
-              onClick={() => {
-                changeGroup.mutate(
-                  { id: data.id, name, facultyId: faculty.id, seniorId: senior.id },
-                  {
-                    onSuccess() {
-                      void apiUtils.group.get.invalidate(data?.id || -1);
-                    },
-                    onError() {
-                      setIsError(true);
-                    },
-                  }
-                );
-              }}
-            >
-              Зберегти
-            </Button>
-            <Button
-              className="mt-2"
-              color={"failure"}
-              onClick={() => {
-                setName(data.name);
-                setFaculty(data.faculty);
-                setSenior(data.senior || { id: -1, name: "" });
-                setIsError(false);
-              }}
-            >
-              Скасувати зміни
-            </Button>
-          </div>
-        )}
-        {isError && (
-          <p className="text-sm text-red-600 dark:text-red-500">
-            У вибраному факультеті вже є група з такою назвою!
-          </p>
+        {isGroupChanged && (
+          <CardButtons
+            isError={isError}
+            isLoading={changeGroup.isLoading}
+            isDisabled={name.trim().length === 0}
+            onConfirm={() => {
+              changeGroup.mutate(
+                { id: data.id, name, facultyId: faculty.id, seniorId: senior.id },
+                {
+                  onSuccess() {
+                    void apiUtils.group.get.invalidate(data?.id || -1);
+                  },
+                  onError() {
+                    setIsError(true);
+                  },
+                }
+              );
+            }}
+            onDiscard={() => {
+              setName(data.name);
+              setFaculty(data.faculty);
+              setSenior(data.senior || { id: -1, name: "" });
+              setIsError(false);
+            }}
+          />
         )}
       </div>
 
