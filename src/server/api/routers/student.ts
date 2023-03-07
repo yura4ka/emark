@@ -2,6 +2,7 @@ import { adminProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, seniorProcedure } from "../trpc";
 import * as argon2 from "argon2";
+import { TRPCError } from "@trpc/server";
 
 export const studentRouter = createTRPCRouter({
   createAdmin: publicProcedure.query(async ({ ctx }) => {
@@ -89,15 +90,23 @@ export const studentRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().trim().min(1),
-        email: z.string().trim().min(1),
+        email: z.string().email(),
         groupId: z.number().positive().int(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const email = input.email.trim();
+      const [student, teacher] = await Promise.all([
+        ctx.prisma.student.findFirst({ where: { email } }),
+        ctx.prisma.student.findFirst({ where: { email } }),
+      ]);
+
+      if (student || teacher) throw new TRPCError({ code: "CONFLICT" });
+
       await ctx.prisma.student.create({
         data: {
           name: input.name.trim(),
-          email: input.email.trim(),
+          email,
           groupId: input.groupId,
         },
       });
@@ -109,25 +118,25 @@ export const studentRouter = createTRPCRouter({
       z.object({
         id: z.number().positive().int(),
         name: z.string().trim().min(1),
-        email: z.string().trim().min(1),
+        email: z.string().email(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const email = input.email.trim();
+
+      const [student, teacher] = await Promise.all([
+        ctx.prisma.student.findFirst({ where: { email, id: { not: input.id } } }),
+        ctx.prisma.student.findFirst({ where: { email } }),
+      ]);
+
+      if (student || teacher) throw new TRPCError({ code: "CONFLICT" });
+
       await ctx.prisma.student.update({
         where: { id: input.id },
         data: {
           name: input.name.trim(),
           email: input.email.trim(),
         },
-      });
-      return true;
-    }),
-  resetPassword: adminProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.student.update({
-        where: { id: input },
-        data: { password: null, isConfirmed: false, isRequested: false },
       });
       return true;
     }),

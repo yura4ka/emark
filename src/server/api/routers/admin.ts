@@ -14,14 +14,10 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
-      console.log("admin confirm");
-
-      const temp = await ctx.prisma.student.update({
+      await ctx.prisma.student.update({
         data: { isRequested: false, isConfirmed: true },
         where: { id: input },
       });
-
-      console.log(temp);
 
       return true;
     }),
@@ -42,5 +38,30 @@ export const adminRouter = createTRPCRouter({
         where: { id: input.groupId },
         data: { seniorId: input.studentId },
       });
+    }),
+
+  resetStudentPassword: adminProcedure
+    .input(z.number().positive().int())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.student.update({
+        where: { id: input },
+        data: { password: null, isConfirmed: false, isRequested: false },
+      });
+      return true;
+    }),
+
+  rejectStudent: adminProcedure
+    .input(z.number().positive().int())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.student.findFirstOrThrow({
+        where: { id: input, isConfirmed: false, isRequested: true },
+      });
+
+      await ctx.prisma.student.update({
+        where: { id: input },
+        data: { isRequested: false, password: null },
+      });
+
+      return true;
     }),
 });

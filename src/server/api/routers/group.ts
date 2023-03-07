@@ -28,6 +28,7 @@ export const groupRouter = createTRPCRouter({
         id: z.number().positive().int(),
         name: z.string().trim().min(1),
         seniorId: z.number().positive().int(),
+        facultyId: z.number().positive().int(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -38,10 +39,21 @@ export const groupRouter = createTRPCRouter({
 
       if (senior?.groupId !== input.id) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      await ctx.prisma.group.update({
-        where: { id: input.id },
-        data: { name: input.name.trim(), seniorId: input.seniorId },
-      });
+      try {
+        await ctx.prisma.group.update({
+          where: { id: input.id },
+          data: {
+            name: input.name.trim(),
+            seniorId: input.seniorId,
+            facultyId: input.facultyId,
+          },
+        });
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          if (e.code === "P2002") throw new TRPCError({ code: "CONFLICT" });
+        }
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
 
       return true;
     }),
@@ -69,7 +81,7 @@ export const groupRouter = createTRPCRouter({
         name: true,
         senior: { select: { id: true, name: true } },
         handler: { select: { id: true, name: true } },
-        faculty: { select: { title: true } },
+        faculty: { select: { id: true, title: true } },
         students: {
           orderBy: { name: "asc" },
           select: {

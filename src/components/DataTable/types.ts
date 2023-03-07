@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type ValidationErrors = "CONFLICT";
+export type ValidationErrors = "CONFLICT" | "FORMAT";
 
 export type ValidationResult = ValidationErrors | boolean;
 
@@ -9,7 +9,7 @@ export interface IColumnDefinition<TData extends IRowData> {
   header: string;
   editType?: "text" | "select";
   validationFunction?: (row: TData, newValue: string) => ValidationResult;
-  errorMessages?: Record<ValidationErrors, string>;
+  errorMessages?: Partial<Record<ValidationErrors, string>>;
   customElement?: (row: TData) => JSX.Element;
   isUnique?: boolean;
   nullable?: boolean;

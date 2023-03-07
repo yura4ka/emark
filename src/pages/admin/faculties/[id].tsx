@@ -67,7 +67,7 @@ const Faculty: NextPage = () => {
             ?.find((d) => d.id === r.id)
             ?.students.map((s) => ({ id: s.id, option: s.name })) || [],
       },
-      { header: "Кількість учнів", key: "count" },
+      { header: "Кількість студентів", key: "count" },
     ],
     options: {
       header: faculty?.title || "",
@@ -84,10 +84,10 @@ const Faculty: NextPage = () => {
     },
     onRowChange: ({ newRow, setLoading, setValidation, ids }) => {
       const name = newRow.name.trim();
-      const { id } = newRow;
+      const groupId = newRow.id;
       setLoading(true);
       changeGroup.mutate(
-        { id, name, seniorId: ids.senior },
+        { id: groupId, name, seniorId: ids.senior, facultyId: id },
         {
           onError(error) {
             if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
@@ -97,10 +97,10 @@ const Faculty: NextPage = () => {
           onSuccess() {
             apiUtils.faculty.getGroupsFull.setData(faculty?.id || -1, (old) =>
               old
-                ? old.map((f) =>
-                    f.id === id
-                      ? { ...f, name, senior: { id: ids.senior, name: newRow.senior } }
-                      : f
+                ? old.map((g) =>
+                    g.id === groupId
+                      ? { ...g, name, senior: { id: ids.senior, name: newRow.senior } }
+                      : g
                   )
                 : old
             );

@@ -42,7 +42,7 @@ export default function DataRow<TData extends IRowData>({
         <div className="inline-flex gap-2">
           <>
             {options.canEdit && <EditAction />}
-            {options.customActions?.(row)}
+            {!isEditing && options.customActions?.(row)}
           </>
         </div>
       </Table.Cell>

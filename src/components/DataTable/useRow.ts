@@ -47,7 +47,7 @@ export function useRow<TData extends IRowData>(
       const result = uniqueCheck(row, d.key, value);
       setRowValidations((old) => ({
         ...old,
-        [d.key]: result === false ? d.errorMessages?.CONFLICT : true,
+        [d.key]: result === false ? "CONFLICT" : true,
       }));
       if (!result) return;
     }
@@ -83,7 +83,7 @@ export function useRow<TData extends IRowData>(
 
     const isSuccess = !(validation.length !== 0 || validation.some((r) => r !== true));
     setIsEditing(!isSuccess);
-    if (isSuccess) setNewRow({ ...row });
+    if (isSuccess) setNewRow({ ...newRow });
   }
 
   return {
