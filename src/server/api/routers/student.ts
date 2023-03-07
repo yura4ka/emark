@@ -62,30 +62,6 @@ export const studentRouter = createTRPCRouter({
     });
   }),
 
-  confirmStudent: seniorProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
-        where: { seniorId: ctx.session.user.id },
-        select: { id: true },
-      });
-      await ctx.prisma.student.findFirstOrThrow({
-        where: {
-          id: input,
-          groupId,
-          isRequested: true,
-          isConfirmed: false,
-        },
-      });
-
-      await ctx.prisma.student.update({
-        data: { isRequested: false, isConfirmed: true },
-        where: { id: input },
-      });
-
-      return true;
-    }),
-
   create: adminProcedure
     .input(
       z.object({

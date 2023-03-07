@@ -49,19 +49,4 @@ export const adminRouter = createTRPCRouter({
       });
       return true;
     }),
-
-  rejectStudent: adminProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.student.findFirstOrThrow({
-        where: { id: input, isConfirmed: false, isRequested: true },
-      });
-
-      await ctx.prisma.student.update({
-        where: { id: input },
-        data: { isRequested: false, password: null },
-      });
-
-      return true;
-    }),
 });

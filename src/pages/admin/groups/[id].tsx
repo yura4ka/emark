@@ -9,9 +9,11 @@ import { Badge, Button, Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
 import MySelect from "../../../components/MySelect";
 import MyInput from "../../../components/Inputs/MyInput";
+import ConfirmModal from "../../../components/Modals/ConfirmModal";
+import CustomAction from "../../../components/TableActions/CustomAction";
+import { useModal } from "../../../hooks/useModal";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -29,45 +31,10 @@ const Group: NextPage = () => {
   const changeStudent = api.student.edit.useMutation();
   const changeGroup = api.group.edit.useMutation();
   const resetPassword = api.admin.resetStudentPassword.useMutation();
-  const rejectStudent = api.admin.rejectStudent.useMutation();
   const faculties = api.faculty.get.useQuery();
   const apiUtils = api.useContext();
 
-  const [modalData, setModalData] = useState({
-    onAccept: () => console.error("accept error"),
-    text: "",
-    isVisible: false,
-  });
-
-  function CustomAction(props: {
-    isVisible: boolean;
-    isLoading: boolean;
-    text: string;
-    modalText: string;
-    icon: JSX.Element;
-    onAccept: () => void;
-    color?: string;
-  }) {
-    return props.isVisible ? (
-      <Button
-        disabled={props.isLoading}
-        size="xs"
-        color={props.color}
-        onClick={() => {
-          setModalData({
-            isVisible: true,
-            text: props.modalText,
-            onAccept: props.onAccept,
-          });
-        }}
-      >
-        {props.icon}
-        {props.text}
-      </Button>
-    ) : (
-      <></>
-    );
-  }
+  const { modalData, setModalData, setModalVisibility } = useModal();
 
   const tableProps = createTableProps({
     data: data?.students || [],
@@ -81,28 +48,43 @@ const Group: NextPage = () => {
           <CustomAction
             isVisible={row.isRequested}
             isLoading={confirmStudent.isLoading}
-            modalText={`підтвердити акаунт студента ${row.name}`}
             text="Підтвердити"
             icon={<HiCheck className="mr-1 h-4 w-4" />}
-            onAccept={() => handleConfirm(row.id)}
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `підтвердити акаунт студента ${row.name}`,
+                onAccept: () => handleConfirm(row.id),
+              });
+            }}
           />
           <CustomAction
             isVisible={row.isConfirmed}
             isLoading={resetPassword.isLoading}
-            modalText={`скинути пароль студента ${row.name}}`}
             text="Скинути пароль"
             icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
             color="failure"
-            onAccept={() => handleResetPassword(row.id)}
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `скинути пароль студента ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
           />
           <CustomAction
             isVisible={row.isRequested}
-            isLoading={rejectStudent.isLoading}
-            modalText={`відхилити запит студента ${row.name}}`}
+            isLoading={resetPassword.isLoading}
             text="Відхилити"
             icon={<HiBan className="mr-1 h-4 w-4" />}
             color="failure"
-            onAccept={() => handleReject(row.id)}
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `відхилити запит студента ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
           />
         </>
       ),
@@ -196,7 +178,7 @@ const Group: NextPage = () => {
   });
 
   const handleConfirm = (id: number) => {
-    setModalData((data) => ({ ...data, isVisible: false }));
+    setModalVisibility(false);
     confirmStudent.mutate(id, {
       onSuccess: () => {
         apiUtils.group.get.setData(data?.id || -1, (old) =>
@@ -214,17 +196,8 @@ const Group: NextPage = () => {
   };
 
   const handleResetPassword = (id: number) => {
-    setModalData((data) => ({ ...data, isVisible: false }));
+    setModalVisibility(false);
     resetPassword.mutate(id, {
-      onSuccess: () => {
-        void apiUtils.group.get.invalidate(data?.id);
-      },
-    });
-  };
-
-  const handleReject = (id: number) => {
-    setModalData((data) => ({ ...data, isVisible: false }));
-    rejectStudent.mutate(id, {
       onSuccess: () => {
         void apiUtils.group.get.invalidate(data?.id);
       },
@@ -257,7 +230,6 @@ const Group: NextPage = () => {
       </Head>
 
       <h1 className="mb-6 text-3xl font-bold">{data.faculty.title + ". " + data.name}</h1>
-
       <div className="my-6 flex max-w-xl flex-col gap-2">
         <MyInput
           label="Назва"
@@ -338,6 +310,7 @@ const Group: NextPage = () => {
         onCancel={() => setModalData((data) => ({ ...data, isVisible: false }))}
         buttonText="Підтвердити"
       />
+
       <DataTable {...tableProps} />
     </>
   );

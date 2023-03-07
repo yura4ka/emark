@@ -1,12 +1,16 @@
-import { Badge, Button, Spinner } from "flowbite-react";
-import { type GetServerSidePropsContext, type NextPage } from "next";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { getServerAuthSession } from "../server/auth";
-import { api } from "../utils/api";
-import { HiCheck } from "react-icons/hi";
-import ConfirmModal from "../components/Modals/ConfirmModal";
-import { useState } from "react";
-import DataTable, { createTableProps } from "../components/DataTable/DataTable";
 import Head from "next/head";
+import { type GetServerSidePropsContext, type NextPage } from "next";
+import { api } from "../utils/api";
+import { Badge, Spinner } from "flowbite-react";
+import { HiCheck, HiBan } from "react-icons/hi";
+import { HiOutlineHashtag } from "react-icons/hi2";
+import DataTable, { createTableProps } from "../components/DataTable/DataTable";
+import ConfirmModal from "../components/Modals/ConfirmModal";
+import CustomAction from "../components/TableActions/CustomAction";
+import { useModal } from "../hooks/useModal";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -16,15 +20,17 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const MyClass: NextPage = () => {
+  const session = useSession({ required: true });
   const apiUtils = api.useContext();
+  const router = useRouter();
   const { data: myGroup, isLoading } = api.student.getClassList.useQuery();
-  const confirmStudent = api.student.confirmStudent.useMutation();
+  const confirmStudent = api.senior.confirmStudent.useMutation();
+  const resetPassword = api.senior.resetStudentPassword.useMutation();
 
-  const [modalData, setModalData] = useState({
-    onAccept: () => console.error("accept error"),
-    text: "",
-    isVisible: false,
-  });
+  const { modalData, setModalData, setModalVisibility } = useModal();
+
+  if (session.status === "authenticated" && !session.data.user.role.isSenior)
+    void router.push("/");
 
   if (isLoading || !myGroup)
     return (
@@ -38,23 +44,51 @@ const MyClass: NextPage = () => {
     options: {
       header: `Моя група: ${myGroup.name}`,
       showActions: true,
-      customActions: (row) =>
-        row.isRequested && (
-          <Button
-            disabled={confirmStudent.isLoading}
-            size="xs"
+      customActions: (row) => (
+        <>
+          <CustomAction
+            isVisible={row.isRequested}
+            isLoading={confirmStudent.isLoading}
+            text="Підтвердити"
+            icon={<HiCheck className="mr-1 h-4 w-4" />}
             onClick={() => {
               setModalData({
                 isVisible: true,
-                text: `підтвердити акаунт учня ${row.name}`,
+                text: `підтвердити акаунт студента ${row.name}`,
                 onAccept: () => handleConfirm(row.id),
               });
             }}
-          >
-            <HiCheck className="mr-1 h-4 w-4" />
-            Підтвердити
-          </Button>
-        ),
+          />
+          <CustomAction
+            isVisible={row.isConfirmed}
+            isLoading={resetPassword.isLoading}
+            text="Скинути пароль"
+            icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
+            color="failure"
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `скинути пароль студента ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
+          />
+          <CustomAction
+            isVisible={row.isRequested}
+            isLoading={resetPassword.isLoading}
+            text="Відхилити"
+            icon={<HiBan className="mr-1 h-4 w-4" />}
+            color="failure"
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `відхилити запит студента ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
+          />
+        </>
+      ),
     },
     columnDefinitions: [
       {
@@ -86,20 +120,30 @@ const MyClass: NextPage = () => {
     ],
   });
 
+  const updateStudents = (
+    id: number,
+    data: { isConfirmed: boolean; isRequested: boolean }
+  ) => {
+    apiUtils.student.getClassList.setData(undefined, (oldData) => {
+      if (!oldData) return;
+      return {
+        ...oldData,
+        students: oldData.students.map((s) => (s.id === id ? { ...s, ...data } : s)),
+      };
+    });
+  };
+
   const handleConfirm = (id: number) => {
-    setModalData((data) => ({ ...data, isVisible: false }));
+    setModalVisibility(false);
     confirmStudent.mutate(id, {
-      onSuccess: () => {
-        apiUtils.student.getClassList.setData(undefined, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            students: oldData.students.map((s) =>
-              s.id === id ? { ...s, isRequested: false, isConfirmed: true } : s
-            ),
-          };
-        });
-      },
+      onSuccess: () => updateStudents(id, { isConfirmed: true, isRequested: false }),
+    });
+  };
+
+  const handleResetPassword = (id: number) => {
+    setModalVisibility(false);
+    resetPassword.mutate(id, {
+      onSuccess: () => updateStudents(id, { isConfirmed: false, isRequested: false }),
     });
   };
 
