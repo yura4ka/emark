@@ -24,7 +24,7 @@ model Student {
 model Teacher {
   id          Int     @id @default(autoincrement())
   name        String  @db.VarChar(255)
-  email       String  @db.VarChar(50)
+  email       String  @unique @db.VarChar(50)
   password    String?
   isRequested Boolean @default(false)
   isConfirmed Boolean @default(false)
@@ -67,7 +67,7 @@ model SubGroup {
 
 model Subject {
   id      Int     @id @default(autoincrement())
-  title   String  @db.VarChar(255)
+  title   String  @unique @db.VarChar(255)
   classes Class[]
 }
 

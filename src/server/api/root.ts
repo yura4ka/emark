@@ -4,6 +4,7 @@ import { facultyRouter } from "./routers/faculty";
 import { studentRouter } from "./routers/student";
 import { adminRouter } from "./routers/admin";
 import { seniorRouter } from "./routers/senior";
+import { subjectRouter } from "./routers/subject";
 
 export const appRouter = createTRPCRouter({
   group: groupRouter,
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   student: studentRouter,
   admin: adminRouter,
   senior: seniorRouter,
+  subject: subjectRouter,
 });
 
 export type AppRouter = typeof appRouter;

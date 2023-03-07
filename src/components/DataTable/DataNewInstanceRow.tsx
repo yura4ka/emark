@@ -21,7 +21,7 @@ function DataNewInstanceRow<TData extends IRowData>({
     onNewValueChange,
     discard,
     save,
-  } = useRow(row, onSave, uniqueCheck, definitions);
+  } = useRow(row, onSave, uniqueCheck, definitions, true);
 
   return !isEditing ? (
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">

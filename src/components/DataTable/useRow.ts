@@ -12,7 +12,8 @@ export function useRow<TData extends IRowData>(
   row: TData,
   onRowSave: TOnRowChangeFunction<TData> | undefined,
   uniqueCheck?: TCheckUniqueFunction<TData>,
-  definitions?: IColumnDefinition<TData>[]
+  definitions?: IColumnDefinition<TData>[],
+  isNew?: boolean
 ) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +84,7 @@ export function useRow<TData extends IRowData>(
 
     const isSuccess = !(validation.length !== 0 || validation.some((r) => r !== true));
     setIsEditing(!isSuccess);
-    if (isSuccess) setNewRow({ ...newRow });
+    if (isSuccess && isNew) setNewRow({ ...row });
   }
 
   return {

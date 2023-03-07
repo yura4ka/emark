@@ -28,9 +28,9 @@ export const TeacherRoutes = {
   handler: [],
   admin: [
     new NavRoute("/admin/faculties", "Факультети"),
-    new NavRoute("/admin", "Предмети"),
-    new NavRoute("/admin", "Групи"),
-    new NavRoute("/admin", "Викладачі"),
-    new NavRoute("/admin", "Студенти"),
+    new NavRoute("/admin/subjects", "Предмети"),
+    new NavRoute("/admin/groups", "Групи"),
+    new NavRoute("/admin/teachers", "Викладачі"),
+    new NavRoute("/admin/students", "Студенти"),
   ],
 };
