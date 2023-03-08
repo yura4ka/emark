@@ -26,17 +26,20 @@ export const groupRouter = createTRPCRouter({
       z.object({
         id: validId,
         name: validString,
-        seniorId: validId,
         facultyId: validId,
+        seniorId: validId.nullable(),
+        handlerId: validId.nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const senior = await ctx.prisma.student.findUnique({
-        where: { id: input.seniorId },
-        select: { groupId: true, name: true },
-      });
+      if (input.seniorId) {
+        const senior = await ctx.prisma.student.findUnique({
+          where: { id: input.seniorId },
+          select: { groupId: true },
+        });
 
-      if (senior?.groupId !== input.id) throw new TRPCError({ code: "BAD_REQUEST" });
+        if (senior?.groupId !== input.id) throw new TRPCError({ code: "BAD_REQUEST" });
+      }
 
       await ctx.prisma.group.update({
         where: { id: input.id },
@@ -44,16 +47,23 @@ export const groupRouter = createTRPCRouter({
           name: input.name.trim(),
           seniorId: input.seniorId,
           facultyId: input.facultyId,
+          handlerId: input.handlerId,
         },
       });
 
       return true;
     }),
   create: adminProcedure
-    .input(z.object({ facultyId: validId, name: validString }))
+    .input(
+      z.object({ facultyId: validId, name: validString, handlerId: validId.nullable() })
+    )
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.group.create({
-        data: { name: input.name.trim(), facultyId: input.facultyId },
+        data: {
+          name: input.name.trim(),
+          facultyId: input.facultyId,
+          handlerId: input.handlerId,
+        },
       });
       return true;
     }),

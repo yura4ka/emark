@@ -9,6 +9,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import MyInput from "../../../components/Inputs/MyInput";
 import CardButtons from "../../../components/Buttons/CardButtons";
+import { formatOptional } from "../../../utils/utils";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -25,6 +26,7 @@ const Faculty: NextPage = () => {
   const changeGroup = api.group.edit.useMutation();
   const createGroup = api.group.create.useMutation();
   const changeFaculty = api.faculty.rename.useMutation();
+  const { data: freeTeachers } = api.teacher.getFreeTeachers.useQuery();
   const apiUtils = api.useContext();
 
   const groupsData = useMemo(
@@ -33,11 +35,17 @@ const Faculty: NextPage = () => {
         id: d.id,
         name: d.name,
         handler: d.handler?.name || "-",
+        handlerId: d.handler?.id || -1,
         senior: d.senior?.name || "-",
         seniorId: d.senior?.id || -1,
         count: d.students.length || "0",
       })),
     [data]
+  );
+
+  const freeTeachersOptions = useMemo(
+    () => freeTeachers?.map((t) => ({ id: t.id, option: t.name })) || [],
+    [freeTeachers]
   );
 
   const tableProps = createTableProps({
@@ -59,12 +67,21 @@ const Faculty: NextPage = () => {
         header: "Куратор",
         key: "handler",
         editType: "select",
+        changeOptions: (row) => {
+          const option = { id: row.handlerId, option: row.handler };
+          return option.id === -1
+            ? freeTeachersOptions
+            : [...freeTeachersOptions, option];
+        },
+        idKey: "handlerId",
+        nullable: true,
       },
       {
         header: "Староста",
         key: "senior",
         idKey: "seniorId",
         editType: "select",
+        nullable: true,
         changeOptions: (r) =>
           data
             ?.find((d) => d.id === r.id)
@@ -80,6 +97,7 @@ const Faculty: NextPage = () => {
         id: -1,
         name: "",
         handler: "-",
+        handlerId: -1,
         senior: "-",
         seniorId: -1,
         count: 0,
@@ -88,9 +106,11 @@ const Faculty: NextPage = () => {
     onRowChange: ({ newRow, setLoading, setValidation }) => {
       const name = newRow.name.trim();
       const groupId = newRow.id;
+      const handlerId = formatOptional(newRow.handlerId);
+      const seniorId = formatOptional(newRow.seniorId);
       setLoading(true);
       changeGroup.mutate(
-        { id: groupId, name, seniorId: newRow.seniorId, facultyId: id },
+        { id: groupId, name, facultyId: id, seniorId, handlerId },
         {
           onError(error) {
             if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
@@ -106,20 +126,23 @@ const Faculty: NextPage = () => {
                           ...g,
                           name,
                           senior: { id: newRow.seniorId, name: newRow.senior },
+                          handler: { id: newRow.handlerId, name: newRow.handler },
                         }
                       : g
                   )
                 : old
             );
             setLoading(false);
+            void apiUtils.teacher.getFreeTeachers.invalidate();
           },
         }
       );
     },
     onNewRowCreate: ({ newRow: row, setLoading, setValidation }) => {
       setLoading(true);
+      const handlerId = formatOptional(row.handlerId);
       createGroup.mutate(
-        { name: row.name.trim(), facultyId: faculty?.id || -1 },
+        { name: row.name.trim(), facultyId: faculty?.id || -1, handlerId },
         {
           onError(error) {
             if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });

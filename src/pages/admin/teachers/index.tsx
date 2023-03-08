@@ -10,6 +10,7 @@ import { useModal } from "../../../hooks/useModal";
 import { api } from "../../../utils/api";
 import { validEmail } from "../../../utils/schemas";
 import { HiOutlineKey } from "react-icons/hi";
+import { formatOptional } from "../../../utils/utils";
 
 const Teachers: NextPage = () => {
   useAdminSession();
@@ -130,7 +131,7 @@ const Teachers: NextPage = () => {
       const { id } = newRow;
       const name = newRow.name.trim();
       const email = newRow.email.trim();
-      const handlerOfId = newRow.handlerOfId === -1 ? undefined : newRow.handlerOfId;
+      const handlerOfId = formatOptional(newRow.handlerOfId);
 
       updateTeacher.mutate(
         { id, name, email, handlerOfId },

@@ -39,7 +39,7 @@ export const teacherRouter = createTRPCRouter({
         id: validId,
         name: validString,
         email: validEmail,
-        handlerOfId: validId.optional(),
+        handlerOfId: validId.nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -48,10 +48,11 @@ export const teacherRouter = createTRPCRouter({
           where: { id: input.id },
           data: { name: input.name.trim(), email: input.email.trim() },
         }),
-        ctx.prisma.group.update({
-          where: { id: input.handlerOfId },
-          data: { handlerId: input.id },
-        }),
+        input.handlerOfId &&
+          ctx.prisma.group.update({
+            where: { id: input.handlerOfId },
+            data: { handlerId: input.id },
+          }),
       ]);
       return true;
     }),
@@ -63,6 +64,13 @@ export const teacherRouter = createTRPCRouter({
       where: { handlerId: null },
       select: { id: true, name: true, faculty: { select: { title: true } } },
       orderBy: [{ faculty: { title: "asc" } }, { name: "asc" }],
+    });
+  }),
+  getFreeTeachers: adminProcedure.query(({ ctx }) => {
+    return ctx.prisma.teacher.findMany({
+      where: { handlerOf: null },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
     });
   }),
 });

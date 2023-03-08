@@ -50,7 +50,7 @@ export default function DataCell<TData extends IRowData>({
               field="option"
               options={changeOptions || []}
               setValue={({ id, option }) => onNewValueChange(String(option), id)}
-              showBlank={true}
+              showBlank={definition.nullable}
             />
           )}
           {typeof validation === "string" && definition.errorMessages && (

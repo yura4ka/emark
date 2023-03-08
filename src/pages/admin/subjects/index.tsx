@@ -4,8 +4,10 @@ import { api } from "../../../utils/api";
 import { Spinner } from "flowbite-react";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
 import Link from "next/link";
+import useAdminSession from "../../../hooks/useAdminSession";
 
 const Subjects: NextPage = () => {
+  useAdminSession();
   const { isLoading, data: subjects } = api.subject.get.useQuery();
   const createSubject = api.subject.create.useMutation();
   const updateSubject = api.subject.update.useMutation();

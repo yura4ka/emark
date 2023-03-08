@@ -15,6 +15,7 @@ import CustomAction from "../../../components/Buttons/CustomAction";
 import { useModal } from "../../../hooks/useModal";
 import CardButtons from "../../../components/Buttons/CardButtons";
 import { validEmail } from "../../../utils/schemas";
+import { formatOptional } from "../../../utils/utils";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -33,6 +34,7 @@ const Group: NextPage = () => {
   const changeGroup = api.group.edit.useMutation();
   const resetPassword = api.admin.resetStudentPassword.useMutation();
   const faculties = api.faculty.get.useQuery();
+  const { data: freeTeachers } = api.teacher.getFreeTeachers.useQuery();
   const apiUtils = api.useContext();
 
   const { setModalData, setModalVisibility, modalProps } = useModal();
@@ -204,19 +206,15 @@ const Group: NextPage = () => {
     });
   };
 
-  const [senior, setSenior] = useState(() => data?.senior || { id: -1, name: "" });
+  const defaultValue = { id: -1, name: "" };
   const [faculty, setFaculty] = useState(() => data?.faculty || { id: -1, title: "" });
   const [name, setName] = useState(() => data?.name || "");
+  const [senior, setSenior] = useState(() => data?.senior || { ...defaultValue });
+  const [handler, setHandler] = useState(() => data?.handler || { ...defaultValue });
   const [isError, setIsError] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const isGroupChanged =
-    data?.students.length !== 0 &&
-    (senior.id !== data?.senior?.id ||
-      senior.id === -1 ||
-      faculty.id !== data.faculty.id ||
-      name !== data.name);
-
-  if (isLoading || !data)
+  if (isLoading || !data || !freeTeachers)
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size={"xl"} />
@@ -237,6 +235,7 @@ const Group: NextPage = () => {
           setValue={(value) => {
             setName(value);
             setIsError(false);
+            setHasChanges(true);
           }}
           isValid={name.trim().length !== 0 && !isError}
         />
@@ -248,6 +247,7 @@ const Group: NextPage = () => {
           setValue={(value) => {
             setFaculty(value);
             setIsError(false);
+            setHasChanges(true);
           }}
         />
         <MySelect
@@ -258,19 +258,38 @@ const Group: NextPage = () => {
           setValue={(value) => {
             setSenior(value);
             setIsError(false);
+            setHasChanges(true);
           }}
+          errorText={{ title: "", text: "В цій групі немає студентів!" }}
+          showBlank={true}
         />
-        {isGroupChanged && (
+        <MySelect
+          label="Куратор"
+          options={[data.handler || { ...defaultValue }, ...freeTeachers]}
+          field={"name"}
+          value={handler}
+          setValue={(value) => {
+            setHandler(value);
+            setIsError(false);
+            setHasChanges(true);
+          }}
+          errorText={{ title: "", text: "Немає вільних викладачів!" }}
+          showBlank={true}
+        />
+        {hasChanges && (
           <CardButtons
             isError={isError}
             isLoading={changeGroup.isLoading}
             isDisabled={name.trim().length === 0}
             errorMessage="У вибраному факультеті вже є група з такою назвою!"
             onConfirm={() => {
+              const seniorId = formatOptional(senior.id);
+              const handlerId = formatOptional(handler.id);
               changeGroup.mutate(
-                { id: data.id, name, facultyId: faculty.id, seniorId: senior.id },
+                { id: data.id, name, facultyId: faculty.id, seniorId, handlerId },
                 {
                   onSuccess() {
+                    setHasChanges(false);
                     void apiUtils.group.get.invalidate(data?.id || -1);
                   },
                   onError() {
@@ -282,7 +301,8 @@ const Group: NextPage = () => {
             onDiscard={() => {
               setName(data.name);
               setFaculty(data.faculty);
-              setSenior(data.senior || { id: -1, name: "" });
+              setSenior(data.senior || { ...defaultValue });
+              setHandler(data.handler || { ...defaultValue });
               setIsError(false);
             }}
           />
