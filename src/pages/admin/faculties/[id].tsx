@@ -163,6 +163,7 @@ const Faculty: NextPage = () => {
             isError={isError}
             isLoading={changeFaculty.isLoading}
             isDisabled={name.trim().length === 0}
+            errorMessage={"Факультет з такою назвою вже існує!"}
             onConfirm={() => {
               changeFaculty.mutate(
                 { id, newName: name },

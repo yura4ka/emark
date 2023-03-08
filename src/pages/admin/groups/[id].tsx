@@ -266,6 +266,7 @@ const Group: NextPage = () => {
             isError={isError}
             isLoading={changeGroup.isLoading}
             isDisabled={name.trim().length === 0}
+            errorMessage="У вибраному факультеті вже є група з такою назвою!"
             onConfirm={() => {
               changeGroup.mutate(
                 { id: data.id, name, facultyId: faculty.id, seniorId: senior.id },

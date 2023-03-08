@@ -23,7 +23,7 @@ const MyClass: NextPage = () => {
   const session = useSession({ required: true });
   const apiUtils = api.useContext();
   const router = useRouter();
-  const { data: myGroup, isLoading } = api.student.getClassList.useQuery();
+  const { data: myGroup, isLoading } = api.senior.getClassList.useQuery();
   const confirmStudent = api.senior.confirmStudent.useMutation();
   const resetPassword = api.senior.resetStudentPassword.useMutation();
 
@@ -124,7 +124,7 @@ const MyClass: NextPage = () => {
     id: number,
     data: { isConfirmed: boolean; isRequested: boolean }
   ) => {
-    apiUtils.student.getClassList.setData(undefined, (oldData) => {
+    apiUtils.senior.getClassList.setData(undefined, (oldData) => {
       if (!oldData) return;
       return {
         ...oldData,

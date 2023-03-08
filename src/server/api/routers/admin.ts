@@ -1,32 +1,31 @@
 import { adminProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
+import { validId } from "../../../utils/schemas";
 
 export const adminRouter = createTRPCRouter({
-  confirmStudent: adminProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.student.findFirstOrThrow({
-        where: {
-          id: input,
-          isRequested: true,
-          isConfirmed: false,
-        },
-      });
+  confirmStudent: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    await ctx.prisma.student.findFirstOrThrow({
+      where: {
+        id: input,
+        isRequested: true,
+        isConfirmed: false,
+      },
+    });
 
-      await ctx.prisma.student.update({
-        data: { isRequested: false, isConfirmed: true },
-        where: { id: input },
-      });
+    await ctx.prisma.student.update({
+      data: { isRequested: false, isConfirmed: true },
+      where: { id: input },
+    });
 
-      return true;
-    }),
+    return true;
+  }),
 
   assignSenior: adminProcedure
     .input(
       z.object({
-        studentId: z.number().positive().int(),
-        groupId: z.number().positive().int(),
+        studentId: validId,
+        groupId: validId,
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -40,13 +39,11 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
-  resetStudentPassword: adminProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.student.update({
-        where: { id: input },
-        data: { password: null, isConfirmed: false, isRequested: false },
-      });
-      return true;
-    }),
+  resetStudentPassword: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    await ctx.prisma.student.update({
+      where: { id: input },
+      data: { password: null, isConfirmed: false, isRequested: false },
+    });
+    return true;
+  }),
 });

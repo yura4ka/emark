@@ -1,34 +1,32 @@
 import { TRPCError } from "@trpc/server";
 import { prisma } from "./../../db";
-import { z } from "zod";
 import { createTRPCRouter, seniorProcedure } from "../trpc";
+import { validId } from "../../../utils/schemas";
 
 export const seniorRouter = createTRPCRouter({
-  confirmStudent: seniorProcedure
-    .input(z.number().positive().int())
-    .mutation(async ({ ctx, input }) => {
-      const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
-        where: { seniorId: ctx.session.user.id },
-        select: { id: true },
-      });
-      await ctx.prisma.student.findFirstOrThrow({
-        where: {
-          id: input,
-          groupId,
-          isRequested: true,
-          isConfirmed: false,
-        },
-      });
+  confirmStudent: seniorProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
+      where: { seniorId: ctx.session.user.id },
+      select: { id: true },
+    });
+    await ctx.prisma.student.findFirstOrThrow({
+      where: {
+        id: input,
+        groupId,
+        isRequested: true,
+        isConfirmed: false,
+      },
+    });
 
-      await ctx.prisma.student.update({
-        data: { isRequested: false, isConfirmed: true },
-        where: { id: input },
-      });
+    await ctx.prisma.student.update({
+      data: { isRequested: false, isConfirmed: true },
+      where: { id: input },
+    });
 
-      return true;
-    }),
+    return true;
+  }),
   resetStudentPassword: seniorProcedure
-    .input(z.number().positive().int())
+    .input(validId)
     .mutation(async ({ ctx, input }) => {
       if (ctx.session.user.id === input) throw new TRPCError({ code: "BAD_REQUEST" });
 
@@ -44,4 +42,24 @@ export const seniorRouter = createTRPCRouter({
 
       return true;
     }),
+
+  getClassList: seniorProcedure.query(({ ctx }) => {
+    return ctx.prisma.group.findFirst({
+      where: { seniorId: ctx.session.user.id },
+      select: {
+        id: true,
+        name: true,
+        students: {
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            isRequested: true,
+            isConfirmed: true,
+          },
+        },
+      },
+    });
+  }),
 });

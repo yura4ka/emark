@@ -1,13 +1,12 @@
 import { adminProcedure } from "./../trpc";
 import { z } from "zod";
-
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { Prisma } from "@prisma/client";
+import { validId, validString } from "../../../utils/schemas";
 
 export const groupRouter = createTRPCRouter({
   getFreeStudents: publicProcedure
-    .input(z.object({ id: z.number().positive().int() }))
+    .input(z.object({ id: validId }))
     .query(({ ctx, input }) => {
       return ctx.prisma.student.findMany({
         where: {
@@ -25,10 +24,10 @@ export const groupRouter = createTRPCRouter({
   edit: adminProcedure
     .input(
       z.object({
-        id: z.number().positive().int(),
-        name: z.string().trim().min(1),
-        seniorId: z.number().positive().int(),
-        facultyId: z.number().positive().int(),
+        id: validId,
+        name: validString,
+        seniorId: validId,
+        facultyId: validId,
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -39,41 +38,26 @@ export const groupRouter = createTRPCRouter({
 
       if (senior?.groupId !== input.id) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      try {
-        await ctx.prisma.group.update({
-          where: { id: input.id },
-          data: {
-            name: input.name.trim(),
-            seniorId: input.seniorId,
-            facultyId: input.facultyId,
-          },
-        });
-      } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === "P2002") throw new TRPCError({ code: "CONFLICT" });
-        }
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-      }
+      await ctx.prisma.group.update({
+        where: { id: input.id },
+        data: {
+          name: input.name.trim(),
+          seniorId: input.seniorId,
+          facultyId: input.facultyId,
+        },
+      });
 
       return true;
     }),
   create: adminProcedure
-    .input(
-      z.object({ facultyId: z.number().positive().int(), name: z.string().trim().min(1) })
-    )
+    .input(z.object({ facultyId: validId, name: validString }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.group.create({
-          data: { name: input.name.trim(), facultyId: input.facultyId },
-        });
-      } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === "P2002") throw new TRPCError({ code: "CONFLICT" });
-        }
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-      }
+      await ctx.prisma.group.create({
+        data: { name: input.name.trim(), facultyId: input.facultyId },
+      });
+      return true;
     }),
-  get: publicProcedure.input(z.number().int().positive()).query(({ ctx, input }) => {
+  get: publicProcedure.input(validId).query(({ ctx, input }) => {
     return ctx.prisma.group.findFirst({
       where: { id: input },
       select: {

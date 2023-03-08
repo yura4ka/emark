@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure, seniorProcedure } from "../trpc";
 import * as argon2 from "argon2";
 import { TRPCError } from "@trpc/server";
+import { validEmail, validId, validString } from "../../../utils/schemas";
 
 export const studentRouter = createTRPCRouter({
   createAdmin: publicProcedure.query(async ({ ctx }) => {
@@ -20,7 +21,7 @@ export const studentRouter = createTRPCRouter({
   makeRequest: publicProcedure
     .input(
       z.object({
-        id: z.number().positive().int(),
+        id: validId,
         password: z.string().trim().min(4),
       })
     )
@@ -42,32 +43,12 @@ export const studentRouter = createTRPCRouter({
       });
     }),
 
-  getClassList: seniorProcedure.query(({ ctx }) => {
-    return ctx.prisma.group.findFirst({
-      where: { seniorId: ctx.session.user.id },
-      select: {
-        id: true,
-        name: true,
-        students: {
-          orderBy: { name: "asc" },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            isRequested: true,
-            isConfirmed: true,
-          },
-        },
-      },
-    });
-  }),
-
   create: adminProcedure
     .input(
       z.object({
-        name: z.string().trim().min(1),
-        email: z.string().email(),
-        groupId: z.number().positive().int(),
+        name: validString,
+        email: validEmail,
+        groupId: validId,
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -92,9 +73,9 @@ export const studentRouter = createTRPCRouter({
   edit: adminProcedure
     .input(
       z.object({
-        id: z.number().positive().int(),
-        name: z.string().trim().min(1),
-        email: z.string().email(),
+        id: validId,
+        name: validString,
+        email: validEmail,
       })
     )
     .mutation(async ({ ctx, input }) => {

@@ -6,6 +6,7 @@ export default function CardButtons(props: {
   isDisabled: boolean;
   onConfirm: () => void;
   onDiscard: () => void;
+  errorMessage?: string;
 }) {
   return (
     <>
@@ -23,10 +24,8 @@ export default function CardButtons(props: {
         </Button>
       </div>
 
-      {props.isError && (
-        <p className="text-sm text-red-600 dark:text-red-500">
-          У вибраному факультеті вже є група з такою назвою!
-        </p>
+      {props.isError && props.errorMessage && (
+        <p className="text-sm text-red-600 dark:text-red-500">{props.errorMessage}</p>
       )}
     </>
   );
