@@ -27,7 +27,7 @@ const MyClass: NextPage = () => {
   const confirmStudent = api.senior.confirmStudent.useMutation();
   const resetPassword = api.senior.resetStudentPassword.useMutation();
 
-  const { modalData, setModalData, setModalVisibility } = useModal();
+  const { setModalData, setModalVisibility, modalProps } = useModal();
 
   if (session.status === "authenticated" && !session.data.user.role.isSenior)
     void router.push("/");
@@ -152,13 +152,7 @@ const MyClass: NextPage = () => {
       <Head>
         <title>Мій клас</title>
       </Head>
-      <ConfirmModal
-        text={modalData.text}
-        isVisible={modalData.isVisible}
-        onAccept={() => modalData.onAccept()}
-        onCancel={() => setModalData((data) => ({ ...data, isVisible: false }))}
-        buttonText="Підтвердити"
-      />
+      <ConfirmModal {...modalProps} />
       <DataTable {...tableProps} />
     </>
   );

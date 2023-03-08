@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { getServerAuthSession } from "../../../server/auth";
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { z } from "zod";
 import { api } from "../../../utils/api";
 import Head from "next/head";
 import { Badge, Spinner } from "flowbite-react";
@@ -15,6 +14,7 @@ import ConfirmModal from "../../../components/Modals/ConfirmModal";
 import CustomAction from "../../../components/Buttons/CustomAction";
 import { useModal } from "../../../hooks/useModal";
 import CardButtons from "../../../components/Buttons/CardButtons";
+import { validEmail } from "../../../utils/schemas";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -35,7 +35,7 @@ const Group: NextPage = () => {
   const faculties = api.faculty.get.useQuery();
   const apiUtils = api.useContext();
 
-  const { modalData, setModalData, setModalVisibility } = useModal();
+  const { setModalData, setModalVisibility, modalProps } = useModal();
 
   const tableProps = createTableProps({
     data: data?.students || [],
@@ -106,8 +106,7 @@ const Group: NextPage = () => {
           FORMAT: "Невірний  формат",
         },
         validationFunction(row, newValue) {
-          if (z.string().email().safeParse(newValue.trim()).success !== true)
-            return "FORMAT";
+          if (validEmail.safeParse(newValue.trim()).success !== true) return "FORMAT";
           return true;
         },
       },
@@ -290,14 +289,7 @@ const Group: NextPage = () => {
         )}
       </div>
 
-      <ConfirmModal
-        text={modalData.text}
-        isVisible={modalData.isVisible}
-        onAccept={() => modalData.onAccept()}
-        onCancel={() => setModalData((data) => ({ ...data, isVisible: false }))}
-        buttonText="Підтвердити"
-      />
-
+      <ConfirmModal {...modalProps} />
       <DataTable {...tableProps} />
     </>
   );

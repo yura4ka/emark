@@ -21,7 +21,7 @@ export default function DataRow<TData extends IRowData>({
     onNewValueChange,
     discard,
     save,
-  } = useRow(row, onRowChange, uniqueCheck, definitions);
+  } = useRow(row, onRowChange, uniqueCheck);
 
   function EditAction() {
     return !isEditing ? (

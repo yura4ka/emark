@@ -85,12 +85,12 @@ const Faculty: NextPage = () => {
         count: 0,
       },
     },
-    onRowChange: ({ newRow, setLoading, setValidation, ids }) => {
+    onRowChange: ({ newRow, setLoading, setValidation }) => {
       const name = newRow.name.trim();
       const groupId = newRow.id;
       setLoading(true);
       changeGroup.mutate(
-        { id: groupId, name, seniorId: ids.senior, facultyId: id },
+        { id: groupId, name, seniorId: newRow.seniorId, facultyId: id },
         {
           onError(error) {
             if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
@@ -102,7 +102,11 @@ const Faculty: NextPage = () => {
               old
                 ? old.map((g) =>
                     g.id === groupId
-                      ? { ...g, name, senior: { id: ids.senior, name: newRow.senior } }
+                      ? {
+                          ...g,
+                          name,
+                          senior: { id: newRow.seniorId, name: newRow.senior },
+                        }
                       : g
                   )
                 : old

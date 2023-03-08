@@ -26,7 +26,6 @@ export type TOnRowChangeFunction<TData extends IRowData> = (props: {
   newRow: TData;
   setLoading: (isLoading: boolean) => void;
   setValidation: (result: { [key: string]: ValidationResult }) => void;
-  ids: Record<Extract<keyof TData, string>, number>;
 }) => void;
 
 interface TableOptions<TData extends IRowData> {

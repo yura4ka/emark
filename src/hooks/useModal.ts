@@ -10,5 +10,13 @@ export function useModal() {
   const setModalVisibility = (isVisible: boolean) =>
     setModalData((data) => ({ ...data, isVisible }));
 
-  return { modalData, setModalData, setModalVisibility };
+  const modalProps = {
+    text: modalData.text,
+    isVisible: modalData.isVisible,
+    onAccept: modalData.onAccept,
+    onCancel: () => setModalVisibility(false),
+    buttonText: "Підтвердити",
+  };
+
+  return { modalData, setModalData, setModalVisibility, modalProps };
 }

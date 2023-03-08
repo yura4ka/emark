@@ -12,22 +12,12 @@ export function useRow<TData extends IRowData>(
   row: TData,
   onRowSave: TOnRowChangeFunction<TData> | undefined,
   uniqueCheck?: TCheckUniqueFunction<TData>,
-  definitions?: IColumnDefinition<TData>[],
   isNew?: boolean
 ) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newRow, setNewRow] = useState(() => ({ ...row }));
   const [rowValidations, setRowValidations] = useState(() => initValidations(row, true));
-  const [selectedIds, setSelectedIds] = useState(
-    () =>
-      Object.fromEntries(
-        Object.keys(row).map((k) => {
-          const id = definitions?.find((d) => d.key === k)?.idKey || -1;
-          return [k, id === -1 ? id : row[id]];
-        })
-      ) as Record<Extract<keyof TData, string>, number>
-  );
 
   const isError = useMemo(
     () => Object.values(rowValidations).some((v) => v !== true),
@@ -35,9 +25,7 @@ export function useRow<TData extends IRowData>(
   );
 
   function onNewValueChange(value: string, d: IColumnDefinition<TData>, id?: number) {
-    if (id !== undefined) setSelectedIds((old) => ({ ...old, [d.key]: id }));
-
-    setNewRow((old) => ({ ...old, [d.key]: value }));
+    setNewRow((old) => ({ ...old, [d.key]: value, ...(d.idKey && { [d.idKey]: id }) }));
     if (!d.nullable) {
       const isEmpty = value.trim().length === 0;
       setRowValidations((old) => ({ ...old, [d.key]: !isEmpty }));
@@ -75,7 +63,6 @@ export function useRow<TData extends IRowData>(
     onRowSave({
       newRow,
       setLoading: setIsLoading,
-      ids: selectedIds,
       setValidation: (result) => {
         setRowValidations((old) => ({ ...old, ...result }));
         validation = Object.values(result);
@@ -100,6 +87,5 @@ export function useRow<TData extends IRowData>(
     onNewValueChange,
     save,
     discard,
-    setSelectedIds,
   };
 }
