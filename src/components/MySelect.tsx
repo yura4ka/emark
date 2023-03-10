@@ -30,12 +30,15 @@ function MySelect<TData extends IRowData>({
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const index = e.target.selectedIndex;
-    const el = e.target.children[index];
-    setValue({
-      ...value,
-      id: +(el?.getAttribute("itemid") || -1),
-      [field]: e.target.value,
-    });
+    //const el = e.target.children[index];
+    const newValue = options[index - Number(showBlank)];
+    console.log(newValue);
+    setValue(
+      // ...value,
+      // id: +(el?.getAttribute("itemid") || -1),
+      // [field]: e.target.value,
+      newValue ? newValue : { ...value, id: -1, [field]: e.target.value }
+    );
   };
 
   const select = (

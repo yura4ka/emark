@@ -8,7 +8,7 @@ import PopupModal from "../../components/Modals/PopupModal";
 import { HiCheck, HiX } from "react-icons/hi";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import SubmitButton from "../../components/SubmitButton";
+import SubmitButton from "../../components/Buttons/SubmitButton";
 
 const SignUp: NextPage = () => {
   const { push } = useRouter();

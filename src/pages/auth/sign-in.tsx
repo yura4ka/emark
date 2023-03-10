@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import MyInput from "../../components/Inputs/MyInput";
 import PasswordInput from "../../components/Inputs/PasswordInput";
-import SubmitButton from "../../components/SubmitButton";
+import SubmitButton from "../../components/Buttons/SubmitButton";
 
 const SignIn: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -79,9 +79,7 @@ const SignIn: NextPage = () => {
               <SubmitButton
                 text="Увійти"
                 disabled={
-                  isError ||
-                  email.trim().length === 0 ||
-                  password.value.trim().length < 4
+                  isError || email.trim().length === 0 || password.value.trim().length < 4
                 }
                 isLoading={isLoading}
               />

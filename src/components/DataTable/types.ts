@@ -34,6 +34,7 @@ interface TableOptions<TData extends IRowData> {
   canEdit?: boolean;
   customActions?: (row: TData) => ReactNode;
   defaultRow?: TData;
+  createOnNewPage?: string;
 }
 
 export interface DataTableProps<TData extends IRowData> {

@@ -58,12 +58,15 @@ export const groupRouter = createTRPCRouter({
       z.object({ facultyId: validId, name: validString, handlerId: validId.nullable() })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.group.create({
+      const { id: groupId } = await ctx.prisma.group.create({
         data: {
           name: input.name.trim(),
           facultyId: input.facultyId,
           handlerId: input.handlerId,
         },
+      });
+      await ctx.prisma.subGroup.create({
+        data: { name: "Вся група", isFull: true, groupId },
       });
       return true;
     }),
@@ -86,6 +89,14 @@ export const groupRouter = createTRPCRouter({
             isConfirmed: true,
           },
         },
+      },
+    });
+  }),
+  getStudents: publicProcedure.input(validId).query(async ({ ctx, input }) => {
+    return ctx.prisma.group.findUniqueOrThrow({
+      where: { id: input },
+      select: {
+        students: { select: { id: true, name: true }, orderBy: { name: "asc" } },
       },
     });
   }),

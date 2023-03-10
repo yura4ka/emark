@@ -73,6 +73,7 @@ model Subject {
 
 model Class {
   id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
   subGroupId Int
   teacherId  Int
   subjectId  Int

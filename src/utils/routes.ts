@@ -32,5 +32,6 @@ export const TeacherRoutes = {
     new NavRoute("/admin/groups", "Групи"),
     new NavRoute("/admin/teachers", "Викладачі"),
     new NavRoute("/admin/students", "Студенти"),
+    new NavRoute("/admin/classes", "Класи"),
   ],
 };

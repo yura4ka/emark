@@ -1,6 +1,6 @@
 import { adminProcedure } from "./../trpc";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure, seniorProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 import * as argon2 from "argon2";
 import { TRPCError } from "@trpc/server";
 import { validEmail, validId, validString } from "../../../utils/schemas";
