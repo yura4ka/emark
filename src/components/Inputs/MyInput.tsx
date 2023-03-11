@@ -51,7 +51,7 @@ const MyInput = ({
       {!!additional && !hideAdditional && (
         <p
           className={`mt-2 text-sm font-medium text-gray-500 dark:text-gray-400 ${
-            isValid
+            isValid !== false
               ? "text-gray-500 dark:text-gray-400"
               : "text-red-600 dark:text-red-500"
           } ${disabled ? "cursor-default" : ""}`}

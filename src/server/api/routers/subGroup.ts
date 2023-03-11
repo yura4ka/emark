@@ -52,8 +52,8 @@ export const subGroupRouter = createTRPCRouter({
   update: adminProcedure
     .input(z.object({ id: validId, name: validString, studentIds: z.array(validId) }))
     .mutation(async ({ ctx, input }) => {
-      const { groupId } = await ctx.prisma.subGroup.findUniqueOrThrow({
-        where: { id: input.id },
+      const { groupId } = await ctx.prisma.subGroup.findFirstOrThrow({
+        where: { id: input.id, isFull: false },
       });
       const students = await ctx.prisma.student.findMany({
         where: { groupId, id: { in: input.studentIds } },

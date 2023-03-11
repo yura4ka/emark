@@ -1,5 +1,5 @@
 import { validEmail, validId, validString } from "./../../../utils/schemas";
-import { adminProcedure } from "./../trpc";
+import { adminProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
 
@@ -71,6 +71,23 @@ export const teacherRouter = createTRPCRouter({
       where: { handlerOf: null },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
+    });
+  }),
+  getClasses: teacherProcedure.input(validId).query(({ ctx, input }) => {
+    return ctx.prisma.class.findMany({
+      where: { teacherId: input },
+      select: {
+        id: true,
+        name: true,
+        subject: { select: { id: true, title: true } },
+        teacher: { select: { id: true, name: true } },
+        subGroup: {
+          select: { group: { select: { faculty: { select: { title: true } } } } },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
     });
   }),
 });

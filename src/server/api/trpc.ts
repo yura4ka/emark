@@ -85,7 +85,7 @@ const requireAdmin = t.middleware(({ ctx, next }) => {
   });
 });
 
-export const userProcedure = t.procedure.use(requireStudent);
+export const studentProcedure = t.procedure.use(requireStudent);
 export const teacherProcedure = t.procedure.use(requireTeacher);
-export const seniorProcedure = userProcedure.use(requireSenior);
+export const seniorProcedure = studentProcedure.use(requireSenior);
 export const adminProcedure = teacherProcedure.use(requireAdmin);

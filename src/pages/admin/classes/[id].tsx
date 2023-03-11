@@ -37,7 +37,8 @@ const Class: NextPage = () => {
 
   useEffect(() => {
     if (dbClass.data) setClassData(dbClass.data);
-  }, [dbClass.data]);
+    if (dbClass.isError) void router.push("/");
+  }, [dbClass.data, dbClass.isError, router]);
 
   const { data: subjects } = api.subject.get.useQuery();
   const { data: teachers } = api.teacher.get.useQuery();
@@ -99,10 +100,12 @@ const Class: NextPage = () => {
         {id === -1 ? "Створити " : "Редагувати "}клас
       </h1>
       <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-2">
+        <p></p>
         <MyInput
           label="Назва"
           value={classData.name}
           setValue={(value) => setData(value, "name")}
+          additional="Рекомендований формат: [Предмет] [Група] [теорія / практика]"
         />
         <MySelect
           label="Виберіть предмет"
@@ -206,7 +209,7 @@ const Class: NextPage = () => {
           Відбулася помилка при {id <= 0 ? "створенні" : "зміні"} класу!
         </p>
       )}
-      {groupStudents && (
+      {groupStudents && !classData.subGroup.isFull && (
         <SubGroupModal
           group={groupStudents.students}
           subGroupStudents={modalStudents}

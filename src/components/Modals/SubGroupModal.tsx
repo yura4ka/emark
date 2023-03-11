@@ -54,7 +54,10 @@ function SubGroupModal({
   const [groupView, setGroupView] = useState(() => initView());
   const [name, setName] = useState(isCreating ? "" : subGroup.name);
 
-  useEffect(() => setGroupView(initView()), [initView]);
+  useEffect(() => {
+    setGroupView(initView());
+    setName(isCreating ? "" : subGroup.name);
+  }, [initView, subGroup, isCreating]);
 
   function handleSelect(isChecked: boolean, index: number) {
     const arr = [...groupView];
