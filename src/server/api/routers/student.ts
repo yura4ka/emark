@@ -120,9 +120,6 @@ export const studentRouter = createTRPCRouter({
         name: true,
         subject: { select: { id: true, title: true } },
         teacher: { select: { id: true, name: true } },
-        subGroup: {
-          select: { group: { select: { faculty: { select: { title: true } } } } },
-        },
       },
       orderBy: {
         name: "asc",
