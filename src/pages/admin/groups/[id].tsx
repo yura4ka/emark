@@ -16,6 +16,8 @@ import { useModal } from "../../../hooks/useModal";
 import CardButtons from "../../../components/Buttons/CardButtons";
 import { validEmail } from "../../../utils/schemas";
 import { formatOptional } from "../../../utils/utils";
+import { HiCog } from "react-icons/hi";
+import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -226,6 +228,23 @@ const Group: NextPage = () => {
       <Head>
         <title>{data.faculty.title + ". " + data.name}</title>
       </Head>
+
+      <Breadcrumb className="mb-6">
+        <BreadcrumbItem href="/" icon={HiCog}>
+          Сторінка адміністратора
+        </BreadcrumbItem>
+        {router.query.from === "faculties" ? (
+          <>
+            <BreadcrumbItem href="/admin/faculties">Факультети</BreadcrumbItem>
+            <BreadcrumbItem href={`/admin/faculties/${data.faculty.id}`}>
+              {data.faculty.title}
+            </BreadcrumbItem>
+          </>
+        ) : (
+          <BreadcrumbItem href="/admin/groups">Групи</BreadcrumbItem>
+        )}
+        <BreadcrumbItem>{data.name}</BreadcrumbItem>
+      </Breadcrumb>
 
       <h1 className="mb-6 text-3xl font-bold">{data.faculty.title + ". " + data.name}</h1>
       <div className="my-6 flex max-w-xl flex-col gap-2">

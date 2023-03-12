@@ -10,6 +10,8 @@ import Link from "next/link";
 import MyInput from "../../../components/Inputs/MyInput";
 import CardButtons from "../../../components/Buttons/CardButtons";
 import { formatOptional } from "../../../utils/utils";
+import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
+import { HiCog } from "react-icons/hi";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -58,7 +60,10 @@ const Faculty: NextPage = () => {
         isUnique: true,
         errorMessages: { CONFLICT: "Група з такою назвою вже існує!" },
         customElement: (row) => (
-          <Link href={`/admin/groups/${row.id}`} className="hover:underline">
+          <Link
+            href={`/admin/groups/${row.id}?from=faculties`}
+            className="hover:underline"
+          >
             {row.name}
           </Link>
         ),
@@ -174,6 +179,13 @@ const Faculty: NextPage = () => {
       <Head>
         <title>{faculty?.title}</title>
       </Head>
+      <Breadcrumb className="mb-6">
+        <BreadcrumbItem href="/" icon={HiCog}>
+          Сторінка адміністратора
+        </BreadcrumbItem>
+        <BreadcrumbItem href="./">Факультети</BreadcrumbItem>
+        <BreadcrumbItem>{faculty.title}</BreadcrumbItem>
+      </Breadcrumb>
       <h1 className="mb-6 text-3xl font-bold">{faculty?.title}</h1>
       <div className="my-6 flex max-w-xl flex-col gap-2">
         <MyInput

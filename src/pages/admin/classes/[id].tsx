@@ -9,6 +9,8 @@ import SubGroupModal from "../../../components/Modals/SubGroupModal";
 import MySelect from "../../../components/MySelect";
 import useAdminSession from "../../../hooks/useAdminSession";
 import { api } from "../../../utils/api";
+import { HiCog } from "react-icons/hi";
+import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
 
 function initiateClassData() {
   return {
@@ -95,6 +97,14 @@ const Class: NextPage = () => {
       <Head>
         <title>{id === -1 ? "Створити клас" : "Редагувати клас"}</title>
       </Head>
+
+      <Breadcrumb className="mb-6">
+        <BreadcrumbItem href="/" icon={HiCog}>
+          Сторінка адміністратора
+        </BreadcrumbItem>
+        <BreadcrumbItem href="./">Класи</BreadcrumbItem>
+        <BreadcrumbItem>{dbClass.data?.name || "Створити"}</BreadcrumbItem>
+      </Breadcrumb>
 
       <h1 className="mb-6 text-3xl font-bold">
         {id === -1 ? "Створити " : "Редагувати "}клас
