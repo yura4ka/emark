@@ -11,3 +11,52 @@
 body {
     @apply dark:bg-gray-900 dark:text-white;
 }
+
+.vertical-text {
+    writing-mode: vertical-rl;
+}
+
+.split-cell {
+    background: repeating-linear-gradient(45deg, #e5e7eb 0, #e5e7eb 10%, transparent 0, transparent 50%);
+    background-size: 1.5em 1.5em;
+    background-color: #ffffff;
+    opacity: 1
+}
+
+.table-hoverable {
+    overflow: hidden;
+}
+ 
+.table-hoverable td {
+    position: relative;
+}
+
+
+.table-hoverable tr:not(:first-of-type):hover{
+    background-color: rgba(242, 247, 244, 0.5);
+    z-index: 0;
+}
+ 
+.table-hoverable td:not(.table-create):not(:first-of-type):hover::after { 
+    background-color: rgba(242, 247, 244, 0.5);
+    content: '\00a0';  
+    height: 10000px;    
+    left: 0;
+    position: absolute;  
+    top: -5000px;
+    width: 100%;
+    z-index: -1;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}

@@ -80,17 +80,18 @@ model Class {
   subGroup   SubGroup @relation(fields: [subGroupId], references: [id])
   subject    Subject  @relation(fields: [subjectId], references: [id])
   teacher    Teacher  @relation(fields: [teacherId], references: [id])
-  Task       Task[]
+  tasks      Task[]
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  dateCreated DateTime @default(now())
-  title       String?  @db.VarChar(255)
-  maxScore    Int
-  classId     Int
-  markes      Mark[]
-  class       Class    @relation(fields: [classId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  date      DateTime @default(now())
+  title     String?  @db.VarChar(255)
+  maxScore  Int
+  classId   Int
+  marks     Mark[]
+  class     Class    @relation(fields: [classId], references: [id])
 }
 
 model Mark {
@@ -98,8 +99,9 @@ model Mark {
   taskId      Int
   teacherId   Int?
   studentId   Int
+  score       Int
   dateCreated DateTime  @default(now())
-  editedAt    DateTime?
+  editedAt    DateTime? @updatedAt
   isNew       Boolean   @default(false)
   comment     String?
   student     Student   @relation(fields: [studentId], references: [id])

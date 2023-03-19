@@ -1,5 +1,5 @@
 import { validString, validId } from "./../../../utils/schemas";
-import { adminProcedure, publicProcedure } from "./../trpc";
+import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
 
@@ -103,4 +103,70 @@ export const classRouter = createTRPCRouter({
         select: { id: true },
       });
     }),
+  getMarks: teacherProcedure.input(validId).query(async ({ ctx, input }) => {
+    const [students, tasks] = await Promise.all([
+      ctx.prisma.class
+        .findUniqueOrThrow({
+          where: { id: input },
+          select: {
+            subGroup: {
+              select: {
+                isFull: true,
+                groupId: true,
+                students: { select: { id: true, name: true }, orderBy: { name: "asc" } },
+              },
+            },
+          },
+        })
+        .then((c) =>
+          c.subGroup.isFull
+            ? ctx.prisma.student.findMany({
+                where: { groupId: c.subGroup.groupId },
+                select: { id: true, name: true },
+                orderBy: { name: "asc" },
+              })
+            : c.subGroup.students
+        ),
+      ctx.prisma.task.findMany({
+        where: {
+          class: { id: input, teacherId: ctx.session.user.id },
+        },
+        select: {
+          id: true,
+          title: true,
+          maxScore: true,
+          date: true,
+          marks: {
+            select: {
+              id: true,
+              studentId: true,
+              comment: true,
+              score: true,
+              taskId: true,
+            },
+            orderBy: { student: { name: "asc" } },
+          },
+        },
+        orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+      }),
+    ]);
+
+    tasks.forEach((t) => {
+      const newMarks = [];
+      let currentMark = 0;
+      for (const s of students) {
+        const mark = t.marks.at(currentMark);
+        const isExists = mark?.studentId === s.id;
+        newMarks.push(
+          isExists
+            ? mark
+            : { id: -1, studentId: s.id, score: 0, comment: null, taskId: t.id }
+        );
+        if (isExists) currentMark++;
+      }
+      t.marks = newMarks;
+    });
+
+    return { tasks, students };
+  }),
 });

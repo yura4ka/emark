@@ -2,9 +2,9 @@ import { Button } from "flowbite-react";
 
 export default function CardButtons(props: {
   isLoading: boolean;
-  isError: boolean;
-  isDisabled: boolean;
-  onConfirm: () => void;
+  isError?: boolean;
+  isDisabled?: boolean;
+  onConfirm?: () => void;
   onDiscard: () => void;
   errorMessage?: string;
 }) {

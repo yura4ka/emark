@@ -1,7 +1,7 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import MySelect from "./MySelect";
+import MySelect from "../MySelect";
 
 interface Props {
   data: {
@@ -63,7 +63,7 @@ function TeacherSubjects({ data }: Props) {
           <MySelect
             options={subjects}
             field="title"
-            label="Предмети"
+            label="Предмет"
             value={subject}
             setValue={setSubject}
             showBlank={true}

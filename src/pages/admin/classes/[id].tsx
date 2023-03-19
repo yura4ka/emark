@@ -11,6 +11,7 @@ import useAdminSession from "../../../hooks/useAdminSession";
 import { api } from "../../../utils/api";
 import { HiCog } from "react-icons/hi";
 import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
+import Link from "next/link";
 
 function initiateClassData() {
   return {
@@ -86,7 +87,7 @@ const Class: NextPage = () => {
     if (id <= 0)
       createClass.mutate(classData, {
         onSuccess(data) {
-          void router.push(`./${data.id}`);
+          void router.push(`./${data.id}?created=true`);
         },
       });
     else updateClass.mutate({ id, ...classData });
@@ -106,11 +107,20 @@ const Class: NextPage = () => {
         <BreadcrumbItem>{dbClass.data?.name || "Створити"}</BreadcrumbItem>
       </Breadcrumb>
 
-      <h1 className="mb-6 text-3xl font-bold">
-        {id === -1 ? "Створити " : "Редагувати "}клас
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">
+          {id === -1 ? "Створити " : "Редагувати "}клас
+        </h1>
+        {id !== -1 && (
+          <Link
+            href={"./create"}
+            className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-600 dark:hover:text-blue-700"
+          >
+            створити інший
+          </Link>
+        )}
+      </div>
       <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-2">
-        <p></p>
         <MyInput
           label="Назва"
           value={classData.name}
@@ -209,6 +219,13 @@ const Class: NextPage = () => {
           />
         </div>
       </form>
+      {router.query.created && !updateClass.isSuccess && (
+        <>
+          <p className="text-sm text-green-600 dark:text-green-500">
+            Клас успішно створено!
+          </p>
+        </>
+      )}
       {updateClass.isSuccess && (
         <p className="text-sm text-green-600 dark:text-green-500">
           Клас успішно змінено!
