@@ -62,7 +62,7 @@ const Class: NextPage = () => {
   );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCreatingSub, setCreatingSub] = useState(false);
+  const [isCreatingSub, setCreatingSub] = useState(true);
 
   const modalStudents = useMemo(() => {
     if (isCreatingSub) return [];
@@ -236,7 +236,7 @@ const Class: NextPage = () => {
           Відбулася помилка при {id <= 0 ? "створенні" : "зміні"} класу!
         </p>
       )}
-      {groupStudents && !classData.subGroup.isFull && (
+      {groupStudents && (isCreatingSub || !classData.subGroup.isFull) && (
         <SubGroupModal
           group={groupStudents.students}
           subGroupStudents={modalStudents}

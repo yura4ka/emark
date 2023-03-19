@@ -27,7 +27,7 @@ function SubGroupModal({
   subGroup,
   isCreating,
 }: Props) {
-  if (subGroup.isFull) throw new Error("Can't edit full group!");
+  if (subGroup.isFull && !isCreating) throw new Error("Can't edit full group!");
 
   const createSubGroup = api.subGroup.create.useMutation();
   const updateSunGroup = api.subGroup.update.useMutation();
@@ -57,7 +57,8 @@ function SubGroupModal({
   useEffect(() => {
     setGroupView(initView());
     setName(isCreating ? "" : subGroup.name);
-  }, [initView, subGroup, isCreating]);
+    console.log("a");
+  }, [initView, subGroup, isCreating, subGroupStudents]);
 
   function handleSelect(isChecked: boolean, index: number) {
     const arr = [...groupView];
@@ -102,7 +103,13 @@ function SubGroupModal({
   }
 
   return isBrowser ? (
-    <Modal show={isVisible} size="2xl" popup={true} onClose={() => setVisible(false)}>
+    <Modal
+      show={isVisible}
+      size="2xl"
+      popup={true}
+      onClose={() => setVisible(false)}
+      className="[&>div:first-child]:md:h-full"
+    >
       <Modal.Header />
       <Modal.Body>
         <h3 className="text-xl font-medium text-gray-900 dark:text-white">
