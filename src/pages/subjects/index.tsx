@@ -52,7 +52,7 @@ const Subjects: NextPage = () => {
                     </p>
                   </div>
                   <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                    0
+                    {c.tasks}
                   </div>
                 </div>
               </Link>

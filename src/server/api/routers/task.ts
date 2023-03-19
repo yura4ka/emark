@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { validId, validString } from "./../../../utils/schemas";
-import { teacherProcedure } from "./../trpc";
+import { studentProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
 
@@ -154,6 +154,15 @@ export const taskRouter = createTRPCRouter({
       where: { id: input, task: { class: { teacherId: ctx.session.user.id } } },
     });
     await ctx.prisma.mark.delete({ where: { id } });
+    return true;
+  }),
+
+  markAsRead: studentProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    const mark = await ctx.prisma.mark.findUniqueOrThrow({ where: { id: input } });
+    if (mark.studentId !== ctx.session.user.id)
+      throw new TRPCError({ code: "BAD_REQUEST" });
+    if (!mark.isNew) return false;
+    await ctx.prisma.mark.update({ where: { id: input }, data: { isNew: false } });
     return true;
   }),
 });

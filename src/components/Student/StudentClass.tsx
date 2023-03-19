@@ -1,4 +1,6 @@
 import { Spinner } from "flowbite-react";
+import { useCallback, useMemo, useRef } from "react";
+import useOnScreen from "../../hooks/useOnScreen";
 import { api } from "../../utils/api";
 
 interface Props {
@@ -14,7 +16,23 @@ function calculateColor(score: number, maxScore: number) {
 }
 
 function StudentClass({ classId, title }: Props) {
-  const { data: marks } = api.student.getMarks.useQuery(classId);
+  const { data: marks } = api.student.getMarks.useQuery(classId, {
+    refetchOnWindowFocus: false,
+  });
+  const markAsRead = api.task.markAsRead.useMutation();
+
+  const marksRef = useRef<Map<number, HTMLDivElement>>(new Map());
+  const marksMap = useMemo(() => new Map(marks?.map((m) => [m.id, m.isNew])), [marks]);
+
+  const setRead = useCallback(
+    (id: number) => {
+      if (marksMap.get(id))
+        markAsRead.mutate(id, { onSuccess: () => marksMap.set(id, false) });
+    },
+    [markAsRead, marksMap]
+  );
+
+  useOnScreen(marksRef, setRead);
 
   if (!marks)
     return (
@@ -30,7 +48,12 @@ function StudentClass({ classId, title }: Props) {
         {marks.map((m) => (
           <div
             key={m.id}
-            className="my-4 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800"
+            ref={(node) => {
+              if (node) marksRef.current.set(m.id, node);
+              else marksRef.current.delete(m.id);
+            }}
+            itemID={m.id.toString()}
+            className="relative my-4 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <div className="flex w-full items-center justify-between py-4 px-5 text-left font-medium">
               <div className="text-lg">
@@ -49,6 +72,9 @@ function StudentClass({ classId, title }: Props) {
               <div className="border-t py-2 px-5 text-gray-700 dark:text-gray-400">
                 {m.comment}
               </div>
+            )}
+            {m.isNew && (
+              <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-600" />
             )}
           </div>
         ))}

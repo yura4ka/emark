@@ -108,7 +108,7 @@ export const studentRouter = createTRPCRouter({
 
     if (!groupId) return [];
 
-    return ctx.prisma.class.findMany({
+    const classes = await ctx.prisma.class.findMany({
       where: {
         subGroup: {
           groupId,
@@ -120,10 +120,20 @@ export const studentRouter = createTRPCRouter({
         name: true,
         subject: { select: { id: true, title: true } },
         teacher: { select: { id: true, name: true } },
+        tasks: {
+          select: {
+            marks: { select: { score: true }, where: { studentId: id, isNew: true } },
+          },
+        },
       },
       orderBy: {
         name: "asc",
       },
+    });
+
+    return classes.map((c) => {
+      const tasks = c.tasks.reduce((acc, current) => acc + current.marks.length, 0);
+      return { ...c, tasks };
     });
   }),
 
