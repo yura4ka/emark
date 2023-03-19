@@ -9,8 +9,10 @@ import { HiCheck, HiX } from "react-icons/hi";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import SubmitButton from "../../components/Buttons/SubmitButton";
+import { useSession } from "next-auth/react";
 
 const SignUp: NextPage = () => {
+  const session = useSession();
   const { push } = useRouter();
   const setInitialTitle = () => ({ id: -1, title: "" });
   const setInitialName = () => ({ id: -1, name: "" });
@@ -89,6 +91,8 @@ const SignUp: NextPage = () => {
       )}
     </>
   );
+
+  if (session.status === "authenticated") void push("/");
 
   return (
     <>

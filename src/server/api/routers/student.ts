@@ -161,4 +161,60 @@ export const studentRouter = createTRPCRouter({
       ],
     });
   }),
+
+  getMarksFull: studentProcedure.query(async ({ ctx }) => {
+    const marks = await ctx.prisma.mark.findMany({
+      where: { studentId: ctx.session.user.id },
+      select: {
+        id: true,
+        score: true,
+        comment: true,
+        task: {
+          select: {
+            id: true,
+            title: true,
+            date: true,
+            maxScore: true,
+            class: { select: { subject: { select: { id: true, title: true } } } },
+          },
+        },
+      },
+      orderBy: { dateCreated: "asc" },
+    });
+
+    type TSubjectMap = Map<number, string>;
+    type TMarkMap = Map<
+      number,
+      {
+        title: string | null;
+        date: Date;
+        score: number;
+        maxScore: number;
+        comment: string | null;
+        id: number;
+      }[]
+    >;
+
+    const subjects: TSubjectMap = new Map();
+    const result: TMarkMap = new Map();
+
+    for (const m of marks) {
+      const sid = m.task.class.subject.id;
+      subjects.set(sid, m.task.class.subject.title);
+      const mark = result.get(sid);
+      const data = {
+        id: m.id,
+        score: m.score,
+        comment: m.comment,
+        title: m.task.title,
+        date: m.task.date,
+        maxScore: m.task.maxScore,
+      };
+      if (mark) mark.push(data);
+      else result.set(sid, [data]);
+    }
+
+    const toReturn: [TSubjectMap, TMarkMap] = [subjects, result];
+    return toReturn;
+  }),
 });

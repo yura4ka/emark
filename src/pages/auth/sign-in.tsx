@@ -1,6 +1,6 @@
 import { Card } from "flowbite-react";
 import type { NextPage } from "next";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -9,6 +9,7 @@ import PasswordInput from "../../components/Inputs/PasswordInput";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 
 const SignIn: NextPage = () => {
+  const session = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState({
     value: "",
@@ -33,6 +34,8 @@ const SignIn: NextPage = () => {
     else await router.push("/");
     setIsLoading(false);
   };
+
+  if (session.status === "authenticated") void router.push("/");
 
   return (
     <>
