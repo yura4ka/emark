@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useUserSession } from "../../hooks/useUserSession";
 import { api } from "../../utils/api";
 import TeacherClass from "../../components/Teacher/TeacherClass";
+import StudentClass from "../../components/Student/StudentClass";
 
 const Subject: NextPageWithLayout = () => {
   const user = useUserSession();
@@ -32,11 +33,7 @@ const Subject: NextPageWithLayout = () => {
       </Head>
 
       {isTeacher && <TeacherClass classId={id} title={data.name} />}
-      {isStudent && (
-        <>
-          <h1 className="mb-6 text-3xl font-bold">{data.name}</h1>
-        </>
-      )}
+      {isStudent && <StudentClass classId={id} title={data.name} />}
     </>
   );
 };

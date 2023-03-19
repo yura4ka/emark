@@ -126,4 +126,29 @@ export const studentRouter = createTRPCRouter({
       },
     });
   }),
+
+  getMarks: studentProcedure.input(validId).query(({ ctx, input }) => {
+    return ctx.prisma.mark.findMany({
+      where: { studentId: ctx.session.user.id, task: { classId: input } },
+      select: {
+        id: true,
+        score: true,
+        comment: true,
+        isNew: true,
+        dateCreated: true,
+        task: {
+          select: {
+            title: true,
+            date: true,
+            maxScore: true,
+          },
+        },
+      },
+      orderBy: [
+        { isNew: "asc" },
+        { task: { date: "desc" } },
+        { task: { createdAt: "desc" } },
+      ],
+    });
+  }),
 });
