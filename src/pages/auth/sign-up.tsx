@@ -10,24 +10,21 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import { useSession } from "next-auth/react";
+import { initialPassword } from "../../utils/utils";
+import Link from "next/link";
 
 const SignUp: NextPage = () => {
   const session = useSession();
   const { push } = useRouter();
   const setInitialTitle = () => ({ id: -1, title: "" });
   const setInitialName = () => ({ id: -1, name: "" });
-  const initialPassword = {
-    value: "",
-    confirm: "",
-    isCorrect: true,
-  };
 
   const [currentFaculty, setCurrentFaculty] = useState<{ id: number; title: string }>(
     () => setInitialTitle()
   );
   const [currentGroup, setCurrentGroup] = useState(() => setInitialName());
   const [currentStudent, setCurrentStudent] = useState(() => setInitialName());
-  const [password, setPassword] = useState(initialPassword);
+  const [password, setPassword] = useState({ ...initialPassword });
 
   const faculties = api.faculty.get.useQuery();
   const facultyGroups = api.faculty.getGroups.useQuery(
@@ -105,8 +102,14 @@ const SignUp: NextPage = () => {
           <Card>
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <h5 className="text-xl font-medium text-gray-900 dark:text-white">
-                Зареєструватися у системі
+                Зареєструватися у системі як студент
               </h5>
+              <Link
+                href="/auth/sign-up-teacher"
+                className="-mt-4 text-sm text-blue-600 hover:text-blue-800"
+              >
+                Я викладач
+              </Link>
 
               <MySelect
                 options={faculties.data || []}

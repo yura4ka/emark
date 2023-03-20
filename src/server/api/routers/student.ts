@@ -26,8 +26,6 @@ export const studentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const password = await argon2.hash(input.password.trim());
-
       const student = await ctx.prisma.student.findFirstOrThrow({
         where: {
           id: input.id,
@@ -36,6 +34,8 @@ export const studentRouter = createTRPCRouter({
           password: null,
         },
       });
+
+      const password = await argon2.hash(input.password.trim());
 
       return ctx.prisma.student.update({
         where: { id: student.id },

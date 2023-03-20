@@ -127,7 +127,7 @@ const Home: NextPage = () => {
           </div>
         </>
       ) : (
-        <div className="my-10 flex flex-col items-center justify-center text-center">
+        <div className="my-40 flex flex-col items-center justify-center text-center">
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
             Зручний застосунок для студентів і викладачів
           </h1>

@@ -15,3 +15,9 @@ export function clampMark(value: number, min?: number, max?: number, notZero = t
   if (value === 0 && notZero) return 1;
   return Math.min(Math.max(value, min), max);
 }
+
+export const initialPassword = {
+  value: "",
+  confirm: "",
+  isCorrect: true,
+};

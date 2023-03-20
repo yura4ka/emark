@@ -1,7 +1,9 @@
+import { TRPCError } from "@trpc/server";
 import { validEmail, validId, validString } from "./../../../utils/schemas";
-import { adminProcedure, teacherProcedure } from "./../trpc";
+import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
+import * as argon2 from "argon2";
 
 export const teacherRouter = createTRPCRouter({
   get: adminProcedure.query(({ ctx }) => {
@@ -23,8 +25,16 @@ export const teacherRouter = createTRPCRouter({
       z.object({ name: validString, email: validEmail, handlerOfId: validId.optional() })
     )
     .mutation(async ({ ctx, input }) => {
+      const email = input.email.trim();
+
+      const exists = await ctx.prisma.student.findUnique({
+        where: { email },
+      });
+
+      if (exists) throw new TRPCError({ code: "BAD_REQUEST" });
+
       const { id } = await ctx.prisma.teacher.create({
-        data: { name: input.name.trim(), email: input.email.trim(), isConfirmed: true },
+        data: { name: input.name.trim(), email, isRequested: true, isConfirmed: false },
       });
       if (input.handlerOfId)
         await ctx.prisma.group.update({
@@ -91,4 +101,23 @@ export const teacherRouter = createTRPCRouter({
       },
     });
   }),
+  makeRequest: publicProcedure
+    .input(z.object({ email: validEmail, password: validString.min(4) }))
+    .mutation(async ({ ctx, input }) => {
+      const teacher = await ctx.prisma.teacher.findUniqueOrThrow({
+        where: { email: input.email },
+      });
+
+      if (teacher.isRequested || teacher.isConfirmed)
+        throw new TRPCError({ code: "BAD_REQUEST" });
+
+      const password = await argon2.hash(input.password.trim());
+
+      await ctx.prisma.teacher.update({
+        where: { email: input.email },
+        data: { isRequested: true, isConfirmed: false, password },
+      });
+
+      return true;
+    }),
 });
