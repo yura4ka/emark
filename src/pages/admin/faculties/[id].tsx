@@ -107,6 +107,7 @@ const Faculty: NextPage = () => {
         seniorId: -1,
         count: 0,
       },
+      enableSearch: true,
     },
     onRowChange: ({ newRow, setLoading, setValidation }) => {
       const name = newRow.name.trim();

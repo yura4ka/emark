@@ -27,6 +27,7 @@ const Subjects: NextPage = () => {
       canEdit: true,
       showActions: true,
       defaultRow: { id: -1, title: "" },
+      enableSearch: true,
     },
     columnDefinitions: [
       {

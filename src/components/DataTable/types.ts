@@ -15,6 +15,7 @@ export interface IColumnDefinition<TData extends IRowData> {
   nullable?: boolean;
   changeOptions?: TChangeOption[] | ((row: TData) => TChangeOption[]);
   idKey?: Extract<keyof TData, string>;
+  searchBy?: boolean | ((row: TData) => boolean);
 }
 
 export interface IRowData {
@@ -35,6 +36,7 @@ interface TableOptions<TData extends IRowData> {
   customActions?: (row: TData) => ReactNode;
   defaultRow?: TData;
   createOnNewPage?: string;
+  enableSearch?: boolean;
 }
 
 export interface DataTableProps<TData extends IRowData> {

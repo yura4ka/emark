@@ -88,6 +88,7 @@ const Teachers: NextPageWithLayout = () => {
       header: "Викладачі",
       canEdit: true,
       showActions: true,
+      enableSearch: true,
       defaultRow: {
         id: -1,
         email: "",
@@ -192,6 +193,7 @@ const Teachers: NextPageWithLayout = () => {
       {
         header: "Статус",
         key: "isAdmin",
+        searchBy: false,
         customElement: (row) => (
           <>
             {row.isAdmin && (

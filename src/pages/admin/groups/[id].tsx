@@ -48,6 +48,7 @@ const Group: NextPage = () => {
       showActions: true,
       canEdit: true,
       defaultRow: { id: -1, name: "", email: "", isRequested: false, isConfirmed: false },
+      enableSearch: true,
       customActions: (row) => (
         <>
           <CustomAction
@@ -131,6 +132,7 @@ const Group: NextPage = () => {
             )}
           </>
         ),
+        searchBy: false,
       },
     ],
     onRowChange: ({ newRow, setLoading, setValidation }) => {

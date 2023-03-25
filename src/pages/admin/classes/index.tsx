@@ -50,6 +50,7 @@ const Classes: NextPage = () => {
     options: {
       header: "Класи",
       createOnNewPage: "./classes/create",
+      enableSearch: true,
     },
   });
 

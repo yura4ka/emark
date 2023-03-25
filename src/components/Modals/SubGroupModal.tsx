@@ -57,7 +57,6 @@ function SubGroupModal({
   useEffect(() => {
     setGroupView(initView());
     setName(isCreating ? "" : subGroup.name);
-    console.log("a");
   }, [initView, subGroup, isCreating, subGroupStudents]);
 
   function handleSelect(isChecked: boolean, index: number) {

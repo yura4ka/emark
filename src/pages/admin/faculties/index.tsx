@@ -26,6 +26,7 @@ const Faculties: NextPage = () => {
       showActions: true,
       canEdit: true,
       defaultRow: { id: -1, title: "" },
+      enableSearch: true,
     },
     columnDefinitions: [
       {
