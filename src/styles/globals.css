@@ -12,6 +12,10 @@ body {
     @apply dark:bg-gray-900 dark:text-white;
 }
 
+body.locked {
+    overflow: hidden;
+}
+
 .vertical-text {
     writing-mode: vertical-rl;
 }
@@ -67,4 +71,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 100%;
     justify-content: center;
     align-items: center;
+}
+
+div[role="tabpanel"] {
+    padding: 1rem 0 0 0;
 }

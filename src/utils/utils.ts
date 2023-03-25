@@ -21,3 +21,10 @@ export const initialPassword = {
   confirm: "",
   isCorrect: true,
 };
+
+export function calculateColor(score: number, maxScore: number) {
+  const ratio = score / maxScore;
+  if (ratio <= 0.3) return "text-red-500";
+  if (ratio < 0.7) return "text-yellow-500";
+  return "text-green-500";
+}

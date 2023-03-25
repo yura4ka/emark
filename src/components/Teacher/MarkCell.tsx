@@ -51,7 +51,7 @@ function MarkCell({ index, classId, mark, maxScore, onFocus, setCommentVisible }
     }
 
     let numberValue = Number(value);
-    if (isNaN(numberValue) || numberValue < 0) {
+    if (isNaN(numberValue) || numberValue < 0 || !Number.isInteger(numberValue)) {
       setValue(mark.id === -1 ? "" : mark.score);
       return;
     }

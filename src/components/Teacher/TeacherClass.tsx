@@ -37,9 +37,10 @@ function TeacherClass({ classId, title }: Props) {
       </div>
     );
 
-  function showEditTask(task?: Task) {
+  function showEditTask(task?: Omit<Task, "students">) {
     setIsTaskEditing(true);
-    setEditTask(task);
+    if (task) setEditTask({ ...task, students: data?.students || [] });
+    else setEditTask(undefined);
   }
 
   return (

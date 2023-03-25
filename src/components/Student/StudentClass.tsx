@@ -2,17 +2,11 @@ import { Spinner } from "flowbite-react";
 import { useCallback, useMemo, useRef } from "react";
 import useOnScreen from "../../hooks/useOnScreen";
 import { api } from "../../utils/api";
+import { calculateColor } from "../../utils/utils";
 
 interface Props {
   classId: number;
   title: string;
-}
-
-function calculateColor(score: number, maxScore: number) {
-  const ratio = score / maxScore;
-  if (ratio <= 0.3) return "text-red-500";
-  if (ratio < 0.7) return "text-yellow-500";
-  return "text-green-500";
 }
 
 function StudentClass({ classId, title }: Props) {
