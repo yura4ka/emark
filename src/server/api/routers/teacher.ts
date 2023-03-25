@@ -13,6 +13,8 @@ export const teacherRouter = createTRPCRouter({
         name: true,
         email: true,
         isAdmin: true,
+        isConfirmed: true,
+        isRequested: true,
         handlerOf: {
           select: { id: true, name: true, faculty: { select: { title: true } } },
         },
@@ -34,8 +36,9 @@ export const teacherRouter = createTRPCRouter({
       if (exists) throw new TRPCError({ code: "BAD_REQUEST" });
 
       const { id } = await ctx.prisma.teacher.create({
-        data: { name: input.name.trim(), email, isRequested: true, isConfirmed: false },
+        data: { name: input.name.trim(), email, isRequested: false, isConfirmed: false },
       });
+
       if (input.handlerOfId)
         await ctx.prisma.group.update({
           where: { id: input.handlerOfId },
@@ -53,17 +56,28 @@ export const teacherRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await Promise.all([
-        ctx.prisma.teacher.update({
-          where: { id: input.id },
-          data: { name: input.name.trim(), email: input.email.trim() },
-        }),
-        input.handlerOfId &&
-          ctx.prisma.group.update({
-            where: { id: input.handlerOfId },
-            data: { handlerId: input.id },
-          }),
-      ]);
+      const teacher = await ctx.prisma.teacher.update({
+        where: { id: input.id },
+        data: { name: input.name.trim(), email: input.email.trim() },
+        select: { handlerOf: { select: { id: true } } },
+      });
+
+      if (input.handlerOfId !== teacher.handlerOf) {
+        await ctx.prisma.$transaction(async (tx) => {
+          if (teacher.handlerOf)
+            await tx.group.update({
+              where: { id: teacher.handlerOf.id },
+              data: { handlerId: null },
+            });
+
+          if (input.handlerOfId)
+            await tx.group.update({
+              where: { id: input.handlerOfId },
+              data: { handlerId: input.id },
+            });
+        });
+      }
+
       return true;
     }),
   makeAdmin: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {

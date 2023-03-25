@@ -1,5 +1,4 @@
 import { Badge, Spinner } from "flowbite-react";
-import type { NextPage } from "next";
 import Head from "next/head";
 import { useMemo } from "react";
 import CustomAction from "../../../components/Buttons/CustomAction";
@@ -11,13 +10,18 @@ import { api } from "../../../utils/api";
 import { validEmail } from "../../../utils/schemas";
 import { HiOutlineKey } from "react-icons/hi";
 import { formatOptional } from "../../../utils/utils";
+import { HiCheck, HiBan } from "react-icons/hi";
+import { HiOutlineHashtag } from "react-icons/hi2";
+import type { NextPageWithLayout } from "../../_app";
 
-const Teachers: NextPage = () => {
+const Teachers: NextPageWithLayout = () => {
   useAdminSession();
   const { isLoading, data } = api.teacher.get.useQuery();
   const updateTeacher = api.teacher.update.useMutation();
   const createTeacher = api.teacher.create.useMutation();
   const makeAdmin = api.teacher.makeAdmin.useMutation();
+  const confirmTeacher = api.admin.confirmTeacher.useMutation();
+  const resetPassword = api.admin.resetTeacherPassword.useMutation();
   const { data: freeGroups } = api.teacher.getFreeGroups.useQuery();
   const apiUtils = api.useContext();
 
@@ -51,6 +55,33 @@ const Teachers: NextPage = () => {
       </div>
     );
 
+  const updateTeachers = (
+    id: number,
+    data: { isConfirmed: boolean; isRequested: boolean }
+  ) => {
+    apiUtils.senior.getClassList.setData(undefined, (oldData) => {
+      if (!oldData) return;
+      return {
+        ...oldData,
+        students: oldData.students.map((s) => (s.id === id ? { ...s, ...data } : s)),
+      };
+    });
+  };
+
+  const handleConfirm = (id: number) => {
+    setModalVisibility(false);
+    confirmTeacher.mutate(id, {
+      onSuccess: () => updateTeachers(id, { isConfirmed: true, isRequested: false }),
+    });
+  };
+
+  const handleResetPassword = (id: number) => {
+    setModalVisibility(false);
+    resetPassword.mutate(id, {
+      onSuccess: () => updateTeachers(id, { isConfirmed: false, isRequested: false }),
+    });
+  };
+
   const tableProps = createTableProps({
     data: teachers,
     options: {
@@ -64,22 +95,67 @@ const Teachers: NextPage = () => {
         isAdmin: false,
         handlerOf: "",
         handlerOfId: -1,
+        isConfirmed: false,
+        isRequested: false,
       },
       customActions: (row) => (
-        <CustomAction
-          isVisible={!row.isAdmin}
-          isLoading={makeAdmin.isLoading}
-          text="Назначити адміном"
-          icon={<HiOutlineKey className="mr-1 h-4 w-4" />}
-          color="warning"
-          onClick={() =>
-            setModalData({
-              isVisible: true,
-              text: `назначити ${row.name} адміністратором`,
-              onAccept: () => handleAssignAdmin(row.id),
-            })
-          }
-        />
+        <>
+          <CustomAction
+            isVisible={row.isRequested}
+            isLoading={confirmTeacher.isLoading}
+            text="Підтвердити"
+            icon={<HiCheck className="mr-1 h-4 w-4" />}
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `підтвердити акаунт викладачу ${row.name}`,
+                onAccept: () => handleConfirm(row.id),
+              });
+            }}
+          />
+          <CustomAction
+            isVisible={row.isConfirmed}
+            isLoading={resetPassword.isLoading}
+            text="Скинути пароль"
+            icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
+            color="failure"
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `скинути пароль викладачу ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
+          />
+          <CustomAction
+            isVisible={row.isRequested}
+            isLoading={resetPassword.isLoading}
+            text="Відхилити"
+            icon={<HiBan className="mr-1 h-4 w-4" />}
+            color="failure"
+            onClick={() => {
+              setModalData({
+                isVisible: true,
+                text: `відхилити запит викладача ${row.name}`,
+                onAccept: () => handleResetPassword(row.id),
+              });
+            }}
+          />
+          <CustomAction
+            isVisible={!row.isAdmin && row.isConfirmed}
+            isLoading={makeAdmin.isLoading}
+            text="Назначити адміном"
+            icon={<HiOutlineKey className="mr-1 h-4 w-4" />}
+            color="warning"
+            onClick={() =>
+              setModalData({
+                isVisible: true,
+                text: `назначити ${row.name} адміністратором`,
+                onAccept: () => handleAssignAdmin(row.id),
+              })
+            }
+          />
+        </>
       ),
     },
     columnDefinitions: [
@@ -95,7 +171,7 @@ const Teachers: NextPage = () => {
         isUnique: true,
         errorMessages: {
           CONFLICT: "Людина з такою електронною поштою вже є у системі!",
-          FORMAT: "Невірний  формат",
+          FORMAT: "Невірний формат",
         },
         validationFunction(row, newValue) {
           if (validEmail.safeParse(newValue).success === false) return "FORMAT";
@@ -107,6 +183,7 @@ const Teachers: NextPage = () => {
         key: "handlerOf",
         editType: "select",
         idKey: "handlerOfId",
+        nullable: true,
         changeOptions: (row) => {
           const option = { id: row.handlerOfId, option: row.handlerOf };
           return option.id === -1 ? freeGroupsOptions : [...freeGroupsOptions, option];
@@ -120,6 +197,16 @@ const Teachers: NextPage = () => {
             {row.isAdmin && (
               <Badge color="purple" theme={{ root: { base: "font-semibold" } }}>
                 Адміністратор
+              </Badge>
+            )}
+            {row.isRequested && (
+              <Badge color="failure" theme={{ root: { base: "font-semibold" } }}>
+                Запит
+              </Badge>
+            )}
+            {row.isConfirmed && !row.isAdmin && (
+              <Badge color="success" theme={{ root: { base: "font-semibold" } }}>
+                Підтверджений
               </Badge>
             )}
           </>
@@ -187,5 +274,9 @@ const Teachers: NextPage = () => {
     </>
   );
 };
+
+Teachers.getLayout = (page) => (
+  <main className="mx-auto w-full max-w-[85rem] p-2.5">{page}</main>
+);
 
 export default Teachers;

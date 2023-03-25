@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PopupModal from "../../components/Modals/PopupModal";
 import { HiCheck, HiX } from "react-icons/hi";
 import { Card } from "flowbite-react";
@@ -37,12 +37,6 @@ const SignUpTeacher: NextPage = () => {
       password: password.value.trim(),
     });
   };
-
-  const [isBrowser, setIsBrowser] = useState(false);
-  useEffect(() => {
-    setIsBrowser(true);
-    return () => setIsBrowser(false);
-  }, []);
 
   return (
     <>

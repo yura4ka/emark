@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { adminProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
@@ -41,6 +42,25 @@ export const adminRouter = createTRPCRouter({
 
   resetStudentPassword: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
     await ctx.prisma.student.update({
+      where: { id: input },
+      data: { password: null, isConfirmed: false, isRequested: false },
+    });
+    return true;
+  }),
+
+  confirmTeacher: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    const teacher = await ctx.prisma.teacher.findUniqueOrThrow({ where: { id: input } });
+    if (!teacher.isRequested || teacher.isConfirmed)
+      throw new TRPCError({ code: "BAD_REQUEST" });
+    await ctx.prisma.teacher.update({
+      where: { id: input },
+      data: { isRequested: false, isConfirmed: true },
+    });
+    return true;
+  }),
+
+  resetTeacherPassword: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    await ctx.prisma.teacher.update({
       where: { id: input },
       data: { password: null, isConfirmed: false, isRequested: false },
     });
