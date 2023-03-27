@@ -195,7 +195,7 @@ const Class: NextPage = () => {
             Створити нову підгрупу
           </button>
         )}
-        {classData.group.id > 0 && !classData.subGroup.isFull && (
+        {classData.subGroup.id > 0 && !classData.subGroup.isFull && (
           <button
             type="button"
             onClick={() => {

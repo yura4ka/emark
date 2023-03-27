@@ -101,6 +101,11 @@ function SubGroupModal({
       );
   }
 
+  function selectAll(selected: boolean) {
+    setGroupView((prev) => prev.map((g) => ({ ...g, isUsed: selected })));
+    setSelected(selected ? group.length : 0);
+  }
+
   return isBrowser ? (
     <Modal
       show={isVisible}
@@ -119,7 +124,10 @@ function SubGroupModal({
           <Table hoverable={true}>
             <Table.Head>
               <Table.HeadCell className="!p-4">
-                <Checkbox />
+                <Checkbox
+                  checked={selected === group.length}
+                  onChange={(e) => selectAll(e.target.checked)}
+                />
               </Table.HeadCell>
               <Table.HeadCell>ПІБ</Table.HeadCell>
             </Table.Head>
@@ -148,7 +156,10 @@ function SubGroupModal({
         <Button
           onClick={() => saveChanges()}
           disabled={
-            name.trim().length === 0 || selected === 0 || createSubGroup.isLoading
+            name.trim().length === 0 ||
+            selected === 0 ||
+            selected === group.length ||
+            createSubGroup.isLoading
           }
         >
           {isCreating ? "Створити" : "Зберегти"}
