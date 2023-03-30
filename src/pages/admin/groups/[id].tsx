@@ -97,6 +97,7 @@ const Group: NextPage = () => {
     },
     columnDefinitions: [
       {
+        isMain: true,
         header: "ПІБ",
         key: "name",
         editType: "text",

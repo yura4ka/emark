@@ -21,6 +21,7 @@ body.locked {
 }
 
 .split-cell {
+    @apply dark:bg-[repeating-linear-gradient(45deg,rgb(75,85,99)_0,rgb(75,85,99)_10%,transparent_0,transparent_50%)] dark:bg-slate-900;
     background: repeating-linear-gradient(45deg, #e5e7eb 0, #e5e7eb 10%, transparent 0, transparent 50%);
     background-size: 1.5em 1.5em;
     background-color: #ffffff;
@@ -37,11 +38,13 @@ body.locked {
 
 
 .table-hoverable tr:not(:first-of-type):hover{
+    @apply dark:bg-gray-800;
     background-color: rgba(242, 247, 244, 0.5);
     z-index: 0;
 }
  
-.table-hoverable td:not(.table-create):not(:first-of-type):hover::after { 
+.table-hoverable td:not(.table-create):not(:first-of-type):hover::after {
+    @apply dark:bg-gray-800;
     background-color: rgba(242, 247, 244, 0.5);
     content: '\00a0';  
     height: 10000px;    
@@ -75,4 +78,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 div[role="tabpanel"] {
     padding: 1rem 0 0 0;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 12px;
+    background-color: #C7C7C7;
+    border-radius: 8px;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: #959595;
+    outline: none;
 }

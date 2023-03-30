@@ -81,7 +81,7 @@ function MarkCell({ index, classId, mark, maxScore, onFocus, setCommentVisible }
   };
 
   return (
-    <td className="border">
+    <td className="border dark:border-gray-700">
       <input
         type="text"
         value={value}

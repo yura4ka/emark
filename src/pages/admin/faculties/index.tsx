@@ -30,6 +30,7 @@ const Faculties: NextPage = () => {
     },
     columnDefinitions: [
       {
+        isMain: true,
         header: "Назва",
         key: "title",
         editType: "text",

@@ -114,7 +114,7 @@ const Class: NextPage = () => {
         {id !== -1 && (
           <Link
             href={"./create"}
-            className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-600 dark:hover:text-blue-700"
+            className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-600"
           >
             створити інший
           </Link>
@@ -190,7 +190,7 @@ const Class: NextPage = () => {
               setCreatingSub(true);
               setIsModalVisible(true);
             }}
-            className="mt-[-5px] w-fit cursor-pointer text-xs font-medium text-blue-700 hover:text-blue-800  focus:outline-none dark:text-blue-600 dark:hover:text-blue-700"
+            className="mt-[-5px] w-fit cursor-pointer text-xs font-medium text-blue-700 hover:text-blue-800  focus:outline-none dark:text-blue-500 dark:hover:text-blue-600"
           >
             Створити нову підгрупу
           </button>
@@ -202,7 +202,7 @@ const Class: NextPage = () => {
               setCreatingSub(false);
               setIsModalVisible(true);
             }}
-            className="mb-2 mt-[-5px] w-fit cursor-pointer text-xs font-medium text-blue-700 hover:text-blue-800  focus:outline-none dark:text-blue-600 dark:hover:text-blue-700"
+            className="mb-2 mt-[-5px] w-fit cursor-pointer text-xs font-medium text-blue-700 hover:text-blue-800  focus:outline-none dark:text-blue-500 dark:hover:text-blue-600"
           >
             Редагувати підгрупу
           </button>

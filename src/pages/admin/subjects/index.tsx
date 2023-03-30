@@ -31,6 +31,7 @@ const Subjects: NextPage = () => {
     },
     columnDefinitions: [
       {
+        isMain: true,
         header: "Назва",
         key: "title",
         isUnique: true,

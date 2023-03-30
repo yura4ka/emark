@@ -51,9 +51,11 @@ const Subjects: NextPage = () => {
                       {c.teacher.name + " - " + c.subject.title}
                     </p>
                   </div>
-                  <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                    {c.tasks}
-                  </div>
+                  {c.tasks !== 0 && (
+                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                      {c.tasks}
+                    </div>
+                  )}
                 </div>
               </Link>
             </li>

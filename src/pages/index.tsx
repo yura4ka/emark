@@ -56,10 +56,15 @@ const Home: NextPage = () => {
 
     for (const [sid, name] of subjects.entries()) {
       rows.push(
-        <tr key={sid} className="hover:bg-gray-50">
-          <td className="min-w-max whitespace-nowrap border p-1 px-2">{name}</td>
+        <tr key={sid} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+          <td className="min-w-max whitespace-nowrap border p-1 px-2 dark:border-gray-700">
+            {name}
+          </td>
           {marks.get(sid)?.map((m) => (
-            <td key={m.id} className="cell-tooltip h-9 w-9 border p-0 hover:bg-gray-100">
+            <td
+              key={m.id}
+              className="cell-tooltip h-9 w-9 border p-0 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-600"
+            >
               <Tooltip
                 animation="duration-1000"
                 content={
@@ -102,7 +107,7 @@ const Home: NextPage = () => {
       {isStudent ? (
         <>
           <h1 className="mb-6 text-3xl font-bold">Оцінки</h1>
-          <table className="text-lg">
+          <table className="text-lg dark:text-gray-400">
             <tbody>{rows}</tbody>
           </table>
           <div className="my-10">

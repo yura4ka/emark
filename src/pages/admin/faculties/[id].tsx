@@ -54,6 +54,7 @@ const Faculty: NextPage = () => {
     data: groupsData || [],
     columnDefinitions: [
       {
+        isMain: true,
         header: "Назва",
         key: "name",
         editType: "text",

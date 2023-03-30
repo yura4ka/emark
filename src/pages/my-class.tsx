@@ -44,6 +44,7 @@ const MyClass: NextPage = () => {
     options: {
       header: `Моя група: ${myGroup.name}`,
       showActions: true,
+      enableSearch: true,
       customActions: (row) => (
         <>
           <CustomAction
@@ -92,6 +93,7 @@ const MyClass: NextPage = () => {
     },
     columnDefinitions: [
       {
+        isMain: true,
         header: "ПІБ",
         key: "name",
       },
@@ -102,6 +104,7 @@ const MyClass: NextPage = () => {
       {
         header: "Статус",
         key: "isRequested",
+        searchBy: false,
         customElement: (row) => (
           <>
             {row.isRequested && (

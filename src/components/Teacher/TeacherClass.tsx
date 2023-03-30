@@ -61,10 +61,10 @@ function TeacherClass({ classId, title, info }: Props) {
   }
 
   return (
-    <main>
-      <div className="border-b">
+    <main className="scrollbar dark:text-gray-300">
+      <div className="border-b dark:border-gray-700">
         <div className="px-4 py-2 text-3xl font-bold">
-          <span className="cursor-pointer hover:text-gray-600 hover:underline">
+          <span className="cursor-pointer hover:text-gray-600 hover:underline dark:text-white">
             {title}
           </span>
         </div>
@@ -72,7 +72,7 @@ function TeacherClass({ classId, title, info }: Props) {
           <div className="flex">
             <IconButton icon={HiOutlineDownload} tooltip="Експортувати в Excel" />
             <IconButton icon={HiOutlineUpload} tooltip="Імпортувати з Excel" />
-            <div className="mx-2 w-[1px] border-l border-gray-300" />
+            <div className="mx-2 w-[1px] border-l border-gray-300 dark:border-gray-500" />
             <IconButton
               icon={HiOutlineDocumentPlus}
               tooltip="Додати завдання"
@@ -85,7 +85,7 @@ function TeacherClass({ classId, title, info }: Props) {
             />
             {!info.subGroup.isFull && (
               <>
-                <div className="mx-2 w-[1px] border-l border-gray-300" />
+                <div className="mx-2 w-[1px] border-l border-gray-300 dark:border-gray-500" />
                 <IconButton
                   icon={HiOutlineUsers}
                   tooltip="Редагувати підгрупу"
@@ -97,15 +97,18 @@ function TeacherClass({ classId, title, info }: Props) {
         </div>
       </div>
 
-      <table className="table-hoverable border text-lg" ref={createButton}>
+      <table
+        className="table-hoverable border text-lg dark:border-gray-700"
+        ref={createButton}
+      >
         <tbody>
           <tr className="text-left">
-            <td className="split-cell border-r font-semibold" />
+            <td className="split-cell border-r font-semibold dark:border-gray-700" />
             {data.tasks.map((t) => (
               <td
                 key={t.id}
                 onClick={() => showEditTask(t)}
-                className="vertical-text max-h-40 overflow-hidden text-ellipsis whitespace-nowrap border-r px-1 py-2 tracking-tight hover:cursor-pointer"
+                className="vertical-text max-h-40 overflow-hidden text-ellipsis whitespace-nowrap border-r px-1 py-2 tracking-tight hover:cursor-pointer dark:border-gray-700"
               >
                 {t.title || t.date.toLocaleDateString()}
               </td>
@@ -115,7 +118,7 @@ function TeacherClass({ classId, title, info }: Props) {
               rowSpan={0}
               className={`${
                 !isOverflowing ? "w-full border-l border-b" : "vertical-text"
-              } table-create max-w-xl border-r px-1 py-2 tracking-tight text-gray-400 hover:bg-gray-50 hover:text-gray-500`}
+              } table-create max-w-xl border-r px-1 py-2 tracking-tight text-gray-400 hover:bg-gray-50 hover:text-gray-500 dark:border-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200`}
               onClick={() => showEditTask()}
             >
               <p className="flex items-center justify-center gap-2">
@@ -127,7 +130,9 @@ function TeacherClass({ classId, title, info }: Props) {
 
           {data.students.map((s, i) => (
             <tr key={s.id}>
-              <td className="min-w-max whitespace-nowrap border-y p-1 px-2">{s.name}</td>
+              <td className="min-w-max whitespace-nowrap border-y p-1 px-2 dark:border-gray-700">
+                {s.name}
+              </td>
               {data.tasks.map((t, j) => (
                 <MarkCell
                   key={t.id}

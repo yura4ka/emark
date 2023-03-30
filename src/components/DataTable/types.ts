@@ -16,6 +16,7 @@ export interface IColumnDefinition<TData extends IRowData> {
   changeOptions?: TChangeOption[] | ((row: TData) => TChangeOption[]);
   idKey?: Extract<keyof TData, string>;
   searchBy?: boolean | ((row: TData) => boolean);
+  isMain?: boolean;
 }
 
 export interface IRowData {

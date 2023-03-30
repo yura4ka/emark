@@ -14,7 +14,9 @@ function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
       <button
         type="button"
         onClick={onClick}
-        className={`flex h-8 w-8 p-1 hover:bg-gray-200 ${className || ""}`}
+        className={`flex h-8 w-8 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 ${
+          className || ""
+        }`}
       >
         <Icon className="h-full w-full" />
       </button>

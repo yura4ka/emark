@@ -47,7 +47,7 @@ function StudentClass({ classId, title }: Props) {
               else marksRef.current.delete(m.id);
             }}
             itemID={m.id.toString()}
-            className="relative my-4 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="relative my-4 rounded-lg border hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
           >
             <div className="flex w-full items-center justify-between py-4 px-5 text-left font-medium">
               <div className="text-lg">
@@ -63,7 +63,7 @@ function StudentClass({ classId, title }: Props) {
               </div>
             </div>
             {m.comment && (
-              <div className="border-t py-2 px-5 text-gray-700 dark:text-gray-400">
+              <div className="border-t py-2 px-5 text-gray-700 dark:border-gray-700 dark:text-gray-400">
                 {m.comment}
               </div>
             )}

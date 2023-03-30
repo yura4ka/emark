@@ -161,6 +161,7 @@ const Teachers: NextPageWithLayout = () => {
     },
     columnDefinitions: [
       {
+        isMain: true,
         header: "ПІБ",
         key: "name",
         editType: "text",

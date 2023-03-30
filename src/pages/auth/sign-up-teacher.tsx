@@ -76,7 +76,7 @@ const SignUpTeacher: NextPage = () => {
               </h5>
               <Link
                 href="/auth/sign-up"
-                className="-mt-4 text-sm text-blue-600 hover:text-blue-800"
+                className="-mt-4 w-fit text-sm text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-600"
               >
                 Я студент
               </Link>

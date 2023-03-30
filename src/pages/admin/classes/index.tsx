@@ -21,6 +21,7 @@ const Classes: NextPage = () => {
     data: classes,
     columnDefinitions: [
       {
+        isMain: true,
         header: "Назва",
         key: "name",
         editType: "text",

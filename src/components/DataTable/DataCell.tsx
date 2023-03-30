@@ -19,8 +19,8 @@ export default function DataCell<TData extends IRowData>({
 
   return (
     <td
-      className={`whitespace-nowrap px-6 font-medium text-gray-900 dark:text-white ${
-        isError ? "pt-4 pb-2" : "py-4"
+      className={`whitespace-nowrap px-6  ${isError ? "pt-4 pb-2" : "py-4"} ${
+        definition.isMain ? "font-medium text-gray-900 dark:text-white" : ""
       }`}
     >
       {!isEditing || !definition.editType ? (
