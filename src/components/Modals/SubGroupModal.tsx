@@ -16,6 +16,7 @@ interface Props {
   groupId: number;
   subGroup: { id: number; name: string; isFull: boolean };
   isCreating: boolean;
+  onUpdate?: () => void;
 }
 
 function SubGroupModal({
@@ -26,11 +27,12 @@ function SubGroupModal({
   groupId,
   subGroup,
   isCreating,
+  onUpdate,
 }: Props) {
   if (subGroup.isFull && !isCreating) throw new Error("Can't edit full group!");
 
   const createSubGroup = api.subGroup.create.useMutation();
-  const updateSunGroup = api.subGroup.update.useMutation();
+  const updateSubGroup = api.subGroup.update.useMutation();
   const apiUtils = api.useContext();
   const [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
@@ -87,13 +89,14 @@ function SubGroupModal({
         }
       );
     else
-      updateSunGroup.mutate(
+      updateSubGroup.mutate(
         { id: subGroup.id, name: name.trim(), studentIds },
         {
           onSuccess: () => {
             apiUtils.subGroup.get.setData(groupId, (old) =>
               old ? old.map((sg) => (sg.id === subGroup.id ? { ...sg, name } : sg)) : old
             );
+            onUpdate?.();
             void apiUtils.subGroup.getById.invalidate(subGroup.id);
           },
           onSettled: () => discard(),

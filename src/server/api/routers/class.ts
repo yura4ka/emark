@@ -151,14 +151,18 @@ export const classRouter = createTRPCRouter({
       }),
     ]);
 
+    const studentMap = new Map(students.map((s) => [s.id, s.name]));
+
     tasks.forEach((t) => {
       const newMarks = [];
       let currentMark = 0;
       for (const s of students) {
-        const mark = t.marks.at(currentMark);
+        let mark = t.marks.at(currentMark);
+        while (currentMark < t.marks.length && !studentMap.has(mark?.studentId || -1))
+          mark = t.marks.at(++currentMark);
         const isExists = mark?.studentId === s.id;
         newMarks.push(
-          isExists
+          isExists && mark
             ? mark
             : { id: -1, studentId: s.id, score: 0, comment: null, taskId: t.id }
         );

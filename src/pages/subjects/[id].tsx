@@ -32,7 +32,7 @@ const Subject: NextPageWithLayout = () => {
         <title>{data.name}</title>
       </Head>
 
-      {isTeacher && <TeacherClass classId={id} title={data.name} />}
+      {isTeacher && <TeacherClass classId={id} title={data.name} info={data} />}
       {isStudent && <StudentClass classId={id} title={data.name} />}
     </>
   );

@@ -5,22 +5,39 @@ import TaskModal, { type Task } from "../Modals/TaskModal";
 import { HiPlus } from "react-icons/hi";
 import MarkCell from "./MarkCell";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
-import { HiOutlineAnnotation, HiOutlineUpload, HiOutlineDownload } from "react-icons/hi";
+import {
+  HiOutlineAnnotation,
+  HiOutlineUpload,
+  HiOutlineDownload,
+  HiOutlineUsers,
+} from "react-icons/hi";
 import IconButton from "../Buttons/IconButton";
 import MarkModal, { type MarkData } from "../Modals/MarkModal";
+import SubGroupModal from "../Modals/SubGroupModal";
 
 interface Props {
   classId: number;
   title: string;
+  info: {
+    subGroup: {
+      isFull: boolean;
+      id: number;
+      name: string;
+    };
+    group: { id: number; name: string };
+  };
 }
 
-function TeacherClass({ classId, title }: Props) {
+function TeacherClass({ classId, title, info }: Props) {
   const { data } = api.class.getMarks.useQuery(classId);
+  const { data: students } = api.group.getStudents.useQuery(info.group.id);
+  const apiUtils = api.useContext();
 
   const [isTaskEditing, setIsTaskEditing] = useState(false);
   const [editTask, setEditTask] = useState<Task>();
   const [isMarkEditing, setIsMarkEditing] = useState(false);
   const [editMark, setEditMark] = useState<MarkData>();
+  const [isSubGroupEditing, setIsSubGroupEditing] = useState(false);
 
   const [isOverflowing, setIsOverflowing] = useState(false);
   const createButton = useRef<HTMLTableElement>(null);
@@ -66,6 +83,16 @@ function TeacherClass({ classId, title }: Props) {
               tooltip="Коментувати"
               onClick={() => setIsMarkEditing(!!editMark)}
             />
+            {!info.subGroup.isFull && (
+              <>
+                <div className="mx-2 w-[1px] border-l border-gray-300" />
+                <IconButton
+                  icon={HiOutlineUsers}
+                  tooltip="Редагувати підгрупу"
+                  onClick={() => setIsSubGroupEditing(true)}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -139,6 +166,18 @@ function TeacherClass({ classId, title }: Props) {
         setVisible={setIsMarkEditing}
         data={editMark}
       />
+      {!info.subGroup.isFull && (
+        <SubGroupModal
+          isCreating={false}
+          group={students?.students || []}
+          subGroupStudents={data.students}
+          subGroup={info.subGroup}
+          groupId={info.group.id}
+          isVisible={isSubGroupEditing}
+          setVisible={setIsSubGroupEditing}
+          onUpdate={() => void apiUtils.class.getMarks.invalidate(classId)}
+        />
+      )}
     </main>
   );
 }

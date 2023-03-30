@@ -220,11 +220,9 @@ const Class: NextPage = () => {
         </div>
       </form>
       {router.query.created && !updateClass.isSuccess && (
-        <>
-          <p className="text-sm text-green-600 dark:text-green-500">
-            Клас успішно створено!
-          </p>
-        </>
+        <p className="text-sm text-green-600 dark:text-green-500">
+          Клас успішно створено!
+        </p>
       )}
       {updateClass.isSuccess && (
         <p className="text-sm text-green-600 dark:text-green-500">
