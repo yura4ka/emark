@@ -5,7 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "../utils/api";
 import "../styles/globals.css";
 import Navbar from "../components/Navbar/Navbar";
-import Footer from "../components/Footer";
+import PageFooter from "../components/Footer";
 import { Flowbite } from "flowbite-react";
 import type { NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
@@ -36,7 +36,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
               <Component {...pageProps} />
             </main>
           )}
-          <Footer />
+          <PageFooter />
         </div>
       </SessionProvider>
     </Flowbite>
