@@ -48,7 +48,7 @@ const Subjects: NextPage = () => {
                       {c.name}
                     </p>
                     <p className="truncate text-lg text-gray-500 dark:text-gray-400">
-                      {c.teacher.name + " - " + c.subject.title}
+                      {c.teacher?.name || "TBA" + " - " + c.subject.title}
                     </p>
                   </div>
                   {c.tasks !== 0 && (

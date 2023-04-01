@@ -15,7 +15,7 @@ import { HiOutlineHashtag } from "react-icons/hi2";
 import type { NextPageWithLayout } from "../../_app";
 
 const Teachers: NextPageWithLayout = () => {
-  useAdminSession();
+  const user = useAdminSession();
   const { isLoading, data } = api.teacher.get.useQuery();
   const updateTeacher = api.teacher.update.useMutation();
   const createTeacher = api.teacher.create.useMutation();
@@ -23,6 +23,7 @@ const Teachers: NextPageWithLayout = () => {
   const confirmTeacher = api.admin.confirmTeacher.useMutation();
   const resetPassword = api.admin.resetTeacherPassword.useMutation();
   const { data: freeGroups } = api.teacher.getFreeGroups.useQuery();
+  const deleteTeacher = api.teacher.delete.useMutation();
   const apiUtils = api.useContext();
 
   const { setModalData, modalProps, setModalVisibility } = useModal();
@@ -89,6 +90,7 @@ const Teachers: NextPageWithLayout = () => {
       canEdit: true,
       showActions: true,
       enableSearch: true,
+      canRemove: (row) => row.id !== user?.id,
       defaultRow: {
         id: -1,
         email: "",
@@ -260,11 +262,27 @@ const Teachers: NextPageWithLayout = () => {
         }
       );
     },
+    onRowRemove: (row) =>
+      setModalData({
+        isVisible: true,
+        text: `видалити ${row.name}`,
+        onAccept: () => handleRemove(row.id),
+      }),
   });
 
   const handleAssignAdmin = (id: number) => {
     setModalVisibility(false);
     makeAdmin.mutate(id, { onSettled: () => void apiUtils.teacher.get.invalidate() });
+  };
+
+  const handleRemove = (id: number) => {
+    setModalVisibility(false);
+    deleteTeacher.mutate(id, {
+      onSuccess: () =>
+        void apiUtils.teacher.get.setData(undefined, (old) =>
+          old ? old.filter((t) => t.id !== id) : old
+        ),
+    });
   };
 
   return (

@@ -24,4 +24,8 @@ export const subjectRouter = createTRPCRouter({
 
       return true;
     }),
+  delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
+    await ctx.prisma.subject.delete({ where: { id } });
+    return true;
+  }),
 });

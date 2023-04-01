@@ -28,7 +28,7 @@ export const classRouter = createTRPCRouter({
       faculty: c.subGroup.group.faculty.title,
       group: c.subGroup.group.name,
       subGroup: c.subGroup.name,
-      teacher: c.teacher.name,
+      teacher: c.teacher?.name || "",
       subject: c.subject.title,
     }));
   }),
@@ -79,6 +79,7 @@ export const classRouter = createTRPCRouter({
       ...classData,
       group: { id: group.id, name: group.name },
       faculty: { id: group.faculty.id, title: group.faculty.title },
+      teacher: classData.teacher ? classData.teacher : { id: -1, name: "" },
     };
   }),
   update: adminProcedure
@@ -172,5 +173,9 @@ export const classRouter = createTRPCRouter({
     });
 
     return { tasks, students };
+  }),
+  delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
+    await ctx.prisma.class.delete({ where: { id } });
+    return true;
   }),
 });

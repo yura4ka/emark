@@ -5,4 +5,5 @@ export default function useAdminSession() {
   const session = useSession({ required: true, onUnauthenticated: () => void push("/") });
   if (session.status === "authenticated" && !session.data.user.role.isAdmin)
     void push("/");
+  return session.data?.user;
 }

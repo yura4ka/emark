@@ -12,6 +12,8 @@ import CardButtons from "../../../components/Buttons/CardButtons";
 import { formatOptional } from "../../../utils/utils";
 import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
 import { HiCog } from "react-icons/hi";
+import { useModal } from "../../../hooks/useModal";
+import ConfirmModal from "../../../components/Modals/ConfirmModal";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -29,6 +31,7 @@ const Faculty: NextPage = () => {
   const createGroup = api.group.create.useMutation();
   const changeFaculty = api.faculty.rename.useMutation();
   const { data: freeTeachers } = api.teacher.getFreeTeachers.useQuery();
+  const deleteGroup = api.group.delete.useMutation();
   const apiUtils = api.useContext();
 
   const groupsData = useMemo(
@@ -109,6 +112,7 @@ const Faculty: NextPage = () => {
         count: 0,
       },
       enableSearch: true,
+      canRemove: true,
     },
     onRowChange: ({ newRow, setLoading, setValidation }) => {
       const name = newRow.name.trim();
@@ -163,11 +167,29 @@ const Faculty: NextPage = () => {
         }
       );
     },
+    onRowRemove: (row) =>
+      setModalData({
+        isVisible: true,
+        text: `видалити групу ${row.name}`,
+        onAccept: () => handleRemove(row.id),
+      }),
   });
+
+  const handleRemove = (groupId: number) => {
+    setModalVisibility(false);
+    deleteGroup.mutate(groupId, {
+      onSuccess: () =>
+        apiUtils.faculty.getGroupsFull.setData(id, (old) =>
+          old ? old.filter((g) => g.id !== groupId) : old
+        ),
+    });
+  };
 
   const [name, setName] = useState(() => faculty?.title || "");
   const [isError, setIsError] = useState(false);
   const isChanged = name !== faculty?.title;
+
+  const { modalProps, setModalData, setModalVisibility } = useModal();
 
   if (isLoading || !data || !faculty)
     return (
@@ -226,6 +248,7 @@ const Faculty: NextPage = () => {
         )}
       </div>
       <DataTable {...tableProps} />
+      <ConfirmModal {...modalProps} />
     </>
   );
 };

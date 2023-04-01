@@ -48,4 +48,8 @@ export const facultyRouter = createTRPCRouter({
       orderBy: { name: "asc" },
     });
   }),
+  delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
+    await ctx.prisma.faculty.delete({ where: { id } });
+    return true;
+  }),
 });

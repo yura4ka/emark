@@ -61,8 +61,8 @@ function TeacherClass({ classId, title, info }: Props) {
   }
 
   return (
-    <main className="scrollbar dark:text-gray-300">
-      <div className="border-b dark:border-gray-700">
+    <main className="scrollbar overflow-x-auto dark:text-gray-300">
+      <div className="sticky top-0 left-0 z-[1] border-b dark:border-gray-700">
         <div className="px-4 py-2 text-3xl font-bold">
           <span className="cursor-pointer hover:text-gray-600 hover:underline dark:text-white">
             {title}

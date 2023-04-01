@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { getServerAuthSession } from "../../../server/auth";
-import type { GetServerSidePropsContext, NextPage } from "next";
+import type { NextPage } from "next";
 import { api } from "../../../utils/api";
 import Head from "next/head";
 import { Badge, Spinner } from "flowbite-react";
@@ -18,15 +17,10 @@ import { validEmail } from "../../../utils/schemas";
 import { formatOptional } from "../../../utils/utils";
 import { HiCog } from "react-icons/hi";
 import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session?.user.role.isAdmin)
-    return { redirect: { destination: "/", permanent: false } };
-  return { props: { user: session.user } };
-};
+import useAdminSession from "../../../hooks/useAdminSession";
 
 const Group: NextPage = () => {
+  useAdminSession();
   const router = useRouter();
   const id = +(router.query.id || -1);
   const { isLoading, data } = api.group.get.useQuery(id);
@@ -37,6 +31,7 @@ const Group: NextPage = () => {
   const resetPassword = api.admin.resetStudentPassword.useMutation();
   const faculties = api.faculty.get.useQuery();
   const { data: freeTeachers } = api.teacher.getFreeTeachers.useQuery();
+  const deleteStudent = api.student.delete.useMutation();
   const apiUtils = api.useContext();
 
   const { setModalData, setModalVisibility, modalProps } = useModal();
@@ -47,8 +42,15 @@ const Group: NextPage = () => {
       header: `Студенти`,
       showActions: true,
       canEdit: true,
-      defaultRow: { id: -1, name: "", email: "", isRequested: false, isConfirmed: false },
+      defaultRow: {
+        id: -1,
+        name: "",
+        email: "",
+        isRequested: false,
+        isConfirmed: false,
+      },
       enableSearch: true,
+      canRemove: true,
       customActions: (row) => (
         <>
           <CustomAction
@@ -182,7 +184,29 @@ const Group: NextPage = () => {
         }
       );
     },
+    onRowRemove: (row) =>
+      setModalData({
+        isVisible: true,
+        text: `видалити студента ${row.name}`,
+        onAccept: () => handleRemove(row.id),
+      }),
   });
+
+  const handleRemove = (studentId: number) => {
+    setModalVisibility(false);
+    deleteStudent.mutate(studentId, {
+      onSuccess: () =>
+        apiUtils.group.get.setData(id, (old) =>
+          old
+            ? {
+                ...old,
+                students: old.students.filter((s) => s.id !== studentId),
+                senior: old.senior?.id === studentId ? null : old.senior,
+              }
+            : old
+        ),
+    });
+  };
 
   const handleConfirm = (id: number) => {
     setModalVisibility(false);
@@ -211,14 +235,6 @@ const Group: NextPage = () => {
     });
   };
 
-  const defaultValue = { id: -1, name: "" };
-  const [faculty, setFaculty] = useState(() => data?.faculty || { id: -1, title: "" });
-  const [name, setName] = useState(() => data?.name || "");
-  const [senior, setSenior] = useState(() => data?.senior || { ...defaultValue });
-  const [handler, setHandler] = useState(() => data?.handler || { ...defaultValue });
-  const [isError, setIsError] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-
   if (isLoading || !data || !freeTeachers)
     return (
       <div className="flex h-full items-center justify-center">
@@ -226,30 +242,16 @@ const Group: NextPage = () => {
       </div>
     );
 
-  return (
-    <>
-      <Head>
-        <title>{data.faculty.title + ". " + data.name}</title>
-      </Head>
+  const GroupData = () => {
+    const defaultValue = { id: -1, name: "" };
+    const [faculty, setFaculty] = useState(() => data?.faculty || { id: -1, title: "" });
+    const [name, setName] = useState(() => data?.name || "");
+    const [senior, setSenior] = useState(() => data?.senior || { ...defaultValue });
+    const [handler, setHandler] = useState(() => data?.handler || { ...defaultValue });
+    const [isError, setIsError] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
 
-      <Breadcrumb className="mb-6">
-        <BreadcrumbItem href="/" icon={HiCog}>
-          Сторінка адміністратора
-        </BreadcrumbItem>
-        {router.query.from === "faculties" ? (
-          <>
-            <BreadcrumbItem href="/admin/faculties">Факультети</BreadcrumbItem>
-            <BreadcrumbItem href={`/admin/faculties/${data.faculty.id}`}>
-              {data.faculty.title}
-            </BreadcrumbItem>
-          </>
-        ) : (
-          <BreadcrumbItem href="/admin/groups">Групи</BreadcrumbItem>
-        )}
-        <BreadcrumbItem>{data.name}</BreadcrumbItem>
-      </Breadcrumb>
-
-      <h1 className="mb-6 text-3xl font-bold">{data.faculty.title + ". " + data.name}</h1>
+    return (
       <div className="my-6 flex max-w-xl flex-col gap-2">
         <MyInput
           label="Назва"
@@ -326,11 +328,39 @@ const Group: NextPage = () => {
               setSenior(data.senior || { ...defaultValue });
               setHandler(data.handler || { ...defaultValue });
               setIsError(false);
+              setHasChanges(false);
             }}
           />
         )}
       </div>
+    );
+  };
 
+  return (
+    <>
+      <Head>
+        <title>{data.faculty.title + ". " + data.name}</title>
+      </Head>
+
+      <Breadcrumb className="mb-6">
+        <BreadcrumbItem href="/" icon={HiCog}>
+          Сторінка адміністратора
+        </BreadcrumbItem>
+        {router.query.from === "faculties" ? (
+          <>
+            <BreadcrumbItem href="/admin/faculties">Факультети</BreadcrumbItem>
+            <BreadcrumbItem href={`/admin/faculties/${data.faculty.id}`}>
+              {data.faculty.title}
+            </BreadcrumbItem>
+          </>
+        ) : (
+          <BreadcrumbItem href="/admin/groups">Групи</BreadcrumbItem>
+        )}
+        <BreadcrumbItem>{data.name}</BreadcrumbItem>
+      </Breadcrumb>
+
+      <h1 className="mb-6 text-3xl font-bold">{data.faculty.title + ". " + data.name}</h1>
+      <GroupData />
       <ConfirmModal {...modalProps} />
       <DataTable {...tableProps} />
     </>

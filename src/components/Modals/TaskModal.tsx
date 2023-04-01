@@ -216,7 +216,7 @@ function TaskModal({ isVisible, setVisible, classId, task }: Props) {
                 </Table.Row>
               );
             })}
-            {scoreCount && (
+            {scoreCount !== 0 && (
               <Table.Row className="!border-t-2 border-gray-300">
                 <Table.HeadCell>Середня оцінка</Table.HeadCell>
                 <Table.HeadCell

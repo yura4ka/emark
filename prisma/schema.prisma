@@ -46,7 +46,7 @@ model Group {
   handlerId Int?       @unique
   facultyId Int
   seniorId  Int?       @unique
-  faculty   Faculty    @relation(fields: [facultyId], references: [id])
+  faculty   Faculty    @relation(fields: [facultyId], references: [id], onDelete: Cascade)
   handler   Teacher?   @relation(fields: [handlerId], references: [id])
   students  Student[]
   subGroups SubGroup[]
@@ -60,7 +60,7 @@ model SubGroup {
   name     String    @db.VarChar(255)
   groupId  Int
   isFull   Boolean   @default(false)
-  group    Group     @relation(fields: [groupId], references: [id])
+  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
   students Student[]
   classes  Class[]
 }
@@ -75,11 +75,11 @@ model Class {
   id         Int      @id @default(autoincrement())
   name       String   @db.VarChar(255)
   subGroupId Int
-  teacherId  Int
+  teacherId  Int?
   subjectId  Int
-  subGroup   SubGroup @relation(fields: [subGroupId], references: [id])
-  subject    Subject  @relation(fields: [subjectId], references: [id])
-  teacher    Teacher  @relation(fields: [teacherId], references: [id])
+  subGroup   SubGroup @relation(fields: [subGroupId], references: [id], onDelete: Cascade)
+  subject    Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher    Teacher? @relation(fields: [teacherId], references: [id])
   tasks      Task[]
 }
 
@@ -91,7 +91,7 @@ model Task {
   maxScore  Int
   classId   Int
   marks     Mark[]
-  class     Class    @relation(fields: [classId], references: [id])
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 model Mark {
@@ -104,7 +104,7 @@ model Mark {
   editedAt    DateTime? @updatedAt
   isNew       Boolean   @default(true)
   comment     String?
-  student     Student   @relation(fields: [studentId], references: [id])
-  task        Task      @relation(fields: [taskId], references: [id])
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
   teacher     Teacher?  @relation(fields: [teacherId], references: [id])
 }

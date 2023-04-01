@@ -3,6 +3,7 @@ import DataCell from "./DataCell";
 import HandleChangesButtons from "./HandleChangesButtons";
 import type { IRowData, RowProps } from "./types";
 import { useRow } from "./useRow";
+import { HiOutlineTrash } from "react-icons/hi";
 
 export default function DataRow<TData extends IRowData>({
   row,
@@ -10,6 +11,7 @@ export default function DataRow<TData extends IRowData>({
   onRowChange,
   options,
   uniqueCheck,
+  onRowRemove,
 }: RowProps<TData>) {
   const {
     isEditing,
@@ -25,9 +27,23 @@ export default function DataRow<TData extends IRowData>({
 
   function EditAction() {
     return !isEditing ? (
-      <button onClick={() => setIsEditing(true)} className="p-1 hover:underline">
-        Редагувати
-      </button>
+      <>
+        {options?.canEdit && (
+          <button onClick={() => setIsEditing(true)} className="p-1 hover:underline">
+            Редагувати
+          </button>
+        )}
+        {((typeof options?.canRemove === "function" && options.canRemove(row)) ||
+          options?.canRemove === true) && (
+          <button
+            type="button"
+            onClick={() => onRowRemove?.(row)}
+            className="flex h-8 w-8 p-1 text-red-700 hover:bg-gray-200 hover:text-red-800 dark:text-red-600 dark:hover:bg-gray-600 dark:hover:text-red-700"
+          >
+            <HiOutlineTrash className="h-full w-full" />
+          </button>
+        )}
+      </>
     ) : (
       <HandleChangesButtons
         {...{ isLoading, isError, handleSave: save, handleCancel: discard }}
@@ -41,7 +57,7 @@ export default function DataRow<TData extends IRowData>({
       <Table.Cell className="w-[25%] font-medium text-blue-600 dark:text-blue-500">
         <div className="inline-flex gap-2">
           <>
-            {options.canEdit && <EditAction />}
+            <EditAction />
             {!isEditing && options.customActions?.(row)}
           </>
         </div>

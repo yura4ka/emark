@@ -5,6 +5,8 @@ import Link from "next/link";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
 import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
+import { useModal } from "../../../hooks/useModal";
+import ConfirmModal from "../../../components/Modals/ConfirmModal";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -17,6 +19,7 @@ const Faculties: NextPage = () => {
   const { isLoading, data: faculties } = api.faculty.get.useQuery();
   const renameFaculty = api.faculty.rename.useMutation();
   const createFaculty = api.faculty.create.useMutation();
+  const deleteFaculty = api.faculty.delete.useMutation();
   const apiUtils = api.useContext();
 
   const tableProps = createTableProps({
@@ -27,6 +30,7 @@ const Faculties: NextPage = () => {
       canEdit: true,
       defaultRow: { id: -1, title: "" },
       enableSearch: true,
+      canRemove: true,
     },
     columnDefinitions: [
       {
@@ -78,7 +82,25 @@ const Faculties: NextPage = () => {
         },
       });
     },
+    onRowRemove: (row) =>
+      setModalData({
+        isVisible: true,
+        text: `видалити факультет ${row.title}`,
+        onAccept: () => handleRemove(row.id),
+      }),
   });
+
+  const { modalProps, setModalData, setModalVisibility } = useModal();
+
+  const handleRemove = (id: number) => {
+    setModalVisibility(false);
+    deleteFaculty.mutate(id, {
+      onSuccess: () =>
+        apiUtils.faculty.get.setData(undefined, (old) =>
+          old ? old.filter((f) => f.id !== id) : old
+        ),
+    });
+  };
 
   if (isLoading || !faculties)
     return (
@@ -93,6 +115,7 @@ const Faculties: NextPage = () => {
         <title>Факультети</title>
       </Head>
       <DataTable {...tableProps} />
+      <ConfirmModal {...modalProps} />
     </>
   );
 };

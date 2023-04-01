@@ -217,4 +217,9 @@ export const studentRouter = createTRPCRouter({
     const toReturn: [TSubjectMap, TMarkMap] = [subjects, result];
     return toReturn;
   }),
+
+  delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
+    await ctx.prisma.student.delete({ where: { id } });
+    return true;
+  }),
 });

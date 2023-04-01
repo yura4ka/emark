@@ -38,7 +38,10 @@ interface TableOptions<TData extends IRowData> {
   defaultRow?: TData;
   createOnNewPage?: string;
   enableSearch?: boolean;
+  canRemove?: boolean | ((row: TData) => boolean);
 }
+
+type TOnRowRemoveFunction<TData extends IRowData> = (row: TData) => void;
 
 export interface DataTableProps<TData extends IRowData> {
   data: TData[];
@@ -46,6 +49,7 @@ export interface DataTableProps<TData extends IRowData> {
   onRowChange?: TOnRowChangeFunction<TData>;
   options?: TableOptions<TData>;
   onNewRowCreate?: TOnRowChangeFunction<TData>;
+  onRowRemove?: TOnRowRemoveFunction<TData>;
 }
 
 export interface RowProps<TData extends IRowData> {
@@ -54,6 +58,7 @@ export interface RowProps<TData extends IRowData> {
   options?: TableOptions<TData>;
   onRowChange?: TOnRowChangeFunction<TData>;
   uniqueCheck?: TCheckUniqueFunction<TData>;
+  onRowRemove?: TOnRowRemoveFunction<TData>;
 }
 
 export interface CellProps<TData extends IRowData> {

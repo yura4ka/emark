@@ -134,4 +134,8 @@ export const teacherRouter = createTRPCRouter({
 
       return true;
     }),
+  delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
+    await ctx.prisma.teacher.delete({ where: { id } });
+    return true;
+  }),
 });

@@ -45,6 +45,7 @@ function DataTable<TData extends IRowData>({
   onRowChange,
   options,
   onNewRowCreate,
+  onRowRemove,
 }: DataTableProps<TData>) {
   const checkUniqueConstraint: TCheckUniqueFunction<TData> = (row, key, newValue) => {
     return !data.some((r) => r[key] === newValue.trim() && r.id !== row.id);
@@ -121,6 +122,7 @@ function DataTable<TData extends IRowData>({
               onRowChange={onRowChange}
               options={options}
               uniqueCheck={checkUniqueConstraint}
+              onRowRemove={onRowRemove}
             />
           ))}
         </Table.Body>

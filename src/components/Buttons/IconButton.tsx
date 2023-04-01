@@ -1,5 +1,5 @@
 import { Tooltip } from "flowbite-react";
-import type { ComponentProps, FC } from "react";
+import { type ComponentProps, type FC, useEffect, useState } from "react";
 
 interface Props {
   tooltip: string;
@@ -9,7 +9,13 @@ interface Props {
 }
 
 function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
-  return (
+  const [isBrowser, setIsBrowser] = useState(false);
+  useEffect(() => {
+    setIsBrowser(true);
+    return () => setIsBrowser(false);
+  }, []);
+
+  return isBrowser ? (
     <Tooltip content={tooltip} placement="bottom">
       <button
         type="button"
@@ -21,6 +27,8 @@ function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
         <Icon className="h-full w-full" />
       </button>
     </Tooltip>
+  ) : (
+    <></>
   );
 }
 
