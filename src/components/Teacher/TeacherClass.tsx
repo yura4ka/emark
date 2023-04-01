@@ -1,5 +1,5 @@
 import { Spinner } from "flowbite-react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../utils/api";
 import TaskModal, { type Task } from "../Modals/TaskModal";
 import { HiPlus } from "react-icons/hi";
@@ -14,6 +14,16 @@ import {
 import IconButton from "../Buttons/IconButton";
 import MarkModal, { type MarkData } from "../Modals/MarkModal";
 import SubGroupModal from "../Modals/SubGroupModal";
+import {
+  CartesianGrid,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ZAxis,
+} from "recharts";
 
 interface Props {
   classId: number;
@@ -47,6 +57,29 @@ function TeacherClass({ classId, title, info }: Props) {
     setIsOverflowing(createButton.current.offsetWidth > createButton.current.scrollWidth);
   }, [data]);
 
+  function calculateAverage(marks: { score: number; id: number }[], maxScore: number) {
+    let total = 0,
+      count = 0;
+    for (const m of marks) {
+      if (m.id !== -1) {
+        total += (m.score / maxScore) * 100;
+        count++;
+      }
+    }
+    return count === 0 ? null : (total / count).toFixed(3);
+  }
+
+  const averageTaskMarks = useMemo(() => {
+    if (!data) return [];
+    const result = [];
+    for (const t of data.tasks) {
+      const avg = calculateAverage(t.marks, t.maxScore);
+      if (avg !== null)
+        result.push({ avg, name: t.title || t.date.toLocaleDateString() });
+    }
+    return result;
+  }, [data]);
+
   if (!data)
     return (
       <div className="flex h-full items-center justify-center">
@@ -60,7 +93,7 @@ function TeacherClass({ classId, title, info }: Props) {
     else setEditTask(undefined);
   }
 
-  return (
+  const Marks = () => (
     <main className="scrollbar overflow-x-auto dark:text-gray-300">
       <div className="sticky top-0 left-0 z-[1] border-b dark:border-gray-700">
         <div className="px-4 py-2 text-3xl font-bold">
@@ -159,7 +192,31 @@ function TeacherClass({ classId, title, info }: Props) {
           ))}
         </tbody>
       </table>
+    </main>
+  );
 
+  return (
+    <>
+      <Marks />
+      <ResponsiveContainer width="100%" height={300} className="my-10">
+        <ScatterChart
+          width={500}
+          height={300}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" interval={0} name="Завдання" angle={-30} />
+          <YAxis name="Оцінка" dataKey="avg" />
+          <ZAxis type="number" range={[100]} />
+          <Tooltip />
+          <Scatter data={averageTaskMarks} fill="#8884d8" line={true} />
+        </ScatterChart>
+      </ResponsiveContainer>
       <TaskModal
         classId={classId}
         isVisible={isTaskEditing}
@@ -183,7 +240,7 @@ function TeacherClass({ classId, title, info }: Props) {
           onUpdate={() => void apiUtils.class.getMarks.invalidate(classId)}
         />
       )}
-    </main>
+    </>
   );
 }
 export default TeacherClass;
