@@ -18,6 +18,8 @@
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
     "argon2": "^0.30.3",
+    "exceljs": "^4.3.0",
+    "file-saver": "^2.0.5",
     "flowbite": "^1.6.3",
     "flowbite-react": "^0.3.8",
     "next": "13.1.6",
@@ -29,6 +31,7 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "@types/node": "^18.11.18",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.26",

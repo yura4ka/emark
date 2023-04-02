@@ -24,6 +24,8 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 interface Props {
   classId: number;
@@ -93,6 +95,60 @@ function TeacherClass({ classId, title, info }: Props) {
     else setEditTask(undefined);
   }
 
+  const generateExcel = () => {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet(title);
+    const row: (undefined | string | number)[] = [""];
+    const comments: [string | null, string, number][] = [];
+    data.tasks.forEach((task, i) => {
+      row[i + 1] = task.title || task.date.toLocaleDateString();
+      comments.push([task.title, task.date.toLocaleDateString(), task.maxScore]);
+    });
+    let sheetRow = sheet.addRow(row);
+    sheetRow.eachCell((cell, i) => {
+      if (i !== 1)
+        cell.note = {
+          texts: [
+            { text: `Завдання: ${comments[i - 1]?.[0] || comments[i - 1]?.[1] || ""}\n` },
+            { text: `Дата: ${comments[i - 1]?.[1] || ""}\n` },
+            { text: `Максимальний бал: ${comments[i - 1]?.[2] || ""}\n` },
+          ],
+        };
+    });
+    sheetRow.alignment = { textRotation: -90, horizontal: "center", vertical: "top" };
+    sheetRow.height = 58;
+    sheetRow.commit();
+
+    data.students.forEach((s, i) => {
+      const comments: (string | null)[] = [];
+      const row: (string | number | undefined)[] = [s.name];
+      data.tasks.forEach((t) => {
+        const mark = t.marks.at(i);
+        row.push(mark?.id === -1 ? "" : mark?.score);
+        comments.push(mark?.comment || null);
+      });
+      sheetRow = sheet.addRow(row);
+      sheetRow.alignment = { horizontal: "center", vertical: "middle" };
+      sheetRow.height = 23.25;
+      sheetRow.eachCell((cell, i) => {
+        if (i !== 1 && comments[i]) cell.note = comments[i] || "";
+      });
+      sheetRow.commit();
+    });
+
+    sheet.getColumn(1).width = 31;
+    sheet.getColumn(1).alignment = { horizontal: "left", vertical: "middle" };
+    console.log(sheet.columns.length);
+    for (let i = 2; i < sheet.columns.length + 1; i++) {
+      sheet.getColumn(i).width = 5.5;
+    }
+
+    workbook.xlsx
+      .writeBuffer()
+      .then((buffer) => saveAs(new Blob([buffer]), `${title}_export.xlsx`))
+      .catch((error) => console.log(error));
+  };
+
   const Marks = () => (
     <main className="scrollbar overflow-x-auto dark:text-gray-300">
       <div className="sticky top-0 left-0 z-[1] border-b dark:border-gray-700">
@@ -103,7 +159,11 @@ function TeacherClass({ classId, title, info }: Props) {
         </div>
         <div className="flex justify-between border-t border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-600 dark:bg-gray-700">
           <div className="flex">
-            <IconButton icon={HiOutlineDownload} tooltip="Експортувати в Excel" />
+            <IconButton
+              icon={HiOutlineDownload}
+              tooltip="Експортувати в Excel"
+              onClick={generateExcel}
+            />
             <IconButton icon={HiOutlineUpload} tooltip="Імпортувати з Excel" />
             <div className="mx-2 w-[1px] border-l border-gray-300 dark:border-gray-500" />
             <IconButton

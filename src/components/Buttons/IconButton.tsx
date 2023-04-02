@@ -15,20 +15,24 @@ function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
     return () => setIsBrowser(false);
   }, []);
 
+  const btn = (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex h-8 w-8 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 ${
+        className || ""
+      }`}
+    >
+      <Icon className="h-full w-full" />
+    </button>
+  );
+
   return isBrowser ? (
     <Tooltip content={tooltip} placement="bottom">
-      <button
-        type="button"
-        onClick={onClick}
-        className={`flex h-8 w-8 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 ${
-          className || ""
-        }`}
-      >
-        <Icon className="h-full w-full" />
-      </button>
+      {btn}
     </Tooltip>
   ) : (
-    <></>
+    <>{btn}</>
   );
 }
 
