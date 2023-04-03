@@ -1,3 +1,5 @@
+import { groupRouter } from "./group";
+import { prisma } from "./../../db";
 import { validString, validId } from "./../../../utils/schemas";
 import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
@@ -201,19 +203,32 @@ export const classRouter = createTRPCRouter({
         where: { id: input.id },
         select: {
           teacherId: true,
-          subGroup: { select: { students: { select: { id: true } } } },
+          subGroup: {
+            select: { isFull: true, groupId: true, students: { select: { id: true } } },
+          },
         },
       });
 
+      let students = cl.subGroup.students;
+      if (cl.subGroup.isFull) {
+        const group = await ctx.prisma.group.findUniqueOrThrow({
+          where: { id: cl.subGroup.groupId },
+          select: { students: { select: { id: true } } },
+        });
+        students = group.students;
+      }
+
       if (
         cl.teacherId !== ctx.session.user.id ||
-        cl.subGroup.students.length < input.students.length
-      )
+        students.length < input.students.length
+      ) {
         throw new TRPCError({ code: "BAD_REQUEST" });
+      }
 
-      const studentSet = new Set(cl.subGroup.students.map((s) => s.id));
-      if (!input.students.every((s) => studentSet.has(s.id)))
+      const studentSet = new Set(students.map((s) => s.id));
+      if (!input.students.every((s) => studentSet.has(s.id))) {
         throw new TRPCError({ code: "BAD_REQUEST" });
+      }
 
       await ctx.prisma.$transaction([
         ctx.prisma.task.deleteMany({ where: { classId: input.id } }),

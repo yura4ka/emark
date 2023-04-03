@@ -91,7 +91,7 @@ export const taskRouter = createTRPCRouter({
         id: validId.optional(),
         taskId: validId,
         studentId: validId,
-        mark: z.number().positive(),
+        mark: z.number().min(-1).int(),
         comment: validString.nullish(),
       })
     )

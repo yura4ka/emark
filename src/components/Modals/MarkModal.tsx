@@ -71,7 +71,7 @@ function TaskModal({ isVisible, setVisible, data }: Props) {
     if (!data) return;
     let mark = value;
     if (isNaN(mark)) mark = 0;
-    mark = clampMark(mark, 0, data.task.maxScore);
+    mark = clampMark(mark, 0, data.task.maxScore, false);
 
     const commentTrim = comment.trim();
 
@@ -138,7 +138,7 @@ function TaskModal({ isVisible, setVisible, data }: Props) {
               onBlur={(e) => {
                 const newValue = e.target.valueAsNumber;
                 if (isNaN(newValue)) setValue(0);
-                setValue(clampMark(newValue, 0, data.task.maxScore));
+                setValue(clampMark(newValue, 0, data.task.maxScore, false));
               }}
               min={0}
               max={data.task.maxScore}

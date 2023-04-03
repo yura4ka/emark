@@ -17,9 +17,9 @@ function getTask(cell: ExcelJS.Cell, studentCount: number) {
     .map((n) => n.slice(n.lastIndexOf(":") + 1).trim());
 
   const text = cell.text.trim();
-  const dateNumber = Date.parse(notes[1] || "");
-  const date = isNaN(dateNumber) ? new Date() : new Date(dateNumber);
-  const title = text === notes[1] && !isNaN(dateNumber) ? null : text;
+  const dateNumber = new Date(notes[1] || "");
+  const date = isNaN(dateNumber.getTime()) ? new Date() : dateNumber;
+  const title = text === notes[1] && !isNaN(dateNumber.getTime()) ? null : text;
   const maxScore = parseInt(notes[2] || "100") || 100;
 
   const marks = new Array(studentCount)
@@ -61,8 +61,6 @@ async function generateMarks(file: File, groupStudents: { id: number; name: stri
     if (i !== 1) tasks.push(getTask(cell, students.length));
   });
 
-  // if (tasks.length === 0) errors.push("Не знайдено завдань!");
-
   for (let i = 2; i <= students.length + 1; i++) {
     const s = students.at(i - 2);
     if (s && s.id === -1) {
@@ -72,7 +70,8 @@ async function generateMarks(file: File, groupStudents: { id: number; name: stri
     const row = sheet.getRow(i);
     for (let j = 2; j <= tasks.length + 1; j++) {
       const cell = row.getCell(j);
-      const score = cell.text.trim().length === 0 ? null : +cell.text.trim();
+      const scoreParsed = parseInt(cell.text.trim());
+      const score = isNaN(scoreParsed) ? null : scoreParsed;
       const isError = (score || 0) > (tasks[j - 2]?.maxScore || 0);
       const comment = (cell.note as ExcelJS.Comment)?.texts?.at(0)?.text;
       if (tasks[j - 2]?.marks[i - 2] !== undefined) {
@@ -234,7 +233,7 @@ function ImportMarksModal({ isVisible, setVisible, students, classId }: Props) {
                         }h-9 w-9 border text-lg dark:border-gray-700`}
                       >
                         {t.marks[i]?.comment === null ? (
-                          t.marks[i]?.score || ""
+                          t.marks[i]?.score
                         ) : (
                           <Tooltip
                             animation="duration-1000"
@@ -247,7 +246,7 @@ function ImportMarksModal({ isVisible, setVisible, students, classId }: Props) {
                               </>
                             }
                           >
-                            {t.marks[i]?.score || ""}
+                            {t.marks[i]?.score}
                             <span className="absolute top-0 right-0 h-1 w-1 rounded-sm bg-green-500" />
                           </Tooltip>
                         )}

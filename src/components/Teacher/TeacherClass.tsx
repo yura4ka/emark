@@ -132,8 +132,8 @@ function TeacherClass({ classId, title, info }: Props) {
       sheetRow = sheet.addRow(row);
       sheetRow.alignment = { horizontal: "center", vertical: "middle" };
       sheetRow.height = 23.25;
-      sheetRow.eachCell((cell, i) => {
-        if (i !== 1 && comments[i]) cell.note = comments[i] || "";
+      sheetRow.eachCell((cell, j) => {
+        if (j !== 1 && comments[j - 2]) cell.note = comments[j - 2] || "";
       });
       sheetRow.commit();
     });

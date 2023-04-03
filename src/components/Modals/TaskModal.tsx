@@ -69,6 +69,7 @@ function TaskModal({ isVisible, setVisible, classId, task }: Props) {
   useEffect(() => {
     if (!task) initTask("", 100, new Date());
     else initTask(task.title || "", task.maxScore, task.date);
+    console.log("ef", task?.title || task?.date || "no task");
   }, [task]);
 
   function discard() {
@@ -103,6 +104,7 @@ function TaskModal({ isVisible, setVisible, classId, task }: Props) {
   };
 
   const dataProps = {
+    task,
     handleSave,
     onDelete: () =>
       setModalData({
