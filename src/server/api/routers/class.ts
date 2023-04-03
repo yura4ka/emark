@@ -2,6 +2,7 @@ import { validString, validId } from "./../../../utils/schemas";
 import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const classRouter = createTRPCRouter({
   get: adminProcedure.query(async ({ ctx }) => {
@@ -178,4 +179,69 @@ export const classRouter = createTRPCRouter({
     await ctx.prisma.class.delete({ where: { id } });
     return true;
   }),
+  loadData: teacherProcedure
+    .input(
+      z.object({
+        id: validId,
+        students: z.array(z.object({ id: validId })),
+        tasks: z.array(
+          z.object({
+            title: validString.nullable(),
+            date: z.date(),
+            maxScore: validId,
+            marks: z.array(
+              z.object({ score: z.number().nullable(), comment: validString.nullable() })
+            ),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const cl = await ctx.prisma.class.findUniqueOrThrow({
+        where: { id: input.id },
+        select: {
+          teacherId: true,
+          subGroup: { select: { students: { select: { id: true } } } },
+        },
+      });
+
+      if (
+        cl.teacherId !== ctx.session.user.id ||
+        cl.subGroup.students.length !== input.students.length
+      )
+        throw new TRPCError({ code: "BAD_REQUEST" });
+
+      const studentSet = new Set(cl.subGroup.students.map((s) => s.id));
+      if (!input.students.every((s) => studentSet.has(s.id)))
+        throw new TRPCError({ code: "BAD_REQUEST" });
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.task.deleteMany({ where: { classId: input.id } }),
+        ...input.tasks.map((t) => {
+          const marks = t.marks
+            .map((m, j) => ({
+              ...m,
+              studentId: input.students[j]?.id || -1,
+              teacherId: ctx.session.user.id,
+            }))
+            .filter((m) => m.score !== null) as {
+            score: number;
+            studentId: number;
+            teacherId: number;
+            comment: string | null;
+          }[];
+          return ctx.prisma.task.create({
+            data: {
+              classId: input.id,
+              title: t.title,
+              maxScore: t.maxScore,
+              date: t.date > new Date() ? new Date() : t.date,
+              marks: { createMany: { data: marks } },
+            },
+          });
+        }),
+      ]);
+
+      return true;
+    }),
 });

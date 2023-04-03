@@ -76,6 +76,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     align-items: center;
 }
 
+.tooltip-min-w-12 > div:last-child {
+    min-width: 12rem;
+}
+
+.tooltip-min-w-20 > div:last-child {
+    min-width: 20rem;
+}
+
 div[role="tabpanel"] {
     padding: 1rem 0 0 0;
 }
