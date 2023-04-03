@@ -207,7 +207,7 @@ export const classRouter = createTRPCRouter({
 
       if (
         cl.teacherId !== ctx.session.user.id ||
-        cl.subGroup.students.length !== input.students.length
+        cl.subGroup.students.length < input.students.length
       )
         throw new TRPCError({ code: "BAD_REQUEST" });
 

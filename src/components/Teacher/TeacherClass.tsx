@@ -111,9 +111,9 @@ function TeacherClass({ classId, title, info }: Props) {
       if (i !== 1)
         cell.note = {
           texts: [
-            { text: `Завдання: ${comments[i - 1]?.[0] || comments[i - 1]?.[1] || ""}\n` },
-            { text: `Дата: ${comments[i - 1]?.[1] || ""}\n` },
-            { text: `Максимальний бал: ${comments[i - 1]?.[2] || ""}\n` },
+            { text: `Завдання: ${comments[i - 2]?.[0] || comments[i - 2]?.[1] || ""}\n` },
+            { text: `Дата: ${comments[i - 2]?.[1] || ""}\n` },
+            { text: `Максимальний бал: ${comments[i - 2]?.[2] || ""}\n` },
           ],
         };
     });
@@ -310,7 +310,7 @@ function TableChart({ data }: { data: { avg: string; name: string }[] }) {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" interval={0} name="Завдання" angle={-30} />
-        <YAxis name="Оцінка" dataKey="avg" />
+        <YAxis name="Оцінка" dataKey="avg" domain={[0, 100]} />
         <ZAxis type="number" range={[100]} />
         <Tooltip />
         <Scatter data={data} fill="#8884d8" line={true} />

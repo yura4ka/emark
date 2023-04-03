@@ -53,13 +53,15 @@ async function generateMarks(file: File, groupStudents: { id: number; name: stri
       id: studentMap.get(s?.toString() || "") || -1,
     }));
 
-  if (students.length !== groupStudents.length) {
+  if (students.length > groupStudents.length)
     errors.push("Не вірна кількість студентів!");
-  }
+  else if (students.length === 0) errors.push("Не вдалося знайти студентів!");
 
   sheet.getRow(1).eachCell((cell, i) => {
     if (i !== 1) tasks.push(getTask(cell, students.length));
   });
+
+  // if (tasks.length === 0) errors.push("Не знайдено завдань!");
 
   for (let i = 2; i <= students.length + 1; i++) {
     const s = students.at(i - 2);
