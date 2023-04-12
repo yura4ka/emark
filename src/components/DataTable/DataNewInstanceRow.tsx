@@ -21,7 +21,7 @@ function DataNewInstanceRow<TData extends IRowData>({
     onNewValueChange,
     discard,
     save,
-  } = useRow(row, onSave, uniqueCheck, true);
+  } = useRow(row, onSave, definitions, uniqueCheck, true);
 
   return !isEditing ? (
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
@@ -49,7 +49,7 @@ function DataNewInstanceRow<TData extends IRowData>({
             setNewValue={(value, id) => onNewValueChange(value, d, id)}
             definition={d}
             isEditing={true}
-            validation={rowValidations[d.key] || true}
+            validation={rowValidations[d.key]}
             customElement={d.customElement ? d.customElement(row) : undefined}
             changeOptions={
               typeof d.changeOptions === "function"

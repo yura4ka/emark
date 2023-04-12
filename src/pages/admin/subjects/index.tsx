@@ -50,33 +50,35 @@ const Subjects: NextPage = () => {
         ),
       },
     ],
-    onRowChange: ({ newRow, setLoading, setValidation }) => {
-      setLoading(true);
+    onRowChange: ({ newRow, setResult }) => {
       updateSubject.mutate(newRow, {
         onError(error) {
-          if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-          else void apiUtils.subject.get.invalidate();
-          setLoading(false);
+          if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+          else {
+            setResult(false);
+            void apiUtils.subject.get.invalidate();
+          }
         },
         onSuccess() {
           apiUtils.subject.get.setData(undefined, (old) =>
             old ? old.map((s) => (s.id === newRow.id ? newRow : s)) : old
           );
-          setLoading(false);
+          setResult();
         },
       });
     },
-    onNewRowCreate: ({ newRow, setLoading, setValidation }) => {
-      setLoading(true);
+    onNewRowCreate: ({ newRow, setResult }) => {
       createSubject.mutate(newRow.title, {
         onError(error) {
-          if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-          else void apiUtils.subject.get.invalidate();
-          setLoading(false);
+          if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+          else {
+            setResult(false);
+            void apiUtils.subject.get.invalidate();
+          }
         },
         onSuccess() {
           void apiUtils.subject.get.invalidate(undefined);
-          setLoading(false);
+          setResult();
         },
       });
     },

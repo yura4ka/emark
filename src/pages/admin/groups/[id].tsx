@@ -138,18 +138,18 @@ const Group: NextPage = () => {
         searchBy: false,
       },
     ],
-    onRowChange: ({ newRow, setLoading, setValidation }) => {
+    onRowChange: ({ newRow, setResult }) => {
       const name = newRow.name.trim();
       const email = newRow.email.trim();
       const { id } = newRow;
-      setLoading(true);
       changeStudent.mutate(
         { id, name, email },
         {
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ email: "CONFLICT" });
-            else void apiUtils.group.get.invalidate(data?.id);
-            setLoading(false);
+            if (error.data?.code !== "CONFLICT") {
+              setResult(false);
+              void apiUtils.group.get.invalidate(data?.id);
+            } else setResult({ email: "CONFLICT" });
           },
           onSuccess() {
             apiUtils.group.get.setData(data?.id || -1, (old) =>
@@ -162,23 +162,24 @@ const Group: NextPage = () => {
                   }
                 : old
             );
-            setLoading(false);
+            setResult();
           },
         }
       );
     },
-    onNewRowCreate: ({ newRow: row, setLoading, setValidation }) => {
-      setLoading(true);
+    onNewRowCreate: ({ newRow: row, setResult }) => {
       createStudent.mutate(
         { name: row.name.trim(), email: row.email.trim(), groupId: data?.id || -1 },
         {
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ email: "CONFLICT" });
-            else void apiUtils.group.get.invalidate(data?.id);
-            setLoading(false);
+            if (error.data?.code !== "CONFLICT") {
+              setResult(false);
+              void apiUtils.group.get.invalidate(data?.id);
+            }
+            setResult({ email: "CONFLICT" });
           },
           onSuccess() {
-            setLoading(false);
+            setResult();
             void apiUtils.group.get.invalidate(data?.id);
           },
         }

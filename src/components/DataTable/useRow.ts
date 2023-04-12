@@ -4,13 +4,13 @@ import type {
   IRowData,
   TCheckUniqueFunction,
   TOnRowChangeFunction,
-  ValidationResult,
 } from "./types";
 import { initValidations } from "./utils";
 
 export function useRow<TData extends IRowData>(
   row: TData,
   onRowSave: TOnRowChangeFunction<TData> | undefined,
+  definitions: IColumnDefinition<TData>[],
   uniqueCheck?: TCheckUniqueFunction<TData>,
   isNew?: boolean
 ) {
@@ -59,19 +59,35 @@ export function useRow<TData extends IRowData>(
       return;
     }
 
-    let validation: ValidationResult[] = [];
+    setIsLoading(true);
     onRowSave({
       newRow,
-      setLoading: setIsLoading,
-      setValidation: (result) => {
-        setRowValidations((old) => ({ ...old, ...result }));
-        validation = Object.values(result);
+      setResult: (result) => {
+        setIsLoading(false);
+        if (result === true || result === undefined) {
+          setIsEditing(false);
+          if (isNew) setNewRow({ ...row });
+          return;
+        }
+
+        if (result == false)
+          setRowValidations((prev) => {
+            const validation = { ...prev };
+            definitions.forEach((d) => (validation[d.key] = result));
+            return validation;
+          });
+        else setRowValidations((prev) => ({ ...prev, ...result }));
+
+        const validation = result && Object.values(result);
+        const isSuccess = !(
+          !validation ||
+          validation.length !== 0 ||
+          validation.some((r) => r !== true)
+        );
+        setIsEditing(!isSuccess);
+        if (isSuccess && isNew) setNewRow({ ...row });
       },
     });
-
-    const isSuccess = !(validation.length !== 0 || validation.some((r) => r !== true));
-    setIsEditing(!isSuccess);
-    if (isSuccess && isNew) setNewRow({ ...row });
   }
 
   return {

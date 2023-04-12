@@ -26,8 +26,7 @@ export interface IRowData {
 
 export type TOnRowChangeFunction<TData extends IRowData> = (props: {
   newRow: TData;
-  setLoading: (isLoading: boolean) => void;
-  setValidation: (result: { [key: string]: ValidationResult }) => void;
+  setResult: (result?: boolean | { [key: string]: ValidationResult }) => void;
 }) => void;
 
 interface TableOptions<TData extends IRowData> {

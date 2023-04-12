@@ -47,37 +47,41 @@ const Faculties: NextPage = () => {
         ),
       },
     ],
-    onRowChange: ({ newRow, setLoading, setValidation }) => {
+    onRowChange: ({ newRow, setResult }) => {
       const title = newRow.title.trim();
       const { id } = newRow;
-      setLoading(true);
       renameFaculty.mutate(
         { id, newName: title },
         {
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-            else void apiUtils.faculty.get.invalidate();
-            setLoading(false);
+            if (error.data?.code === "CONFLICT") {
+              setResult({ title: "CONFLICT" });
+            } else {
+              setResult(false);
+              void apiUtils.faculty.get.invalidate();
+            }
           },
           onSuccess() {
             apiUtils.faculty.get.setData(undefined, (old) =>
               old ? old.map((f) => (f.id === id ? { ...f, title } : f)) : old
             );
-            setLoading(false);
+            setResult();
           },
         }
       );
     },
-    onNewRowCreate: ({ newRow: row, setLoading, setValidation }) => {
-      setLoading(true);
+    onNewRowCreate: ({ newRow: row, setResult }) => {
       createFaculty.mutate(row.title, {
         onError(error) {
-          if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-          else void apiUtils.faculty.get.invalidate();
-          setLoading(false);
+          if (error.data?.code === "CONFLICT") {
+            setResult({ title: "CONFLICT" });
+          } else {
+            setResult(false);
+            void apiUtils.faculty.get.invalidate();
+          }
         },
         onSuccess() {
-          setLoading(false);
+          setResult();
           void apiUtils.faculty.get.invalidate();
         },
       });

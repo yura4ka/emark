@@ -23,7 +23,7 @@ export default function DataRow<TData extends IRowData>({
     onNewValueChange,
     discard,
     save,
-  } = useRow(row, onRowChange, uniqueCheck);
+  } = useRow(row, onRowChange, definitions, uniqueCheck);
 
   function EditAction() {
     return !isEditing ? (
@@ -75,7 +75,7 @@ export default function DataRow<TData extends IRowData>({
           setNewValue={(value, id) => onNewValueChange(value, d, id)}
           definition={d}
           isEditing={isEditing}
-          validation={rowValidations[d.key] || true}
+          validation={rowValidations[d.key]}
           customElement={d.customElement ? d.customElement(row) : undefined}
           changeOptions={
             typeof d.changeOptions === "function" ? d.changeOptions(row) : d.changeOptions

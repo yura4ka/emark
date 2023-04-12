@@ -83,7 +83,7 @@ export const studentRouter = createTRPCRouter({
 
       const [student, teacher] = await Promise.all([
         ctx.prisma.student.findFirst({ where: { email, id: { not: input.id } } }),
-        ctx.prisma.student.findFirst({ where: { email } }),
+        ctx.prisma.teacher.findFirst({ where: { email } }),
       ]);
 
       if (student || teacher) throw new TRPCError({ code: "CONFLICT" });

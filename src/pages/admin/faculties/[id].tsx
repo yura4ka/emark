@@ -114,19 +114,20 @@ const Faculty: NextPage = () => {
       enableSearch: true,
       canRemove: true,
     },
-    onRowChange: ({ newRow, setLoading, setValidation }) => {
+    onRowChange: ({ newRow, setResult }) => {
       const name = newRow.name.trim();
       const groupId = newRow.id;
       const handlerId = formatOptional(newRow.handlerId);
       const seniorId = formatOptional(newRow.seniorId);
-      setLoading(true);
       changeGroup.mutate(
         { id: groupId, name, facultyId: id, seniorId, handlerId },
         {
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-            else void apiUtils.faculty.getGroupsFull.invalidate(faculty?.id);
-            setLoading(false);
+            if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+            else {
+              setResult(false);
+              void apiUtils.faculty.getGroupsFull.invalidate(faculty?.id);
+            }
           },
           onSuccess() {
             apiUtils.faculty.getGroupsFull.setData(faculty?.id || -1, (old) =>
@@ -143,25 +144,26 @@ const Faculty: NextPage = () => {
                   )
                 : old
             );
-            setLoading(false);
+            setResult();
             void apiUtils.teacher.getFreeTeachers.invalidate();
           },
         }
       );
     },
-    onNewRowCreate: ({ newRow: row, setLoading, setValidation }) => {
-      setLoading(true);
+    onNewRowCreate: ({ newRow: row, setResult }) => {
       const handlerId = formatOptional(row.handlerId);
       createGroup.mutate(
         { name: row.name.trim(), facultyId: faculty?.id || -1, handlerId },
         {
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-            else void apiUtils.faculty.getGroupsFull.invalidate();
-            setLoading(false);
+            if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+            else {
+              setResult(false);
+              void apiUtils.faculty.getGroupsFull.invalidate();
+            }
           },
           onSuccess() {
-            setLoading(false);
+            setResult();
             void apiUtils.faculty.getGroupsFull.invalidate(faculty?.id);
           },
         }

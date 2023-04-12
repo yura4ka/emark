@@ -117,7 +117,7 @@ const Teachers: NextPageWithLayout = () => {
             }}
           />
           <CustomAction
-            isVisible={row.isConfirmed}
+            isVisible={row.isConfirmed && row.id !== user?.id}
             isLoading={resetPassword.isLoading}
             text="Скинути пароль"
             icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
@@ -218,8 +218,7 @@ const Teachers: NextPageWithLayout = () => {
         ),
       },
     ],
-    onRowChange: ({ newRow, setValidation, setLoading }) => {
-      setLoading(true);
+    onRowChange: ({ newRow, setResult }) => {
       const { id } = newRow;
       const name = newRow.name.trim();
       const email = newRow.email.trim();
@@ -229,19 +228,20 @@ const Teachers: NextPageWithLayout = () => {
         { id, name, email, handlerOfId },
         {
           onSuccess() {
+            setResult();
             void apiUtils.teacher.get.invalidate();
-            setLoading(false);
           },
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-            else void apiUtils.teacher.get.invalidate();
-            setLoading(false);
+            if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+            else {
+              setResult(false);
+              void apiUtils.teacher.get.invalidate();
+            }
           },
         }
       );
     },
-    onNewRowCreate: ({ newRow, setValidation, setLoading }) => {
-      setLoading(true);
+    onNewRowCreate: ({ newRow, setResult }) => {
       const handlerOfId = newRow.handlerOfId === -1 ? undefined : newRow.handlerOfId;
       createTeacher.mutate(
         {
@@ -251,13 +251,15 @@ const Teachers: NextPageWithLayout = () => {
         },
         {
           onSuccess() {
+            setResult();
             void apiUtils.teacher.get.invalidate();
-            setLoading(false);
           },
           onError(error) {
-            if (error.data?.code === "CONFLICT") setValidation({ title: "CONFLICT" });
-            else void apiUtils.teacher.get.invalidate();
-            setLoading(false);
+            if (error.data?.code === "CONFLICT") setResult({ title: "CONFLICT" });
+            else {
+              setResult(false);
+              void apiUtils.teacher.get.invalidate();
+            }
           },
         }
       );

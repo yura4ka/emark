@@ -1,5 +1,3 @@
-import { groupRouter } from "./group";
-import { prisma } from "./../../db";
 import { validString, validId } from "./../../../utils/schemas";
 import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
