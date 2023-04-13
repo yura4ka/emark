@@ -4,13 +4,14 @@ import { getServerAuthSession } from "../server/auth";
 import Head from "next/head";
 import { type GetServerSidePropsContext, type NextPage } from "next";
 import { api } from "../utils/api";
-import { Badge, Spinner } from "flowbite-react";
+import { Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../components/DataTable/DataTable";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 import CustomAction from "../components/Buttons/CustomAction";
 import { useModal } from "../hooks/useModal";
+import { ConfirmedBadge, RequestedBadge } from "../components/Badges";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
@@ -107,16 +108,8 @@ const MyClass: NextPage = () => {
         searchBy: false,
         customElement: (row) => (
           <>
-            {row.isRequested && (
-              <Badge color="failure" theme={{ root: { base: "font-semibold" } }}>
-                Запит
-              </Badge>
-            )}
-            {row.isConfirmed && (
-              <Badge color="success" theme={{ root: { base: "font-semibold" } }}>
-                Підтверджений
-              </Badge>
-            )}
+            <RequestedBadge isVisible={row.isRequested} />
+            <ConfirmedBadge isVisible={row.isConfirmed} />
           </>
         ),
       },

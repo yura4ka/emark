@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { api } from "../../../utils/api";
 import Head from "next/head";
-import { Badge, Spinner } from "flowbite-react";
+import { Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
@@ -18,6 +18,7 @@ import { formatOptional } from "../../../utils/utils";
 import { HiCog } from "react-icons/hi";
 import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
 import useAdminSession from "../../../hooks/useAdminSession";
+import { ConfirmedBadge, RequestedBadge } from "../../../components/Badges";
 
 const Group: NextPage = () => {
   useAdminSession();
@@ -123,16 +124,8 @@ const Group: NextPage = () => {
         key: "isRequested",
         customElement: (row) => (
           <>
-            {row.isRequested && (
-              <Badge color="failure" theme={{ root: { base: "font-semibold" } }}>
-                Запит
-              </Badge>
-            )}
-            {row.isConfirmed && (
-              <Badge color="success" theme={{ root: { base: "font-semibold" } }}>
-                Підтверджений
-              </Badge>
-            )}
+            <RequestedBadge isVisible={row.isRequested} />
+            <ConfirmedBadge isVisible={row.isConfirmed} />
           </>
         ),
         searchBy: false,

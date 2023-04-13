@@ -222,4 +222,38 @@ export const studentRouter = createTRPCRouter({
     await ctx.prisma.student.delete({ where: { id } });
     return true;
   }),
+
+  get: adminProcedure.query(({ ctx }) => {
+    return ctx.prisma.student
+      .findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isConfirmed: true,
+          isRequested: true,
+          seniorOf: { select: { id: true } },
+          group: {
+            select: {
+              id: true,
+              name: true,
+              faculty: { select: { id: true, title: true } },
+            },
+          },
+        },
+        orderBy: [
+          { group: { faculty: { title: "asc" } } },
+          { group: { name: "asc" } },
+          { name: "asc" },
+        ],
+      })
+      .then((students) =>
+        students.map((s) => ({
+          ...s,
+          seniorOf: !!s.seniorOf,
+          group: s.group?.name || "-",
+          faculty: s.group?.faculty.title || "-",
+        }))
+      );
+  }),
 });

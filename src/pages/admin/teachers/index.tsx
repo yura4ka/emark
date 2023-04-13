@@ -1,4 +1,4 @@
-import { Badge, Spinner } from "flowbite-react";
+import { Spinner } from "flowbite-react";
 import Head from "next/head";
 import { useMemo } from "react";
 import CustomAction from "../../../components/Buttons/CustomAction";
@@ -13,6 +13,7 @@ import { formatOptional } from "../../../utils/utils";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import type { NextPageWithLayout } from "../../_app";
+import { RequestedBadge, ConfirmedBadge, AdminBadge } from "../../../components/Badges";
 
 const Teachers: NextPageWithLayout = () => {
   const user = useAdminSession();
@@ -199,21 +200,9 @@ const Teachers: NextPageWithLayout = () => {
         searchBy: false,
         customElement: (row) => (
           <>
-            {row.isAdmin && (
-              <Badge color="purple" theme={{ root: { base: "font-semibold" } }}>
-                Адміністратор
-              </Badge>
-            )}
-            {row.isRequested && (
-              <Badge color="failure" theme={{ root: { base: "font-semibold" } }}>
-                Запит
-              </Badge>
-            )}
-            {row.isConfirmed && !row.isAdmin && (
-              <Badge color="success" theme={{ root: { base: "font-semibold" } }}>
-                Підтверджений
-              </Badge>
-            )}
+            <AdminBadge isVisible={row.isAdmin} />
+            <RequestedBadge isVisible={row.isRequested} />
+            <ConfirmedBadge isVisible={row.isConfirmed && !row.isAdmin} />
           </>
         ),
       },
