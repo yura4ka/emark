@@ -104,4 +104,30 @@ export const groupRouter = createTRPCRouter({
     await ctx.prisma.group.delete({ where: { id } });
     return true;
   }),
+  getAll: adminProcedure.query(({ ctx }) => {
+    return ctx.prisma.group
+      .findMany({
+        select: {
+          id: true,
+          name: true,
+          faculty: { select: { id: true, title: true } },
+          handler: { select: { id: true, name: true } },
+          senior: { select: { id: true, name: true } },
+          students: { select: { _count: true } },
+        },
+        orderBy: [{ faculty: { title: "asc" } }, { name: "asc" }],
+      })
+      .then((groups) =>
+        groups.map((g) => ({
+          ...g,
+          facultyId: g.faculty.id,
+          faculty: g.faculty.title,
+          handlerId: g.handler?.id || -1,
+          handler: g.handler?.name || "-",
+          seniorId: g.senior?.id || -1,
+          senior: g.senior?.name || "-",
+          students: g.students.length || "0",
+        }))
+      );
+  }),
 });
