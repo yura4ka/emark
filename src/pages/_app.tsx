@@ -9,6 +9,7 @@ import PageFooter from "../components/Footer";
 import { Flowbite } from "flowbite-react";
 import type { NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
+import Head from "next/head";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -25,21 +26,26 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const getLayout = Component.getLayout ?? ((page) => page);
   const layout = getLayout(<Component {...pageProps} />);
   return (
-    <Flowbite>
-      <SessionProvider session={session}>
-        <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
-          <Navbar session={session} />
-          {Component.getLayout ? (
-            layout
-          ) : (
-            <main className="mx-auto w-full max-w-7xl p-2.5">
-              <Component {...pageProps} />
-            </main>
-          )}
-          <PageFooter />
-        </div>
-      </SessionProvider>
-    </Flowbite>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+      <Flowbite>
+        <SessionProvider session={session}>
+          <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
+            <Navbar session={session} />
+            {Component.getLayout ? (
+              layout
+            ) : (
+              <main className="mx-auto w-full max-w-7xl p-2.5">
+                <Component {...pageProps} />
+              </main>
+            )}
+            <PageFooter />
+          </div>
+        </SessionProvider>
+      </Flowbite>
+    </>
   );
 };
 
