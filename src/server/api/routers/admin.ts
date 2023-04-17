@@ -3,6 +3,8 @@ import { adminProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
 import { validId } from "../../../utils/schemas";
+import { mailToTeacher } from "../../../utils/mailer";
+import { v4 as uuid } from "uuid";
 
 export const adminRouter = createTRPCRouter({
   confirmStudent: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
@@ -48,22 +50,49 @@ export const adminRouter = createTRPCRouter({
     return true;
   }),
 
-  confirmTeacher: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
+  sendTeacherRequest: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
     const teacher = await ctx.prisma.teacher.findUniqueOrThrow({ where: { id: input } });
-    if (!teacher.isRequested || teacher.isConfirmed)
+    if (teacher.isRequested || teacher.isConfirmed)
       throw new TRPCError({ code: "BAD_REQUEST" });
+    const confirmString = uuid();
+    await mailToTeacher(teacher.email, confirmString, "CONFIRM");
     await ctx.prisma.teacher.update({
       where: { id: input },
-      data: { isRequested: false, isConfirmed: true },
+      data: {
+        isRequested: true,
+        isConfirmed: false,
+        confirmString,
+        requestDate: new Date(),
+      },
     });
     return true;
   }),
 
-  resetTeacherPassword: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
-    await ctx.prisma.teacher.update({
-      where: { id: input },
-      data: { password: null, isConfirmed: false, isRequested: false },
-    });
-    return true;
-  }),
+  resetTeacherPassword: adminProcedure
+    .input(z.object({ id: validId, doRequest: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const teacher = await ctx.prisma.teacher.findUniqueOrThrow({
+        where: { id: input.id },
+      });
+
+      let confirmString: string | null = null;
+      let requestDate: Date | null = null;
+      if (input.doRequest) {
+        confirmString = uuid();
+        requestDate = new Date();
+        await mailToTeacher(teacher.email, confirmString, "ADMIN_PASSWORD");
+      }
+
+      await ctx.prisma.teacher.update({
+        where: { id: input.id },
+        data: {
+          password: null,
+          isConfirmed: false,
+          isRequested: input.doRequest,
+          requestDate,
+          confirmString,
+        },
+      });
+      return true;
+    }),
 });

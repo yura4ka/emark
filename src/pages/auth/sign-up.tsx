@@ -11,7 +11,6 @@ import Head from "next/head";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import { useSession } from "next-auth/react";
 import { initialPassword } from "../../utils/utils";
-import Link from "next/link";
 
 const SignUp: NextPage = () => {
   const session = useSession();
@@ -104,13 +103,6 @@ const SignUp: NextPage = () => {
               <h5 className="text-xl font-medium text-gray-900 dark:text-white">
                 Зареєструватися у системі як студент
               </h5>
-              <Link
-                href="/auth/sign-up-teacher"
-                className="-mt-4 w-fit text-sm text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-600"
-              >
-                Я викладач
-              </Link>
-
               <MySelect
                 options={faculties.data || []}
                 field="title"

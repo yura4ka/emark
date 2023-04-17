@@ -10,6 +10,7 @@ import { Flowbite } from "flowbite-react";
 import type { NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
 import Head from "next/head";
+import React from "react";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -18,6 +19,8 @@ export type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+if (typeof window === "undefined") React.useLayoutEffect = () => undefined;
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

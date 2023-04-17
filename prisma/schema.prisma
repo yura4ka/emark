@@ -22,16 +22,18 @@ model Student {
 }
 
 model Teacher {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(255)
-  email       String  @unique @db.VarChar(50)
-  password    String?
-  isRequested Boolean @default(false)
-  isConfirmed Boolean @default(false)
-  isAdmin     Boolean @default(false)
-  classes     Class[]
-  handlerOf   Group?
-  marks       Mark[]
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  email         String    @unique @db.VarChar(50)
+  password      String?
+  isRequested   Boolean   @default(true)
+  isConfirmed   Boolean   @default(false)
+  isAdmin       Boolean   @default(false)
+  classes       Class[]
+  handlerOf     Group?
+  marks         Mark[]
+  requestDate   DateTime?
+  confirmString String?   @default(uuid())
 }
 
 model Faculty {

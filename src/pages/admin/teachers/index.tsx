@@ -21,7 +21,7 @@ const Teachers: NextPageWithLayout = () => {
   const updateTeacher = api.teacher.update.useMutation();
   const createTeacher = api.teacher.create.useMutation();
   const makeAdmin = api.teacher.makeAdmin.useMutation();
-  const confirmTeacher = api.admin.confirmTeacher.useMutation();
+  const sendRequest = api.admin.sendTeacherRequest.useMutation();
   const resetPassword = api.admin.resetTeacherPassword.useMutation();
   const { data: freeGroups } = api.teacher.getFreeGroups.useQuery();
   const deleteTeacher = api.teacher.delete.useMutation();
@@ -61,27 +61,28 @@ const Teachers: NextPageWithLayout = () => {
     id: number,
     data: { isConfirmed: boolean; isRequested: boolean }
   ) => {
-    apiUtils.senior.getClassList.setData(undefined, (oldData) => {
+    apiUtils.teacher.get.setData(undefined, (oldData) => {
       if (!oldData) return;
-      return {
-        ...oldData,
-        students: oldData.students.map((s) => (s.id === id ? { ...s, ...data } : s)),
-      };
+      return oldData.map((d) => (d.id === id ? { ...d, ...data } : d));
     });
   };
 
-  const handleConfirm = (id: number) => {
+  const handleRequest = (id: number) => {
     setModalVisibility(false);
-    confirmTeacher.mutate(id, {
-      onSuccess: () => updateTeachers(id, { isConfirmed: true, isRequested: false }),
+    sendRequest.mutate(id, {
+      onSuccess: () => updateTeachers(id, { isConfirmed: false, isRequested: true }),
     });
   };
 
-  const handleResetPassword = (id: number) => {
+  const handleResetPassword = (id: number, doRequest = false) => {
     setModalVisibility(false);
-    resetPassword.mutate(id, {
-      onSuccess: () => updateTeachers(id, { isConfirmed: false, isRequested: false }),
-    });
+    resetPassword.mutate(
+      { id, doRequest },
+      {
+        onSuccess: () =>
+          updateTeachers(id, { isConfirmed: false, isRequested: doRequest }),
+      }
+    );
   };
 
   const tableProps = createTableProps({
@@ -105,15 +106,15 @@ const Teachers: NextPageWithLayout = () => {
       customActions: (row) => (
         <>
           <CustomAction
-            isVisible={row.isRequested}
-            isLoading={confirmTeacher.isLoading}
-            text="Підтвердити"
+            isVisible={!row.isRequested && !row.isConfirmed}
+            isLoading={sendRequest.isLoading}
+            text="Надіслати запрошення"
             icon={<HiCheck className="mr-1 h-4 w-4" />}
             onClick={() => {
               setModalData({
                 isVisible: true,
                 text: `підтвердити акаунт викладачу ${row.name}`,
-                onAccept: () => handleConfirm(row.id),
+                onAccept: () => handleRequest(row.id),
               });
             }}
           />
@@ -127,20 +128,20 @@ const Teachers: NextPageWithLayout = () => {
               setModalData({
                 isVisible: true,
                 text: `скинути пароль викладачу ${row.name}`,
-                onAccept: () => handleResetPassword(row.id),
+                onAccept: () => handleResetPassword(row.id, true),
               });
             }}
           />
           <CustomAction
             isVisible={row.isRequested}
             isLoading={resetPassword.isLoading}
-            text="Відхилити"
+            text="Скасувати"
             icon={<HiBan className="mr-1 h-4 w-4" />}
             color="failure"
             onClick={() => {
               setModalData({
                 isVisible: true,
-                text: `відхилити запит викладача ${row.name}`,
+                text: `скасувати запит викладача ${row.name}`,
                 onAccept: () => handleResetPassword(row.id),
               });
             }}
