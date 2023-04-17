@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { FC, SVGProps } from "react";
 
 export type ValidationErrors = "CONFLICT" | "FORMAT";
 
@@ -29,11 +29,20 @@ export type TOnRowChangeFunction<TData extends IRowData> = (props: {
   setResult: (result?: boolean | { [key: string]: ValidationResult }) => void;
 }) => void;
 
+export interface CustomActionProps {
+  isVisible: boolean;
+  isLoading: boolean;
+  text: string;
+  icon: FC<SVGProps<SVGSVGElement>>;
+  onClick: () => void;
+  color?: string;
+}
+
 interface TableOptions<TData extends IRowData> {
   header: string;
   showActions?: boolean;
   canEdit?: boolean;
-  customActions?: (row: TData) => ReactNode;
+  customActions?: (row: TData) => CustomActionProps[];
   defaultRow?: TData;
   createOnNewPage?: string;
   enableSearch?: boolean;

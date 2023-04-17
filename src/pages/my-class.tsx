@@ -9,7 +9,6 @@ import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import DataTable, { createTableProps } from "../components/DataTable/DataTable";
 import ConfirmModal from "../components/Modals/ConfirmModal";
-import CustomAction from "../components/Buttons/CustomAction";
 import { useModal } from "../hooks/useModal";
 import { ConfirmedBadge, RequestedBadge } from "../components/Badges";
 
@@ -46,51 +45,49 @@ const MyClass: NextPage = () => {
       header: `Моя група: ${myGroup.name}`,
       showActions: true,
       enableSearch: true,
-      customActions: (row) => (
-        <>
-          <CustomAction
-            isVisible={row.isRequested}
-            isLoading={confirmStudent.isLoading}
-            text="Підтвердити"
-            icon={<HiCheck className="mr-1 h-4 w-4" />}
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `підтвердити акаунт студента ${row.name}`,
-                onAccept: () => handleConfirm(row.id),
-              });
-            }}
-          />
-          <CustomAction
-            isVisible={row.isConfirmed}
-            isLoading={resetPassword.isLoading}
-            text="Скинути пароль"
-            icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
-            color="failure"
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `скинути пароль студента ${row.name}`,
-                onAccept: () => handleResetPassword(row.id),
-              });
-            }}
-          />
-          <CustomAction
-            isVisible={row.isRequested}
-            isLoading={resetPassword.isLoading}
-            text="Відхилити"
-            icon={<HiBan className="mr-1 h-4 w-4" />}
-            color="failure"
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `відхилити запит студента ${row.name}`,
-                onAccept: () => handleResetPassword(row.id),
-              });
-            }}
-          />
-        </>
-      ),
+      customActions: (row) => [
+        {
+          isVisible: row.isRequested,
+          isLoading: confirmStudent.isLoading,
+          text: "Підтвердити",
+          icon: HiCheck,
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `підтвердити акаунт студента ${row.name}`,
+              onAccept: () => handleConfirm(row.id),
+            });
+          },
+        },
+        {
+          isVisible: row.isConfirmed,
+          isLoading: resetPassword.isLoading,
+          text: "Скинути пароль",
+          icon: HiOutlineHashtag,
+          color: "failure",
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `скинути пароль студента ${row.name}`,
+              onAccept: () => handleResetPassword(row.id),
+            });
+          },
+        },
+        {
+          isVisible: row.isRequested,
+          isLoading: resetPassword.isLoading,
+          text: "Відхилити",
+          icon: HiBan,
+          color: "failure",
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `відхилити запит студента ${row.name}`,
+              onAccept: () => handleResetPassword(row.id),
+            });
+          },
+        },
+      ],
     },
     columnDefinitions: [
       {

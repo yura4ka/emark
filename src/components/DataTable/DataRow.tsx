@@ -1,9 +1,11 @@
-import { Table } from "flowbite-react";
+import { Dropdown, Table } from "flowbite-react";
 import DataCell from "./DataCell";
 import HandleChangesButtons from "./HandleChangesButtons";
 import type { IRowData, RowProps } from "./types";
 import { useRow } from "./useRow";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlineTrash, HiDotsVertical } from "react-icons/hi";
+import { useLayoutEffect, useRef, useState } from "react";
+import CustomAction from "../Buttons/CustomAction";
 
 export default function DataRow<TData extends IRowData>({
   row,
@@ -25,11 +27,23 @@ export default function DataRow<TData extends IRowData>({
     save,
   } = useRow(row, onRowChange, definitions, uniqueCheck);
 
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [isActionsOverflow, setIsActionsOverflow] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!actionsRef.current) return;
+    if (actionsRef.current.scrollWidth > actionsRef.current.clientWidth)
+      setIsActionsOverflow(true);
+  }, [actionsRef]);
+
   function EditAction() {
     return !isEditing ? (
       <>
         {options?.canEdit && (
-          <button onClick={() => setIsEditing(true)} className="p-1 hover:underline">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="p-1 text-blue-600 hover:underline dark:text-blue-500"
+          >
             Редагувати
           </button>
         )}
@@ -38,7 +52,7 @@ export default function DataRow<TData extends IRowData>({
           <button
             type="button"
             onClick={() => onRowRemove?.(row)}
-            className="flex h-8 w-8 p-1 text-red-700 hover:bg-gray-200 hover:text-red-800 dark:text-red-600 dark:hover:bg-gray-600 dark:hover:text-red-700"
+            className="flex h-8 w-8 shrink-0 p-1 text-red-700 hover:bg-gray-200 hover:text-red-800 dark:text-red-600 dark:hover:bg-gray-600 dark:hover:text-red-700"
           >
             <HiOutlineTrash className="h-full w-full" />
           </button>
@@ -54,11 +68,33 @@ export default function DataRow<TData extends IRowData>({
   function RowActions() {
     if (!options?.showActions) return null;
     return (
-      <Table.Cell className="w-[25%] font-medium text-blue-600 dark:text-blue-500">
-        <div className="inline-flex gap-2">
+      <Table.Cell className="w-[25%] font-medium">
+        <div ref={actionsRef} className="inline-flex items-center gap-2">
           <>
             <EditAction />
-            {!isEditing && options.customActions?.(row)}
+            {!isEditing &&
+              (isActionsOverflow ? (
+                <Dropdown
+                  label={<HiDotsVertical className="h-5 w-5" />}
+                  inline={true}
+                  arrowIcon={false}
+                  placement="right"
+                >
+                  {options.customActions?.(row).map((a) =>
+                    a.isVisible ? (
+                      <Dropdown.Item key={a.text} icon={a.icon} onClick={a.onClick}>
+                        {a.text}
+                      </Dropdown.Item>
+                    ) : (
+                      <></>
+                    )
+                  )}
+                </Dropdown>
+              ) : (
+                options
+                  .customActions?.(row)
+                  .map((a) => <CustomAction key={a.text} {...a} />)
+              ))}
           </>
         </div>
       </Table.Cell>

@@ -1,7 +1,6 @@
 import { Spinner } from "flowbite-react";
 import Head from "next/head";
 import { useMemo } from "react";
-import CustomAction from "../../../components/Buttons/CustomAction";
 import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
 import ConfirmModal from "../../../components/Modals/ConfirmModal";
 import useAdminSession from "../../../hooks/useAdminSession";
@@ -53,7 +52,7 @@ const Teachers: NextPageWithLayout = () => {
   if (isLoading || !data)
     return (
       <div className="flex h-full items-center justify-center">
-        <Spinner size={"xl"} />
+        <Spinner size="xl" />
       </div>
     );
 
@@ -103,65 +102,62 @@ const Teachers: NextPageWithLayout = () => {
         isConfirmed: false,
         isRequested: false,
       },
-      customActions: (row) => (
-        <>
-          <CustomAction
-            isVisible={!row.isRequested && !row.isConfirmed}
-            isLoading={sendRequest.isLoading}
-            text="Надіслати запрошення"
-            icon={<HiCheck className="mr-1 h-4 w-4" />}
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `підтвердити акаунт викладачу ${row.name}`,
-                onAccept: () => handleRequest(row.id),
-              });
-            }}
-          />
-          <CustomAction
-            isVisible={row.isConfirmed && row.id !== user?.id}
-            isLoading={resetPassword.isLoading}
-            text="Скинути пароль"
-            icon={<HiOutlineHashtag className="mr-1 h-4 w-4" />}
-            color="failure"
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `скинути пароль викладачу ${row.name}`,
-                onAccept: () => handleResetPassword(row.id, true),
-              });
-            }}
-          />
-          <CustomAction
-            isVisible={row.isRequested}
-            isLoading={resetPassword.isLoading}
-            text="Скасувати"
-            icon={<HiBan className="mr-1 h-4 w-4" />}
-            color="failure"
-            onClick={() => {
-              setModalData({
-                isVisible: true,
-                text: `скасувати запит викладача ${row.name}`,
-                onAccept: () => handleResetPassword(row.id),
-              });
-            }}
-          />
-          <CustomAction
-            isVisible={!row.isAdmin && row.isConfirmed}
-            isLoading={makeAdmin.isLoading}
-            text="Назначити адміном"
-            icon={<HiOutlineKey className="mr-1 h-4 w-4" />}
-            color="warning"
-            onClick={() =>
-              setModalData({
-                isVisible: true,
-                text: `назначити ${row.name} адміністратором`,
-                onAccept: () => handleAssignAdmin(row.id),
-              })
-            }
-          />
-        </>
-      ),
+      customActions: (row) => [
+        {
+          isVisible: !row.isRequested && !row.isConfirmed,
+          isLoading: sendRequest.isLoading,
+          text: "Надіслати запрошення",
+          icon: HiCheck,
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `підтвердити акаунт викладачу ${row.name}`,
+              onAccept: () => handleRequest(row.id),
+            });
+          },
+        },
+        {
+          isVisible: row.isConfirmed && row.id !== user?.id,
+          isLoading: resetPassword.isLoading,
+          text: "Скинути пароль",
+          icon: HiOutlineHashtag,
+          color: "failure",
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `скинути пароль викладачу ${row.name}`,
+              onAccept: () => handleResetPassword(row.id, true),
+            });
+          },
+        },
+        {
+          isVisible: row.isRequested,
+          isLoading: resetPassword.isLoading,
+          text: "Скасувати",
+          icon: HiBan,
+          color: "failure",
+          onClick: () => {
+            setModalData({
+              isVisible: true,
+              text: `скасувати запит викладача ${row.name}`,
+              onAccept: () => handleResetPassword(row.id),
+            });
+          },
+        },
+        {
+          isVisible: !row.isAdmin && row.isConfirmed,
+          isLoading: makeAdmin.isLoading,
+          text: "Назначити адміном",
+          icon: HiOutlineKey,
+          color: "warning",
+          onClick: () =>
+            setModalData({
+              isVisible: true,
+              text: `назначити ${row.name} адміністратором`,
+              onAccept: () => handleAssignAdmin(row.id),
+            }),
+        },
+      ],
     },
     columnDefinitions: [
       {
