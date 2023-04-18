@@ -1,10 +1,11 @@
 import { TRPCError } from "@trpc/server";
-import { adminProcedure } from "./../trpc";
+import { adminProcedure, userProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
 import { validId } from "../../../utils/schemas";
 import { mailToTeacher } from "../../../utils/mailer";
 import { v4 as uuid } from "uuid";
+import * as argon2 from "argon2";
 
 export const adminRouter = createTRPCRouter({
   confirmStudent: adminProcedure.input(validId).mutation(async ({ ctx, input }) => {
@@ -94,5 +95,37 @@ export const adminRouter = createTRPCRouter({
         },
       });
       return true;
+    }),
+
+  updatePassword: userProcedure
+    .input(
+      z.object({
+        currentPassword: z.string().trim().min(4),
+        newPassword: z.string().trim().min(4),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const isStudent = ctx.session.user.role.isStudent;
+      const user = isStudent
+        ? await ctx.prisma.student.findUnique({ where: { id: ctx.session.user.id } })
+        : await ctx.prisma.teacher.findUnique({ where: { id: ctx.session.user.id } });
+
+      if (!user || !user.password) throw new TRPCError({ code: "BAD_REQUEST" });
+      const isValidPassword = await argon2.verify(
+        user.password,
+        input.currentPassword.trim()
+      );
+      if (!isValidPassword) throw new TRPCError({ code: "BAD_REQUEST" });
+      const newPassword = await argon2.hash(input.newPassword.trim());
+
+      isStudent
+        ? await ctx.prisma.student.update({
+            where: { id: user.id },
+            data: { password: newPassword },
+          })
+        : await ctx.prisma.teacher.update({
+            where: { id: user.id },
+            data: { password: newPassword },
+          });
     }),
 });

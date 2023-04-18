@@ -35,16 +35,13 @@ const PasswordInput = ({
 
   const checkValid = (value: string) => {
     const field = type === "value" ? "confirm" : "value";
-    return (
-      value.length === 0 || input[field]?.length === 0 || input[field] === value
-    );
+    return value.length === 0 || input[field]?.length === 0 || input[field] === value;
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     let isCorrect: boolean;
-    if (type === "confirm" && value.length < input.value.length)
-      isCorrect = true;
+    if (type === "confirm" && value.length < input.value.length) isCorrect = true;
     else isCorrect = checkValid(value);
     setValue({ ...input, [type]: value, isCorrect });
   };
@@ -63,10 +60,8 @@ const PasswordInput = ({
 
   const AdditionalInfo = ({ text }: { text: string }) => (
     <p
-      className={`mt-2 text-sm font-medium text-gray-500 dark:text-gray-400 ${
-        isValid
-          ? "text-gray-500 dark:text-gray-400"
-          : "text-red-600 dark:text-red-500"
+      className={`mt-2 text-sm font-medium ${
+        isValid ? "text-gray-500 dark:text-gray-400" : "text-red-600 dark:text-red-500"
       } ${disabled ? "cursor-default" : ""}`}
     >
       {text}

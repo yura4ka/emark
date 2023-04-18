@@ -1,11 +1,12 @@
-import { DarkThemeToggle, Navbar } from "flowbite-react";
+import { DarkThemeToggle, Dropdown, Navbar } from "flowbite-react";
 import type { Session, User } from "next-auth";
 import StudentNav from "./StudentNav";
 import TeacherNav from "./TeacherNav";
 import { UserRoutes } from "../../utils/routes";
 import RouteLinks from "./RouteLinks";
 import { useSession, signOut } from "next-auth/react";
-import { HiLogout } from "react-icons/hi";
+import { HiLogout, HiCog } from "react-icons/hi";
+import Link from "next/link";
 
 const NavBar = () => {
   const { data: session, status } = useSession();
@@ -53,15 +54,39 @@ function SessionNav({ session }: { session: Session | null }) {
   return (
     <>
       <UserNav user={session.user} />
-      <button
-        onClick={() => void signOut()}
-        className="flex items-center py-2 pr-4 pl-3 text-black hover:text-red-600 dark:text-gray-400  hover:dark:text-red-500 md:bg-transparent md:p-0"
+      <Dropdown
+        label={
+          <div className="flex items-center rounded-full text-sm font-medium text-gray-900 hover:text-blue-600 focus:ring-4 focus:ring-gray-100 dark:text-white dark:hover:text-blue-500 dark:focus:ring-gray-700 md:mr-0">
+            <span className="sr-only">Open user menu</span>
+            <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-lime-900 text-slate-100">
+              {formatName(session.user.name)}
+            </div>
+          </div>
+        }
+        inline={true}
+        arrowIcon={false}
       >
-        Вийти
-        <HiLogout className="ml-2 h-5 w-5" />
-      </button>
+        <Dropdown.Header>
+          <div>{session.user.name}</div>
+          <div className="truncate font-medium">{session.user.email}</div>
+        </Dropdown.Header>
+        <Link href="/settings">
+          <Dropdown.Item icon={HiCog}>Налаштування</Dropdown.Item>
+        </Link>
+        <Dropdown.Item icon={HiLogout} onClick={() => void signOut()}>
+          Вийти
+        </Dropdown.Item>
+      </Dropdown>
     </>
   );
+}
+
+function formatName(name: string) {
+  const words = name.split(" ");
+  if (words.length < 2) return name[0];
+  const first = words[0] || "";
+  const last = words[1] || "";
+  return first[0] || "" + (last[0] || "");
 }
 
 export default NavBar;
