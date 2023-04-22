@@ -22,7 +22,11 @@ const Faculty: NextPage = () => {
   useAdminSession();
   const router = useRouter();
   const id = +(router.query.id || -1);
-  const { data: faculty } = api.faculty.getById.useQuery(id);
+  const { data: faculty } = api.faculty.getById.useQuery(id, {
+    onSuccess(data) {
+      setName(data?.title || "");
+    },
+  });
   const { isLoading, data } = api.faculty.getGroupsFull.useQuery(id);
   const changeGroup = api.group.edit.useMutation();
   const createGroup = api.group.create.useMutation();
@@ -49,6 +53,19 @@ const Faculty: NextPage = () => {
     () => freeTeachers?.map((t) => ({ id: t.id, option: t.name })) || [],
     [freeTeachers]
   );
+
+  const [name, setName] = useState(faculty?.title || "");
+  const [isError, setIsError] = useState(false);
+  const isChanged = name !== faculty?.title;
+
+  const { modalProps, setModalData, setModalVisibility } = useModal();
+
+  if (isLoading || !data || !faculty)
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner size={"xl"} />
+      </div>
+    );
 
   const tableProps = createTableProps({
     data: groupsData || [],
@@ -183,19 +200,6 @@ const Faculty: NextPage = () => {
         ),
     });
   };
-
-  const [name, setName] = useState(() => faculty?.title || "");
-  const [isError, setIsError] = useState(false);
-  const isChanged = name !== faculty?.title;
-
-  const { modalProps, setModalData, setModalVisibility } = useModal();
-
-  if (isLoading || !data || !faculty)
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner size={"xl"} />
-      </div>
-    );
 
   return (
     <>
