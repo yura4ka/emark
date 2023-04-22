@@ -1,6 +1,6 @@
 import { Button, Modal, Spinner, Tooltip } from "flowbite-react";
 import { useEffect, useState } from "react";
-import FileInput from "../Inputs/FileInput";
+import { FileInput } from "../";
 import ExcelJS from "exceljs";
 import { api } from "../../utils/api";
 
@@ -104,7 +104,7 @@ interface Props {
   classId: number;
 }
 
-function ImportMarksModal({ isVisible, setVisible, students, classId }: Props) {
+export function ImportMarksModal({ isVisible, setVisible, students, classId }: Props) {
   const loadTable = api.class.loadData.useMutation();
   const apiUtils = api.useContext();
 
@@ -287,5 +287,3 @@ function ImportMarksModal({ isVisible, setVisible, students, classId }: Props) {
     <></>
   );
 }
-
-export default ImportMarksModal;

@@ -28,3 +28,8 @@ export function calculateColor(score: number, maxScore: number) {
   if (ratio < 0.7) return "text-yellow-500";
   return "text-green-500";
 }
+
+export interface Student {
+  id: number;
+  name: string;
+}

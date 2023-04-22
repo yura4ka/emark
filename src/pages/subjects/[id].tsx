@@ -2,10 +2,9 @@ import type { NextPageWithLayout } from "../_app";
 import Head from "next/head";
 import { Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import { useUserSession } from "../../hooks/useUserSession";
+import { useUserSession } from "../../hooks";
 import { api } from "../../utils/api";
-import TeacherClass from "../../components/Teacher/TeacherClass";
-import StudentClass from "../../components/Student/StudentClass";
+import { TeacherClass, StudentClass } from "../../components";
 
 const Subject: NextPageWithLayout = () => {
   const user = useUserSession();

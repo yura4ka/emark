@@ -1,15 +1,15 @@
 import { Spinner } from "flowbite-react";
 import { useCallback, useMemo, useRef } from "react";
-import useOnScreen from "../../hooks/useOnScreen";
+import { useOnScreen } from "../../hooks";
 import { api } from "../../utils/api";
-import { calculateColor } from "../../utils/utils";
+import { calculateColor } from "../../utils";
 
 interface Props {
   classId: number;
   title: string;
 }
 
-function StudentClass({ classId, title }: Props) {
+export function StudentClass({ classId, title }: Props) {
   const { data: marks } = api.student.getMarks.useQuery(classId, {
     refetchOnWindowFocus: false,
   });
@@ -76,5 +76,3 @@ function StudentClass({ classId, title }: Props) {
     </div>
   );
 }
-
-export default StudentClass;

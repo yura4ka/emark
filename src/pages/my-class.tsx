@@ -5,11 +5,14 @@ import { api } from "../utils/api";
 import { Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
-import DataTable, { createTableProps } from "../components/DataTable/DataTable";
-import ConfirmModal from "../components/Modals/ConfirmModal";
-import { useModal } from "../hooks/useModal";
-import { ConfirmedBadge, RequestedBadge } from "../components/Badges";
-import { useUserSession } from "../hooks/useUserSession";
+import {
+  createTableProps,
+  DataTable,
+  ConfirmModal,
+  RequestedBadge,
+  ConfirmedBadge,
+} from "../components";
+import { useModal, useUserSession } from "../hooks";
 
 const MyClass: NextPage = () => {
   const session = useUserSession();

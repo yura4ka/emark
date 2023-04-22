@@ -16,7 +16,7 @@ import {
   YAxis,
 } from "recharts";
 import { HiArrowRight, HiVideoCamera, HiAcademicCap } from "react-icons/hi";
-import { InfoAlert } from "../components/InfoAlert";
+import { InfoAlert } from "../components";
 
 const Home: NextPage = () => {
   const session = useSession();

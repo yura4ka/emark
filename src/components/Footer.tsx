@@ -2,7 +2,7 @@ import { Footer } from "flowbite-react";
 import type { NextComponentType } from "next";
 import { BsTelegram, BsGithub, BsAt } from "react-icons/bs";
 
-const PageFooter: NextComponentType = () => {
+export const PageFooter: NextComponentType = () => {
   return (
     <Footer
       container={true}
@@ -19,5 +19,3 @@ const PageFooter: NextComponentType = () => {
     </Footer>
   );
 };
-
-export default PageFooter;

@@ -1,18 +1,10 @@
 import { Button, Modal, Table, Tabs, type TabsRef } from "flowbite-react";
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../utils/api";
-import { calculateColor, clampMark, formatDate } from "../../utils/utils";
-import MyInput from "../Inputs/MyInput";
+import { calculateColor, clampMark, formatDate } from "../../utils";
+import { ConfirmModal, IconButton, MyInput, NumberInput } from "../";
 import { HiCalendar, HiOutlineTrash } from "react-icons/hi";
-import IconButton from "../Buttons/IconButton";
-import { useModal } from "../../hooks/useModal";
-import ConfirmModal from "./ConfirmModal";
-import NumberInput from "../Inputs/NumberInput";
-
-export interface Student {
-  id: number;
-  name: string;
-}
+import { useModal } from "../../hooks";
 
 export interface Task {
   id: number;
@@ -30,7 +22,7 @@ interface Props {
   task?: Task;
 }
 
-function TaskModal({ isVisible, setVisible, classId, task }: Props) {
+export function TaskModal({ isVisible, setVisible, classId, task }: Props) {
   const createTask = api.task.create.useMutation();
   const updateTask = api.task.update.useMutation();
   const removeTask = api.task.remove.useMutation();
@@ -296,5 +288,3 @@ function TaskMarks({ task }: { task: Task }) {
     </Modal.Body>
   );
 }
-
-export default TaskModal;

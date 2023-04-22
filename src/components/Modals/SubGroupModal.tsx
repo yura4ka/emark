@@ -1,12 +1,8 @@
 import { Button, Checkbox, Modal, Table } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../../utils/api";
-import MyInput from "../Inputs/MyInput";
-
-export interface Student {
-  id: number;
-  name: string;
-}
+import { MyInput } from "../";
+import { type Student } from "../../utils";
 
 interface Props {
   group: Student[];
@@ -19,7 +15,7 @@ interface Props {
   onUpdate?: () => void;
 }
 
-function SubGroupModal({
+export function SubGroupModal({
   group,
   subGroupStudents,
   isVisible,
@@ -180,5 +176,3 @@ function SubGroupModal({
     <></>
   );
 }
-
-export default SubGroupModal;

@@ -5,7 +5,7 @@ import type { IRowData, RowProps } from "./types";
 import { useRow } from "./useRow";
 import { HiOutlineTrash, HiDotsVertical } from "react-icons/hi";
 import { useLayoutEffect, useRef, useState } from "react";
-import CustomAction from "../Buttons/CustomAction";
+import { CustomAction } from "../";
 
 export default function DataRow<TData extends IRowData>({
   row,

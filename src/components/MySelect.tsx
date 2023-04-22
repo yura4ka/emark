@@ -15,7 +15,7 @@ interface SelectProps<TData extends IRowData> {
   isVisible?: boolean;
 }
 
-function MySelect<TData extends IRowData>({
+export function MySelect<TData extends IRowData>({
   options,
   field,
   value,
@@ -84,5 +84,3 @@ function MySelect<TData extends IRowData>({
     </div>
   );
 }
-
-export default MySelect;

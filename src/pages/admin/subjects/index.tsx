@@ -2,11 +2,9 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { api } from "../../../utils/api";
 import { Spinner } from "flowbite-react";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
+import { ConfirmModal, DataTable, createTableProps } from "../../../components";
 import Link from "next/link";
-import useAdminSession from "../../../hooks/useAdminSession";
-import { useModal } from "../../../hooks/useModal";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
+import { useAdminSession, useModal } from "../../../hooks";
 
 const Subjects: NextPage = () => {
   useAdminSession();

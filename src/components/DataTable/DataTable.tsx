@@ -39,7 +39,7 @@ function TableSearch({
   );
 }
 
-function DataTable<TData extends IRowData>({
+export function DataTable<TData extends IRowData>({
   data,
   columnDefinitions,
   onRowChange,
@@ -130,4 +130,3 @@ function DataTable<TData extends IRowData>({
     </div>
   );
 }
-export default DataTable;

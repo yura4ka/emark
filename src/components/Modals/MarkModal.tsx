@@ -1,13 +1,10 @@
 import { Button, Label, Modal, Textarea } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { api } from "../../utils/api";
-import { clampMark } from "../../utils/utils";
-import MyInput from "../Inputs/MyInput";
+import { clampMark } from "../../utils";
+import { ConfirmModal, IconButton, MyInput, NumberInput } from "../";
 import { HiOutlineTrash } from "react-icons/hi";
-import IconButton from "../Buttons/IconButton";
-import { useModal } from "../../hooks/useModal";
-import ConfirmModal from "./ConfirmModal";
-import NumberInput from "../Inputs/NumberInput";
+import { useModal } from "../../hooks";
 
 export interface Mark {
   id: number;
@@ -31,7 +28,7 @@ interface Props {
   data?: MarkData;
 }
 
-function TaskModal({ isVisible, setVisible, data }: Props) {
+export function MarkModal({ isVisible, setVisible, data }: Props) {
   const upsertMark = api.task.upsertMark.useMutation();
   const removeMark = api.task.removeMark.useMutation();
   const apiUtils = api.useContext();
@@ -176,5 +173,3 @@ function TaskModal({ isVisible, setVisible, data }: Props) {
     <></>
   );
 }
-
-export default TaskModal;

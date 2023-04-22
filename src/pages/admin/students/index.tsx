@@ -1,13 +1,17 @@
 import Head from "next/head";
 import { api } from "../../../utils/api";
 import { Spinner } from "flowbite-react";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
 import Link from "next/link";
-import useAdminSession from "../../../hooks/useAdminSession";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
-import { ConfirmedBadge, RequestedBadge, SeniorBadge } from "../../../components/Badges";
+import { useAdminSession, useModal } from "../../../hooks";
+import {
+  ConfirmModal,
+  ConfirmedBadge,
+  DataTable,
+  RequestedBadge,
+  SeniorBadge,
+  createTableProps,
+} from "../../../components";
 import type { NextPageWithLayout } from "../../_app";
-import { useModal } from "../../../hooks/useModal";
 
 const Students: NextPageWithLayout = () => {
   useAdminSession();

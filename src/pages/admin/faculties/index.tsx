@@ -1,21 +1,13 @@
 import { Spinner } from "flowbite-react";
-import { type GetServerSidePropsContext, type NextPage } from "next";
+import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
-import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
-import { useModal } from "../../../hooks/useModal";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session?.user.role.isAdmin)
-    return { redirect: { destination: "/", permanent: false } };
-  return { props: { user: session.user } };
-};
+import { useAdminSession, useModal } from "../../../hooks";
+import { ConfirmModal, DataTable, createTableProps } from "../../../components";
 
 const Faculties: NextPage = () => {
+  useAdminSession();
   const { isLoading, data: faculties } = api.faculty.get.useQuery();
   const renameFaculty = api.faculty.rename.useMutation();
   const createFaculty = api.faculty.create.useMutation();

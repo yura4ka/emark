@@ -1,6 +1,6 @@
 import { Button } from "flowbite-react";
 
-export default function CardButtons(props: {
+export function CardButtons(props: {
   isLoading: boolean;
   isError?: boolean;
   isDisabled?: boolean;

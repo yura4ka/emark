@@ -2,10 +2,9 @@ import { Spinner } from "flowbite-react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import TeacherSubjects from "../../components/Teacher/TeacherSubjects";
-import { useUserSession } from "../../hooks/useUserSession";
+import { TeacherSubjects, InfoAlert } from "../../components";
+import { useUserSession } from "../../hooks";
 import { api } from "../../utils/api";
-import { InfoAlert } from "../../components/InfoAlert";
 
 const Subjects: NextPage = () => {
   const user = useUserSession();

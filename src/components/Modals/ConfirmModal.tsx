@@ -10,7 +10,13 @@ type Props = {
   buttonText?: string;
 };
 
-const ConfirmModal = ({ text, isVisible, onAccept, onCancel, buttonText }: Props) => {
+export const ConfirmModal = ({
+  text,
+  isVisible,
+  onAccept,
+  onCancel,
+  buttonText,
+}: Props) => {
   const [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
     setIsBrowser(true);
@@ -40,5 +46,3 @@ const ConfirmModal = ({ text, isVisible, onAccept, onCancel, buttonText }: Props
     <></>
   );
 };
-
-export default ConfirmModal;

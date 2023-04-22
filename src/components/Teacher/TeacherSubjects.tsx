@@ -1,8 +1,7 @@
 import { Table } from "flowbite-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import MySelect from "../MySelect";
-import { InfoAlert } from "../InfoAlert";
+import { InfoAlert, MySelect } from "../";
 
 interface Props {
   data: {
@@ -15,7 +14,7 @@ interface Props {
   }[];
 }
 
-function TeacherSubjects({ data }: Props) {
+export function TeacherSubjects({ data }: Props) {
   const [faculties, subjects] = useMemo(() => {
     const faculties = new Map<number, string>();
     const subjects = new Map<number, string>();
@@ -98,5 +97,3 @@ function TeacherSubjects({ data }: Props) {
     </>
   );
 }
-
-export default TeacherSubjects;

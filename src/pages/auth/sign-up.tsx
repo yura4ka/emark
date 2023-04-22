@@ -1,16 +1,13 @@
 import { Card } from "flowbite-react";
 import type { NextPage } from "next";
 import React, { useState } from "react";
-import MySelect from "../../components/MySelect";
-import PasswordInput from "../../components/Inputs/PasswordInput";
+import { MySelect, PasswordInput, PopupModal, SubmitButton } from "../../components";
 import { api } from "../../utils/api";
-import PopupModal from "../../components/Modals/PopupModal";
 import { HiCheck, HiX } from "react-icons/hi";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import SubmitButton from "../../components/Buttons/SubmitButton";
 import { useSession } from "next-auth/react";
-import { initialPassword } from "../../utils/utils";
+import { initialPassword } from "../../utils";
 
 const SignUp: NextPage = () => {
   const session = useSession();

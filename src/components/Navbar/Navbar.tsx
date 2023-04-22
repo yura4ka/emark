@@ -8,7 +8,7 @@ import { useSession, signOut } from "next-auth/react";
 import { HiLogout, HiCog } from "react-icons/hi";
 import Link from "next/link";
 
-const NavBar = () => {
+export const NavBar = () => {
   const { data: session, status } = useSession();
 
   return (
@@ -83,5 +83,3 @@ function formatName(name: string) {
   const last = words[1] || "";
   return (first[0] || "") + (last[0] || "");
 }
-
-export default NavBar;

@@ -1,9 +1,17 @@
 import { Spinner } from "flowbite-react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../utils/api";
-import TaskModal, { type Task } from "../Modals/TaskModal";
+import {
+  type Task,
+  type MarkData,
+  TaskModal,
+  MarkCell,
+  IconButton,
+  MarkModal,
+  SubGroupModal,
+  ImportMarksModal,
+} from "../";
 import { HiPlus } from "react-icons/hi";
-import MarkCell from "./MarkCell";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
 import {
   HiOutlineAnnotation,
@@ -11,9 +19,6 @@ import {
   HiOutlineDownload,
   HiOutlineUsers,
 } from "react-icons/hi";
-import IconButton from "../Buttons/IconButton";
-import MarkModal, { type MarkData } from "../Modals/MarkModal";
-import SubGroupModal from "../Modals/SubGroupModal";
 import {
   CartesianGrid,
   ResponsiveContainer,
@@ -26,7 +31,6 @@ import {
 } from "recharts";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import ImportMarksModal from "./ImportMarksModal";
 
 interface Props {
   classId: number;
@@ -41,7 +45,7 @@ interface Props {
   };
 }
 
-function TeacherClass({ classId, title, info }: Props) {
+export function TeacherClass({ classId, title, info }: Props) {
   const { data } = api.class.getMarks.useQuery(classId);
   const { data: students } = api.group.getStudents.useQuery(info.group.id);
   const apiUtils = api.useContext();
@@ -320,5 +324,3 @@ function TableChart({ data }: { data: { avg: string; name: string }[] }) {
     <></>
   );
 }
-
-export default TeacherClass;

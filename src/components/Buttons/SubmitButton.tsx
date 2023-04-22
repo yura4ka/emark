@@ -7,7 +7,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-const SubmitButton = ({ text, disabled, isLoading }: Props) => {
+export const SubmitButton = ({ text, disabled, isLoading }: Props) => {
   return (
     <Button
       type="submit"
@@ -20,15 +20,9 @@ const SubmitButton = ({ text, disabled, isLoading }: Props) => {
           isLoading ? "opacity-1" : "opacity-0"
         }`}
       />
-      <span
-        className={`transition-all duration-300 ${
-          isLoading ? "ml-3" : "-ml-3"
-        }`}
-      >
+      <span className={`transition-all duration-300 ${isLoading ? "ml-3" : "-ml-3"}`}>
         {text}
       </span>
     </Button>
   );
 };
-
-export default SubmitButton;

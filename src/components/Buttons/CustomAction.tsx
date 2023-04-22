@@ -1,7 +1,7 @@
 import { Button } from "flowbite-react";
 import type { CustomActionProps } from "../DataTable/types";
 
-export default function CustomAction(props: CustomActionProps) {
+export function CustomAction(props: CustomActionProps) {
   const Icon = props.icon;
 
   return props.isVisible ? (

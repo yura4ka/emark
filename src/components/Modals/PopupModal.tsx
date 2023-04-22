@@ -9,7 +9,7 @@ type Props = {
   color: "success" | "failure" | "warning";
 };
 
-const PopupModal = ({
+export const PopupModal = ({
   text,
   buttonText,
   isVisible,
@@ -35,14 +35,10 @@ const PopupModal = ({
       <Modal.Header />
       <Modal.Body>
         <div className="flex flex-col gap-7 text-center">
-          <div
-            className={`[&_svg]:mx-auto [&_svg]:h-14 [&_svg]:w-14 ${textColor}`}
-          >
+          <div className={`[&_svg]:mx-auto [&_svg]:h-14 [&_svg]:w-14 ${textColor}`}>
             {Icon}
           </div>
-          <h3 className="text-lg font-normal text-gray-500 dark:text-gray-400">
-            {text}
-          </h3>
+          <h3 className="text-lg font-normal text-gray-500 dark:text-gray-400">{text}</h3>
           <div className="flex justify-center gap-4">
             <Button color={color} onClick={onClose} className="w-4/6">
               {buttonText}
@@ -53,5 +49,3 @@ const PopupModal = ({
     </Modal>
   );
 };
-
-export default PopupModal;

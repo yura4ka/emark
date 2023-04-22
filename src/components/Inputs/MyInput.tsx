@@ -12,7 +12,7 @@ type Props = {
   readonly?: boolean;
 };
 
-const MyInput = ({
+export const MyInput = ({
   value,
   setValue,
   label,
@@ -64,5 +64,3 @@ const MyInput = ({
     </div>
   );
 };
-
-export default MyInput;

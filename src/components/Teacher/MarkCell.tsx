@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../utils/api";
-import { clampMark } from "../../utils/utils";
+import { clampMark } from "../../utils";
 
 interface Props {
   classId: number;
@@ -19,7 +19,14 @@ interface Props {
   setCommentVisible: (value: boolean) => void;
 }
 
-function MarkCell({ index, classId, mark, maxScore, onFocus, setCommentVisible }: Props) {
+export function MarkCell({
+  index,
+  classId,
+  mark,
+  maxScore,
+  onFocus,
+  setCommentVisible,
+}: Props) {
   const upsertMark = api.task.upsertMark.useMutation();
   const removeMark = api.task.removeMark.useMutation();
   const apiUtils = api.useContext();
@@ -101,5 +108,3 @@ function MarkCell({ index, classId, mark, maxScore, onFocus, setCommentVisible }
     </td>
   );
 }
-
-export default MarkCell;

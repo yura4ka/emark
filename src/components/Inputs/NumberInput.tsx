@@ -9,7 +9,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   errorText?: string;
 }
 
-const NumberInput: FC<Props> = ({
+export const NumberInput: FC<Props> = ({
   label,
   value,
   setValue,
@@ -52,5 +52,3 @@ const NumberInput: FC<Props> = ({
     </div>
   );
 };
-
-export default NumberInput;

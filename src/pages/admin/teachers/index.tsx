@@ -1,18 +1,21 @@
 import { Spinner } from "flowbite-react";
 import Head from "next/head";
 import { useMemo } from "react";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
-import useAdminSession from "../../../hooks/useAdminSession";
-import { useModal } from "../../../hooks/useModal";
+import {
+  createTableProps,
+  DataTable,
+  ConfirmModal,
+  RequestedBadge,
+  ConfirmedBadge,
+  AdminBadge,
+} from "../../../components";
+import { useAdminSession, useModal } from "../../../hooks";
 import { api } from "../../../utils/api";
 import { validEmail } from "../../../utils/schemas";
-import { HiOutlineKey } from "react-icons/hi";
-import { formatOptional } from "../../../utils/utils";
-import { HiCheck, HiBan } from "react-icons/hi";
+import { formatOptional } from "../../../utils";
+import { HiCheck, HiBan, HiOutlineKey } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
 import type { NextPageWithLayout } from "../../_app";
-import { RequestedBadge, ConfirmedBadge, AdminBadge } from "../../../components/Badges";
 
 const Teachers: NextPageWithLayout = () => {
   const user = useAdminSession();

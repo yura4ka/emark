@@ -3,15 +3,18 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import SubmitButton from "../../../components/Buttons/SubmitButton";
-import MyInput from "../../../components/Inputs/MyInput";
-import SubGroupModal from "../../../components/Modals/SubGroupModal";
-import MySelect from "../../../components/MySelect";
-import useAdminSession from "../../../hooks/useAdminSession";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  MyInput,
+  MySelect,
+  SubGroupModal,
+  SubmitButton,
+} from "../../../components/";
 import { api } from "../../../utils/api";
 import { HiCog } from "react-icons/hi";
-import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
 import Link from "next/link";
+import { useAdminSession } from "../../../hooks";
 
 function initiateClassData() {
   return {

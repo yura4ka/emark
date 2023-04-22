@@ -4,9 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import MyInput from "../../components/Inputs/MyInput";
-import PasswordInput from "../../components/Inputs/PasswordInput";
-import SubmitButton from "../../components/Buttons/SubmitButton";
+import { MyInput, PasswordInput, SubmitButton } from "../../components";
 
 const SignIn: NextPage = () => {
   const session = useSession();

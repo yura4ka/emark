@@ -1,11 +1,10 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useUserSession } from "../../hooks/useUserSession";
+import { useUserSession } from "../../hooks";
 import { Spinner } from "flowbite-react";
-import { initialPassword } from "../../utils/utils";
+import { initialPassword } from "../../utils";
 import { useState } from "react";
-import PasswordInput from "../../components/Inputs/PasswordInput";
-import SubmitButton from "../../components/Buttons/SubmitButton";
+import { PasswordInput, SubmitButton } from "../../components";
 import { api } from "../../utils/api";
 
 const Settings: NextPage = () => {

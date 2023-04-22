@@ -1,28 +1,25 @@
-import { Spinner } from "flowbite-react";
-import type { GetServerSidePropsContext, NextPage } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
 import Head from "next/head";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
+import { Spinner } from "flowbite-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import MyInput from "../../../components/Inputs/MyInput";
-import CardButtons from "../../../components/Buttons/CardButtons";
-import { formatOptional } from "../../../utils/utils";
-import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
+import { formatOptional } from "../../../utils";
 import { HiCog } from "react-icons/hi";
-import { useModal } from "../../../hooks/useModal";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session?.user.role.isAdmin)
-    return { redirect: { destination: "/", permanent: false } };
-  return { props: { user: session.user } };
-};
+import { useAdminSession, useModal } from "../../../hooks";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  CardButtons,
+  ConfirmModal,
+  DataTable,
+  MyInput,
+  createTableProps,
+} from "../../../components";
 
 const Faculty: NextPage = () => {
+  useAdminSession();
   const router = useRouter();
   const id = +(router.query.id || -1);
   const { data: faculty } = api.faculty.getById.useQuery(id);

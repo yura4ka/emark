@@ -1,6 +1,6 @@
 import { type RefObject, useEffect, useMemo } from "react";
 
-export default function useOnScreen(
+export function useOnScreen(
   ref: RefObject<Map<number, HTMLDivElement>>,
   callback: (id: number) => void
 ) {

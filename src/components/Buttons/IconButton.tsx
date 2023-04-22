@@ -8,7 +8,7 @@ interface Props {
   className?: string;
 }
 
-function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
+export function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
   const [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
     setIsBrowser(true);
@@ -35,5 +35,3 @@ function IconButton({ tooltip, icon: Icon, onClick, className }: Props) {
     <>{btn}</>
   );
 }
-
-export default IconButton;

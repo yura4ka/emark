@@ -8,7 +8,7 @@ interface Props {
   rounded?: boolean;
 }
 
-function FileInput({ accept, fileInfo, onFileUpload, rounded }: Props) {
+export function FileInput({ accept, fileInfo, onFileUpload, rounded }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
@@ -56,5 +56,3 @@ function FileInput({ accept, fileInfo, onFileUpload, rounded }: Props) {
     </div>
   );
 }
-
-export default FileInput;

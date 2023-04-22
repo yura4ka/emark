@@ -4,20 +4,23 @@ import type { NextPage } from "next";
 import { api } from "../../../utils/api";
 import Head from "next/head";
 import { Spinner } from "flowbite-react";
-import { HiCheck, HiBan } from "react-icons/hi";
+import { HiCheck, HiBan, HiCog } from "react-icons/hi";
 import { HiOutlineHashtag } from "react-icons/hi2";
-import DataTable, { createTableProps } from "../../../components/DataTable/DataTable";
-import MySelect from "../../../components/MySelect";
-import MyInput from "../../../components/Inputs/MyInput";
-import ConfirmModal from "../../../components/Modals/ConfirmModal";
-import { useModal } from "../../../hooks/useModal";
-import CardButtons from "../../../components/Buttons/CardButtons";
 import { validEmail } from "../../../utils/schemas";
-import { formatOptional } from "../../../utils/utils";
-import { HiCog } from "react-icons/hi";
-import { Breadcrumb, BreadcrumbItem } from "../../../components/Breadcrumb";
-import useAdminSession from "../../../hooks/useAdminSession";
-import { ConfirmedBadge, RequestedBadge } from "../../../components/Badges";
+import { formatOptional } from "../../../utils";
+import { useAdminSession, useModal } from "../../../hooks";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  CardButtons,
+  ConfirmModal,
+  ConfirmedBadge,
+  DataTable,
+  MyInput,
+  MySelect,
+  RequestedBadge,
+  createTableProps,
+} from "../../../components";
 
 const Group: NextPage = () => {
   useAdminSession();

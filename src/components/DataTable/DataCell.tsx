@@ -1,5 +1,5 @@
+import { MySelect } from "../";
 import type { CellProps, IRowData } from "./types";
-import MySelect from "../../components/MySelect";
 
 export default function DataCell<TData extends IRowData>({
   value,

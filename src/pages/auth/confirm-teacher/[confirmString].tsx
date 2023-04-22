@@ -3,10 +3,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Card, Spinner } from "flowbite-react";
 import Head from "next/head";
-import { initialPassword } from "../../../utils/utils";
-import PasswordInput from "../../../components/Inputs/PasswordInput";
-import SubmitButton from "../../../components/Buttons/SubmitButton";
-import MyInput from "../../../components/Inputs/MyInput";
+import { initialPassword } from "../../../utils";
+import { PasswordInput, SubmitButton, MyInput } from "../../../components";
 import { api } from "../../../utils/api";
 import { signIn, useSession } from "next-auth/react";
 

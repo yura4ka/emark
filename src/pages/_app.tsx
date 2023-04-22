@@ -4,8 +4,7 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { api } from "../utils/api";
 import "../styles/globals.css";
-import Navbar from "../components/Navbar/Navbar";
-import PageFooter from "../components/Footer";
+import { NavBar, PageFooter } from "../components";
 import { Flowbite } from "flowbite-react";
 import type { NextPage } from "next";
 import type { ReactElement, ReactNode } from "react";
@@ -36,7 +35,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Flowbite>
         <SessionProvider session={session}>
           <div className="grid min-h-screen grid-rows-[auto_1fr_auto]">
-            <Navbar session={session} />
+            <NavBar />
             {Component.getLayout ? (
               layout
             ) : (

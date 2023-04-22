@@ -17,7 +17,7 @@ type Props = {
   validationFunction?: (value: string, confirm: string) => boolean;
 };
 
-const PasswordInput = ({
+export const PasswordInput = ({
   input,
   setValue,
   label,
@@ -108,5 +108,3 @@ const PasswordInput = ({
     </div>
   );
 };
-
-export default PasswordInput;
