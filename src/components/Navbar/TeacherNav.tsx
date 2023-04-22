@@ -8,6 +8,7 @@ const TeacherNav = ({ user }: { user: User }) => {
   return (
     <>
       <RouteLinks routes={TeacherRoutes.basic} />
+      {user.role.isHandler && <RouteLinks routes={TeacherRoutes.handler} />}
       {user.role.isAdmin && (
         <Dropdown
           inline={true}

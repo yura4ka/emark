@@ -21,7 +21,8 @@ const MyClass: NextPage = () => {
 
   const { setModalData, setModalVisibility, modalProps } = useModal();
 
-  if (session && !session.role.isSenior) void router.push("/");
+  if (session && !(session.role.isSenior || session.role.isHandler))
+    void router.push("/");
 
   if (isLoading || !myGroup || !session)
     return (
@@ -51,7 +52,8 @@ const MyClass: NextPage = () => {
           },
         },
         {
-          isVisible: row.isConfirmed && session.id !== row.id,
+          isVisible:
+            row.isConfirmed && (session.id !== row.id || session.role.isHandler === true),
           isLoading: resetPassword.isLoading,
           text: "Скинути пароль",
           icon: HiOutlineHashtag,

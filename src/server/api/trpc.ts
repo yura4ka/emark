@@ -53,7 +53,7 @@ const requireStudent = t.middleware(({ ctx, next }) => {
 });
 
 const requireSenior = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user.role.isSenior) {
+  if (!ctx.session?.user.role.isSenior && !ctx.session?.user.role.isHandler) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -98,6 +98,6 @@ const requireUser = t.middleware(({ ctx, next }) => {
 
 export const studentProcedure = t.procedure.use(requireStudent);
 export const teacherProcedure = t.procedure.use(requireTeacher);
-export const seniorProcedure = studentProcedure.use(requireSenior);
-export const adminProcedure = teacherProcedure.use(requireAdmin);
 export const userProcedure = t.procedure.use(requireUser);
+export const seniorProcedure = userProcedure.use(requireSenior);
+export const adminProcedure = teacherProcedure.use(requireAdmin);

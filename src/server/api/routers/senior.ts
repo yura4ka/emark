@@ -5,8 +5,12 @@ import { validId } from "../../../utils/schemas";
 
 export const seniorRouter = createTRPCRouter({
   confirmStudent: seniorProcedure.input(validId).mutation(async ({ ctx, input }) => {
+    const where = ctx.session.user.role.isSenior
+      ? { seniorId: ctx.session.user.id }
+      : { handlerId: ctx.session.user.id };
+
     const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
-      where: { seniorId: ctx.session.user.id },
+      where,
       select: { id: true },
     });
     await ctx.prisma.student.findFirstOrThrow({
@@ -28,10 +32,15 @@ export const seniorRouter = createTRPCRouter({
   resetStudentPassword: seniorProcedure
     .input(validId)
     .mutation(async ({ ctx, input }) => {
-      if (ctx.session.user.id === input) throw new TRPCError({ code: "BAD_REQUEST" });
+      if (ctx.session.user.id === input && ctx.session.user.role.isSenior)
+        throw new TRPCError({ code: "BAD_REQUEST" });
+
+      const where = ctx.session.user.role.isSenior
+        ? { seniorId: ctx.session.user.id }
+        : { handlerId: ctx.session.user.id };
 
       const { id: groupId } = await ctx.prisma.group.findUniqueOrThrow({
-        where: { seniorId: ctx.session.user.id },
+        where,
       });
 
       await prisma.student.findFirstOrThrow({ where: { id: input, groupId } });
@@ -44,8 +53,12 @@ export const seniorRouter = createTRPCRouter({
     }),
 
   getClassList: seniorProcedure.query(({ ctx }) => {
+    const where = ctx.session.user.role.isSenior
+      ? { seniorId: ctx.session.user.id }
+      : { handlerId: ctx.session.user.id };
+
     return ctx.prisma.group.findFirst({
-      where: { seniorId: ctx.session.user.id },
+      where,
       select: {
         id: true,
         name: true,
