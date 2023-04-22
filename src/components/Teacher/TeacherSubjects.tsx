@@ -2,6 +2,7 @@ import { Table } from "flowbite-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import MySelect from "../MySelect";
+import { InfoAlert } from "../InfoAlert";
 
 interface Props {
   data: {
@@ -45,6 +46,9 @@ function TeacherSubjects({ data }: Props) {
       ),
     [data, faculty.id, subject.id]
   );
+
+  if (filtered.length === 0)
+    return <InfoAlert text="Не знайдено груп, у яких ви викладаєте." />;
 
   return (
     <>

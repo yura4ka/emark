@@ -16,6 +16,7 @@ import {
   YAxis,
 } from "recharts";
 import { HiArrowRight } from "react-icons/hi";
+import { InfoAlert } from "../components/InfoAlert";
 
 const Home: NextPage = () => {
   const session = useSession();
@@ -97,6 +98,17 @@ const Home: NextPage = () => {
       <div className="flex h-full items-center justify-center">
         <Spinner size={"xl"} />
       </div>
+    );
+
+  if (isStudent && rows.length === 0)
+    return (
+      <>
+        <Head>
+          <title>Emark</title>
+        </Head>
+        <h1 className="mb-6 text-3xl font-bold">Оцінки</h1>
+        <InfoAlert text="Не знайдено жодної оцінки" />
+      </>
     );
 
   return (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import TeacherSubjects from "../../components/Teacher/TeacherSubjects";
 import { useUserSession } from "../../hooks/useUserSession";
 import { api } from "../../utils/api";
+import { InfoAlert } from "../../components/InfoAlert";
 
 const Subjects: NextPage = () => {
   const user = useUserSession();
@@ -34,34 +35,37 @@ const Subjects: NextPage = () => {
       <h1 className="mb-6 text-3xl font-bold">Предмети</h1>
 
       {teacherClasses.data && <TeacherSubjects data={teacherClasses.data} />}
-      {studentClasses.data && (
-        <ul className="mt-4 divide-y divide-gray-200 dark:divide-gray-700">
-          {studentClasses.data.map((c) => (
-            <li
-              key={c.id}
-              className="py-3 px-1 transition-colors duration-300 hover:bg-gray-50 dark:hover:bg-slate-800 sm:py-4"
-            >
-              <Link href={`subjects/${c.id}`}>
-                <div className="flex items-center space-x-4 px-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xl font-medium text-gray-900 dark:text-white">
-                      {c.name}
-                    </p>
-                    <p className="truncate text-lg text-gray-500 dark:text-gray-400">
-                      {c.teacher?.name || "TBA" + " - " + c.subject.title}
-                    </p>
-                  </div>
-                  {c.tasks !== 0 && (
-                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                      {c.tasks}
+      {studentClasses.data &&
+        (studentClasses.data.length !== 0 ? (
+          <ul className="mt-4 divide-y divide-gray-200 dark:divide-gray-700">
+            {studentClasses.data.map((c) => (
+              <li
+                key={c.id}
+                className="py-3 px-1 transition-colors duration-300 hover:bg-gray-50 dark:hover:bg-slate-800 sm:py-4"
+              >
+                <Link href={`subjects/${c.id}`}>
+                  <div className="flex items-center space-x-4 px-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xl font-medium text-gray-900 dark:text-white">
+                        {c.name}
+                      </p>
+                      <p className="truncate text-lg text-gray-500 dark:text-gray-400">
+                        {c.teacher?.name || "TBA" + " - " + c.subject.title}
+                      </p>
                     </div>
-                  )}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+                    {c.tasks !== 0 && (
+                      <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                        {c.tasks}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <InfoAlert text="Не знайдено жодного предмету." />
+        ))}
     </>
   );
 };
