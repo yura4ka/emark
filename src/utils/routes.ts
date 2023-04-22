@@ -24,7 +24,7 @@ export const StudentRoutes = {
 };
 
 export const TeacherRoutes = {
-  basic: [new NavRoute("/", "Групи"), new NavRoute("/subjects", "Предмети")],
+  basic: [new NavRoute("/", "Головна"), new NavRoute("/subjects", "Предмети")],
   handler: [new NavRoute("/my-class", "Моя група")],
   admin: [
     new NavRoute("/admin/faculties", "Факультети"),

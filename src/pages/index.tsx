@@ -15,15 +15,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { HiArrowRight } from "react-icons/hi";
+import { HiArrowRight, HiVideoCamera, HiAcademicCap } from "react-icons/hi";
 import { InfoAlert } from "../components/InfoAlert";
 
 const Home: NextPage = () => {
   const session = useSession();
-  const isStudent =
-    session.status === "authenticated" &&
-    session.data.user.role.isStudent &&
-    session.data.user.isConfirmed;
+  const isConfirmed = session.status === "authenticated" && session.data.user.isConfirmed;
+  const isStudent = isConfirmed && session.data.user.role.isStudent;
+  const isTeacher = isConfirmed && session.data.user.role.isTeacher;
 
   const { data, isLoading } = api.student.getMarksFull.useQuery(undefined, {
     enabled: isStudent,
@@ -116,7 +115,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Emark</title>
       </Head>
-      {isStudent ? (
+      {isStudent && (
         <>
           <h1 className="mb-6 text-3xl font-bold">Оцінки</h1>
           <table className="text-lg dark:text-gray-400">
@@ -143,7 +142,79 @@ const Home: NextPage = () => {
             </ResponsiveContainer>
           </div>
         </>
-      ) : (
+      )}
+      {isTeacher && (
+        <section className="bg-white dark:bg-gray-900">
+          <div className="mx-auto max-w-screen-xl py-8 px-4 lg:py-16">
+            <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-800 md:p-12">
+              <span className="mb-2 inline-flex items-center rounded-md bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-gray-700 dark:text-blue-400">
+                <HiVideoCamera className="mr-1 h-3 w-3" />
+                Відео
+              </span>
+              <h1 className="mb-2 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl">
+                Огляд системи від розробника
+              </h1>
+              <p className="mb-6 text-lg font-normal text-gray-500 dark:text-gray-400">
+                У цьому відео розробник електронного журналу представляє свій продукт,
+                роблячи детальний огляд його функцій та можливостей. Він показує, як
+                користуватися програмою, та можливості системи для учнів, вчителів та
+                адміністраторів.
+              </p>
+              <Link
+                href="#"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-700 py-2.5 px-5 text-center text-base font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+              >
+                Дивитися
+                <HiArrowRight className="ml-2 -mr-1 h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-800 md:p-12">
+                <span className="mb-2 inline-flex items-center rounded-md bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-gray-700 dark:text-green-400">
+                  <HiAcademicCap className="mr-1 h-3 w-3" />
+                  Стаття
+                </span>
+                <h2 className="mb-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                  Керівництво для вчителів
+                </h2>
+                <p className="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
+                  Мануал управління в системі електронного журналу для вчителів допоможе
+                  ефективно використовувати програму. Навчіться користуватися всього за 5
+                  хвилин.
+                </p>
+                <Link
+                  href="#"
+                  className="inline-flex items-center text-lg font-medium text-blue-600 hover:underline dark:text-blue-500"
+                >
+                  Читати
+                  <HiArrowRight className="ml-2 -mr-1 h-4 w-4" />
+                </Link>
+              </div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-800 md:p-12">
+                <span className="mb-2 inline-flex items-center rounded-md bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-gray-700 dark:text-blue-400">
+                  <HiAcademicCap className="mr-1 h-3 w-3" />
+                  Стаття
+                </span>
+                <h2 className="mb-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                  Мануал для адміністратора
+                </h2>
+                <p className="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
+                  Мануал для адміністраторів, в якому йдеться про налаштування і
+                  управління системою електронного журналу.
+                </p>
+                <Link
+                  href="#"
+                  className="inline-flex items-center text-lg font-medium text-blue-600 hover:underline dark:text-blue-500"
+                >
+                  Читати
+                  <HiArrowRight className="ml-2 -mr-1 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+      {!isTeacher && !isStudent && (
         <div className="my-40 flex flex-col items-center justify-center text-center">
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
             Зручний застосунок для студентів і викладачів
