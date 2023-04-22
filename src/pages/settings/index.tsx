@@ -53,11 +53,11 @@ const Settings: NextPage = () => {
           ПІБ
         </label>
         <input
-          placeholder={user.name}
+          defaultValue={user.name}
           disabled={true}
           type="text"
           id="name"
-          className="mb-6 block w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="mb-6 block w-full cursor-text rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm text-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         />
       </div>
       <div className="mb-6">
@@ -68,11 +68,11 @@ const Settings: NextPage = () => {
           Електронна адреса
         </label>
         <input
-          placeholder={user.email}
+          defaultValue={user.email}
           disabled={true}
           type="text"
           id="email"
-          className="mb-6 block w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="mb-6 block w-full cursor-text rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm text-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         />
       </div>
 

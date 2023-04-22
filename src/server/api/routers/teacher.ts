@@ -4,7 +4,7 @@ import { adminProcedure, publicProcedure, teacherProcedure } from "./../trpc";
 import { createTRPCRouter } from "../trpc";
 import { z } from "zod";
 import * as argon2 from "argon2";
-import { checkIsExpired, mailToTeacher } from "../../../utils/mailer";
+import { checkIsExpired, mailTo } from "../../../utils/mailer";
 
 export const teacherRouter = createTRPCRouter({
   get: adminProcedure.query(({ ctx }) => {
@@ -47,7 +47,7 @@ export const teacherRouter = createTRPCRouter({
         });
 
       try {
-        await mailToTeacher(email, confirmString || "", "CONFIRM");
+        await mailTo(email, confirmString || "", "CONFIRM");
       } catch (e) {
         console.error(e);
         await ctx.prisma.teacher.update({

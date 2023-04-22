@@ -1,4 +1,4 @@
-import { DarkThemeToggle, Dropdown, Navbar } from "flowbite-react";
+import { Avatar, DarkThemeToggle, Dropdown, Navbar } from "flowbite-react";
 import type { Session, User } from "next-auth";
 import StudentNav from "./StudentNav";
 import TeacherNav from "./TeacherNav";
@@ -56,12 +56,7 @@ function SessionNav({ session }: { session: Session | null }) {
       <UserNav user={session.user} />
       <Dropdown
         label={
-          <div className="flex items-center rounded-full text-sm font-medium text-gray-900 hover:text-blue-600 focus:ring-4 focus:ring-gray-100 dark:text-white dark:hover:text-blue-500 dark:focus:ring-gray-700 md:mr-0">
-            <span className="sr-only">Open user menu</span>
-            <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-lime-900 text-slate-100">
-              {formatName(session.user.name)}
-            </div>
-          </div>
+          <Avatar placeholderInitials={formatName(session.user.name)} rounded={true} />
         }
         inline={true}
         arrowIcon={false}
@@ -86,7 +81,7 @@ function formatName(name: string) {
   if (words.length < 2) return name[0];
   const first = words[0] || "";
   const last = words[1] || "";
-  return first[0] || "" + (last[0] || "");
+  return (first[0] || "") + (last[0] || "");
 }
 
 export default NavBar;

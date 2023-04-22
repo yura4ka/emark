@@ -1,8 +1,6 @@
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { getServerAuthSession } from "../server/auth";
 import Head from "next/head";
-import { type GetServerSidePropsContext, type NextPage } from "next";
+import { type NextPage } from "next";
 import { api } from "../utils/api";
 import { Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
@@ -11,16 +9,10 @@ import DataTable, { createTableProps } from "../components/DataTable/DataTable";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 import { useModal } from "../hooks/useModal";
 import { ConfirmedBadge, RequestedBadge } from "../components/Badges";
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session?.user.role.isSenior)
-    return { redirect: { destination: "/", permanent: false } };
-  return { props: { user: session.user } };
-};
+import { useUserSession } from "../hooks/useUserSession";
 
 const MyClass: NextPage = () => {
-  const session = useSession({ required: true });
+  const session = useUserSession();
   const apiUtils = api.useContext();
   const router = useRouter();
   const { data: myGroup, isLoading } = api.senior.getClassList.useQuery();
@@ -29,10 +21,9 @@ const MyClass: NextPage = () => {
 
   const { setModalData, setModalVisibility, modalProps } = useModal();
 
-  if (session.status === "authenticated" && !session.data.user.role.isSenior)
-    void router.push("/");
+  if (session && !session.role.isSenior) void router.push("/");
 
-  if (isLoading || !myGroup)
+  if (isLoading || !myGroup || !session)
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size={"xl"} />
@@ -60,7 +51,7 @@ const MyClass: NextPage = () => {
           },
         },
         {
-          isVisible: row.isConfirmed,
+          isVisible: row.isConfirmed && session.id !== row.id,
           isLoading: resetPassword.isLoading,
           text: "Скинути пароль",
           icon: HiOutlineHashtag,

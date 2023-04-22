@@ -57,37 +57,6 @@ const SignUp: NextPage = () => {
     });
   };
 
-  const modals = (
-    <>
-      {isSuccessVisible && (
-        <PopupModal
-          Icon={<HiCheck />}
-          color="success"
-          buttonText="Ок"
-          isVisible={isSuccessVisible}
-          onClose={() => {
-            setIsSuccessVisible(false);
-            void push("/");
-          }}
-          text="Запит на реєстрацію вашого акаунта успішно створено. Зверніться до старости або адміністратора для підтвердження."
-        />
-      )}
-      {isErrorVisible && (
-        <PopupModal
-          Icon={<HiX />}
-          color="failure"
-          buttonText="Ок"
-          isVisible={isErrorVisible}
-          onClose={() => {
-            setIsErrorVisible(false);
-            void push("/");
-          }}
-          text="При обробці запиту сталася помилка."
-        />
-      )}
-    </>
-  );
-
   if (session.status === "authenticated") void push("/");
 
   return (
@@ -96,7 +65,6 @@ const SignUp: NextPage = () => {
         <title>Реєстрація</title>
       </Head>
       <div className="flex h-full items-center justify-center">
-        {modals}
         <div className="w-full max-w-md">
           <Card>
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -191,6 +159,28 @@ const SignUp: NextPage = () => {
           </Card>
         </div>
       </div>
+      <PopupModal
+        Icon={<HiCheck />}
+        color="success"
+        buttonText="Ок"
+        isVisible={isSuccessVisible}
+        onClose={() => {
+          setIsSuccessVisible(false);
+          void push("/");
+        }}
+        text="Запит на реєстрацію вашого акаунта успішно створено. Зверніться до старости або адміністратора для підтвердження."
+      />
+      <PopupModal
+        Icon={<HiX />}
+        color="failure"
+        buttonText="Ок"
+        isVisible={isErrorVisible}
+        onClose={() => {
+          setIsErrorVisible(false);
+          void push("/");
+        }}
+        text="При обробці запиту сталася помилка."
+      />
     </>
   );
 };

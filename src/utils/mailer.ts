@@ -19,7 +19,7 @@ export function checkIsExpired(date: Date) {
   return new Date() > maxDate;
 }
 
-export function mailToTeacher(to: string, confirmString: string, type: EmailType) {
+export function mailTo(to: string, confirmString: string, type: EmailType) {
   const transporter = createTransporter();
   let html, subject;
 
@@ -27,9 +27,11 @@ export function mailToTeacher(to: string, confirmString: string, type: EmailType
     case "CONFIRM":
       html = confirmTeacherMarkup(confirmString);
       subject = "Реєстрація в системі Emark";
+      break;
     case "ADMIN_PASSWORD":
       html = adminPasswordResetMarkup(confirmString);
       subject = "Скидання пароля | Emark";
+      break;
   }
 
   return transporter.sendMail({
@@ -52,7 +54,7 @@ const confirmTeacherMarkup = (link: string) => `
 <div>
 <h1>Вас було зареєстровано в системі Emark у ролі викладача</h1>
 <p>Підтвердьте акаунт, щоб почати користуватися сервісом. Посилання буде дійсним протягом 24 годин. Якщо ви не мали отримати це повідомлення – проігноруйте його.</p>
-<a class='btn' href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
+<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
 <p>З повагою, адміністратор <a href='http://localhost:3000/'>Emark.com</a></p>
 </div>`;
 
@@ -95,16 +97,5 @@ p {
 a {
   text-decoration: none;
   color: rgb(26 86 219);
-}
-.btn {
-  font-weight: 500;
-  font-size: 1.25rem;
-  color: #fff;
-  background-color: rgb(26 86 219);
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  margin: 1.25rem auto;
-  display: block;
-  width: min-content;
 }
 </style>`;

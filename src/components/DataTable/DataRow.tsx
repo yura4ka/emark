@@ -34,7 +34,7 @@ export default function DataRow<TData extends IRowData>({
     if (!actionsRef.current) return;
     if (actionsRef.current.scrollWidth > actionsRef.current.clientWidth)
       setIsActionsOverflow(true);
-  }, [actionsRef]);
+  }, [actionsRef, row]);
 
   function EditAction() {
     return !isEditing ? (

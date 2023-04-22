@@ -3,7 +3,7 @@ import { adminProcedure, userProcedure } from "./../trpc";
 import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
 import { validId } from "../../../utils/schemas";
-import { mailToTeacher } from "../../../utils/mailer";
+import { mailTo } from "../../../utils/mailer";
 import { v4 as uuid } from "uuid";
 import * as argon2 from "argon2";
 
@@ -56,7 +56,7 @@ export const adminRouter = createTRPCRouter({
     if (teacher.isRequested || teacher.isConfirmed)
       throw new TRPCError({ code: "BAD_REQUEST" });
     const confirmString = uuid();
-    await mailToTeacher(teacher.email, confirmString, "CONFIRM");
+    await mailTo(teacher.email, confirmString, "CONFIRM");
     await ctx.prisma.teacher.update({
       where: { id: input },
       data: {
@@ -81,7 +81,7 @@ export const adminRouter = createTRPCRouter({
       if (input.doRequest) {
         confirmString = uuid();
         requestDate = new Date();
-        await mailToTeacher(teacher.email, confirmString, "ADMIN_PASSWORD");
+        await mailTo(teacher.email, confirmString, "ADMIN_PASSWORD");
       }
 
       await ctx.prisma.teacher.update({
