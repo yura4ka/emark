@@ -199,11 +199,11 @@ const Teachers: NextPageWithLayout = () => {
         key: "isAdmin",
         searchBy: false,
         customElement: (row) => (
-          <>
+          <div className="flex gap-1">
             <AdminBadge isVisible={row.isAdmin} />
             <RequestedBadge isVisible={row.isRequested} />
             <ConfirmedBadge isVisible={row.isConfirmed && !row.isAdmin} />
-          </>
+          </div>
         ),
       },
     ],

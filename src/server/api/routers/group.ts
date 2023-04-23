@@ -101,7 +101,10 @@ export const groupRouter = createTRPCRouter({
     });
   }),
   delete: adminProcedure.input(validId).mutation(async ({ ctx, input: id }) => {
-    await ctx.prisma.group.delete({ where: { id } });
+    await ctx.prisma.$transaction([
+      ctx.prisma.student.deleteMany({ where: { groupId: id } }),
+      ctx.prisma.group.delete({ where: { id } }),
+    ]);
     return true;
   }),
   getAll: adminProcedure.query(({ ctx }) => {

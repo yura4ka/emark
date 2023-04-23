@@ -22,7 +22,7 @@ import {
   SubGroupModal,
   createTableProps,
 } from "../../../components";
-import { Student } from "../../../utils";
+import { type Student } from "../../../utils";
 
 const GroupData = ({ id }: { id: number }) => {
   const { data } = api.group.get.useQuery(id);
@@ -79,7 +79,7 @@ const GroupData = ({ id }: { id: number }) => {
       />
       <MySelect
         label="Куратор"
-        options={[data.handler || { ...defaultValue }, ...freeTeachers]}
+        options={handler.id > 0 ? [handler, ...freeTeachers] : freeTeachers}
         field={"name"}
         value={handler}
         setValue={(value) => {

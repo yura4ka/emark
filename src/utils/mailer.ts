@@ -5,7 +5,9 @@ type EmailType = "CONFIRM" | "ADMIN_PASSWORD";
 
 function createTransporter() {
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "mail.gmx.com",
+    port: 465,
+    secure: true,
     auth: {
       user: env.EMAIL,
       pass: env.PASSWORD,
@@ -35,7 +37,7 @@ export function mailTo(to: string, confirmString: string, type: EmailType) {
   }
 
   return transporter.sendMail({
-    from: "Emark Admin <no-reply@emark.com>",
+    from: "Emark Admin <emark@gmx.us>",
     to,
     subject,
     html: embedInHtml(html),
@@ -46,7 +48,7 @@ const adminPasswordResetMarkup = (link: string) => `
 <div>
 <h1>Ваш пароль було скинуто адміном Emark</h1>
 <p>Ввести новий пароль можна за посиланням. Посилання буде дійсним протягом 24 годин.</p>
-<a class='btn' href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
+<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
 <p>З повагою, адміністратор <a href='http://localhost:3000/'>Emark.com</a></p>
 </div>`;
 

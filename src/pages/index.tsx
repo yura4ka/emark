@@ -161,7 +161,7 @@ const Home: NextPage = () => {
                 адміністраторів.
               </p>
               <Link
-                href="#"
+                href="https://drive.google.com/file/d/1PBTx9BDBJpwm0WjfZNITIuuXiUDuWF5l/view"
                 className="inline-flex items-center justify-center rounded-lg bg-blue-700 py-2.5 px-5 text-center text-base font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
               >
                 Дивитися
