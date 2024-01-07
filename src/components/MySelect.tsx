@@ -41,11 +41,9 @@ export function MySelect<TData extends IRowData>({
       value={String(value[field])}
       onChange={handleSelect}
     >
-      {showBlank && <option itemID="-2">{""}</option>}
+      {showBlank && <option>{""}</option>}
       {options.map((o) => (
-        <option key={o.id} itemID={o.id.toString()}>
-          {o[field]}
-        </option>
+        <option key={o.id}>{o[field]}</option>
       ))}
     </Select>
   );

@@ -101,6 +101,7 @@ export function MarkCell({
         onBlur={handleSave}
         max={maxScore}
         className="h-9 w-9 border-0 bg-transparent p-0 text-center text-lg hover:cursor-pointer focus:ring-0 focus:hover:cursor-auto"
+        name="mark"
       />
       {mark.comment !== null && (
         <span className="absolute top-0 right-0 h-1 w-1 rounded-sm bg-green-500" />

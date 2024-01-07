@@ -46,7 +46,7 @@ export function TeacherSubjects({ data }: Props) {
     [data, faculty.id, subject.id]
   );
 
-  if (filtered.length === 0)
+  if (filtered.length === 0 && faculty.id === -1 && subject.id === -1)
     return <InfoAlert text="Не знайдено груп, у яких ви викладаєте." />;
 
   return (

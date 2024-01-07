@@ -114,7 +114,7 @@ const Teachers: NextPageWithLayout = () => {
           onClick: () => {
             setModalData({
               isVisible: true,
-              text: `підтвердити акаунт викладачу ${row.name}`,
+              text: `надіслати запрошення викладачу ${row.name}`,
               onAccept: () => handleRequest(row.id),
             });
           },

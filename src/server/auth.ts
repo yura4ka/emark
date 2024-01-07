@@ -106,7 +106,6 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt: async ({ token, user }) => {
-      //console.log("in jwt", "token :", token, "user: ", user);
       if (user) {
         token = { ...token, ...user, id: +user.id };
         return token;
@@ -146,18 +145,15 @@ export const authOptions: NextAuthOptions = {
         isAdmin: !!teacher?.isAdmin,
       };
 
-      //console.log("db update", token);
       return token;
     },
     session: ({ session, token }) => {
-      //console.log("in session", "session: ", session, "token :", token);
       if (token) {
         session.user = { ...session.user, ...token };
       }
       return session;
     },
     signIn: ({ user }) => {
-      //console.log("in sign in", user);
       if (user.isRequested && !user.isConfirmed) return false;
       return true;
     },

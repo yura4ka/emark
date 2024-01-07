@@ -23,7 +23,7 @@ export const NavBar = () => {
         }}
       >
         <Navbar.Toggle />
-        <Navbar.Brand href="/">
+        <Navbar.Brand href="/" as={Link}>
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Emark
           </span>

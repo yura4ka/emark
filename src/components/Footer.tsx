@@ -11,7 +11,7 @@ export const PageFooter: NextComponentType = () => {
       <div className="w-full sm:flex sm:items-center sm:justify-between">
         <Footer.Copyright href="#" by="Emark™" year={new Date().getFullYear()} />
         <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
-          <Footer.Icon href="#" icon={BsAt} />
+          <Footer.Icon href="" icon={BsAt} />
           <Footer.Icon href="#" icon={BsTelegram} />
           <Footer.Icon href="https://github.com/yura4ka/emark" icon={BsGithub} />
         </div>

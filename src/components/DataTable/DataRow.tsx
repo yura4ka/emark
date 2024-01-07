@@ -70,32 +70,31 @@ export default function DataRow<TData extends IRowData>({
     return (
       <Table.Cell className="w-[25%] font-medium">
         <div ref={actionsRef} className="inline-flex items-center gap-2">
-          <>
-            <EditAction />
-            {!isEditing &&
-              (isActionsOverflow ? (
-                <Dropdown
-                  label={<HiDotsVertical className="h-5 w-5" />}
-                  inline={true}
-                  arrowIcon={false}
-                  placement="right"
-                >
-                  {options.customActions?.(row).map((a) =>
-                    a.isVisible ? (
-                      <Dropdown.Item key={a.text} icon={a.icon} onClick={a.onClick}>
-                        {a.text}
-                      </Dropdown.Item>
-                    ) : (
-                      <></>
-                    )
-                  )}
-                </Dropdown>
-              ) : (
-                options
-                  .customActions?.(row)
-                  .map((a) => <CustomAction key={a.text} {...a} />)
-              ))}
-          </>
+          <EditAction />
+          {!isEditing &&
+            (isActionsOverflow ? (
+              <Dropdown
+                label={<HiDotsVertical className="h-5 w-5" />}
+                inline={true}
+                arrowIcon={false}
+                placement="right"
+              >
+                {options.customActions?.(row).map((a) => (
+                  <Dropdown.Item
+                    key={a.text}
+                    icon={a.icon}
+                    onClick={a.onClick}
+                    className={a.isVisible ? "hidden" : undefined}
+                  >
+                    {a.text}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown>
+            ) : (
+              options
+                .customActions?.(row)
+                .map((a) => <CustomAction key={a.text} {...a} />)
+            ))}
         </div>
       </Table.Cell>
     );
