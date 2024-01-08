@@ -68,7 +68,7 @@ export function MySelect<TData extends IRowData>({
     <div className={classes.join(" ")}>
       {label && (
         <div className="mb-2 block">
-          <Label htmlFor={label + id} value={label} />
+          <Label htmlFor={options.length !== 0 ? label + id : undefined} value={label} />
         </div>
       )}
       {isLoading ? (

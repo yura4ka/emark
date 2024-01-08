@@ -31,7 +31,7 @@ const Subjects: NextPage = () => {
         <title>Предмети</title>
       </Head>
 
-      <h1 className="mb-6 text-3xl font-bold">Предмети</h1>
+      <h1 className="mb-6 mt-3 text-3xl font-bold">Предмети</h1>
 
       {teacherClasses.data && <TeacherSubjects data={teacherClasses.data} />}
       {studentClasses.data &&

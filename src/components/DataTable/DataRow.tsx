@@ -84,7 +84,7 @@ export default function DataRow<TData extends IRowData>({
                     key={a.text}
                     icon={a.icon}
                     onClick={a.onClick}
-                    className={a.isVisible ? "hidden" : undefined}
+                    className={!a.isVisible ? "hidden" : undefined}
                   >
                     {a.text}
                   </Dropdown.Item>

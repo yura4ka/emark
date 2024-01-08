@@ -48,16 +48,16 @@ const adminPasswordResetMarkup = (link: string) => `
 <div>
 <h1>Ваш пароль було скинуто адміном Emark</h1>
 <p>Ввести новий пароль можна за посиланням. Посилання буде дійсним протягом 24 годин.</p>
-<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
-<p>З повагою, адміністратор <a href='http://localhost:3000/'>Emark.com</a></p>
+<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='https://e-mark.vercel.app/auth/confirm-teacher/${link}'>Підтвердити</a>
+<p>З повагою, адміністратор <a href='https://e-mark.vercel.app/'>emark</a></p>
 </div>`;
 
 const confirmTeacherMarkup = (link: string) => `
 <div>
 <h1>Вас було зареєстровано в системі Emark у ролі викладача</h1>
 <p>Підтвердьте акаунт, щоб почати користуватися сервісом. Посилання буде дійсним протягом 24 годин. Якщо ви не мали отримати це повідомлення – проігноруйте його.</p>
-<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='http://localhost:3000/auth/confirm-teacher/${link}'>Підтвердити</a>
-<p>З повагою, адміністратор <a href='http://localhost:3000/'>Emark.com</a></p>
+<a style="font-weight: 500; font-size: 1.25rem; color: rgb(255, 255, 255); background-color: rgb(26, 86, 219); border-radius: 0.5rem; padding: 0.75rem 1.25rem; margin: 1.25rem auto; display: block; width: fit-content; text-decoration: none; font-family: sans-serif;" href='https://e-mark.vercel.app/auth/confirm-teacher/${link}'>Підтвердити</a>
+<p>З повагою, адміністратор <a href='https://e-mark.vercel.app/'>emark</a></p>
 </div>`;
 
 function embedInHtml(html: string) {

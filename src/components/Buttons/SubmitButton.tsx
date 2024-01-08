@@ -16,7 +16,7 @@ export const SubmitButton = ({ text, disabled, isLoading }: Props) => {
     >
       <Spinner
         aria-label="Loader indictor"
-        className={`transition-opacity duration-300 ${
+        className={`transition-opacity duration-300 dark:!text-gray-200 ${
           isLoading ? "opacity-1" : "opacity-0"
         }`}
       />

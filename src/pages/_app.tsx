@@ -39,7 +39,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
             {Component.getLayout ? (
               layout
             ) : (
-              <main className="mx-auto w-full max-w-7xl p-2.5">
+              <main className="mx-auto w-full max-w-7xl px-2.5 sm:px-0">
                 <Component {...pageProps} />
               </main>
             )}

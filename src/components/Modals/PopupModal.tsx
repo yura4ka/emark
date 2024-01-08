@@ -1,4 +1,5 @@
 import { Button, Modal } from "flowbite-react";
+import { useEffect, useState } from "react";
 
 type Props = {
   text: string;
@@ -29,6 +30,14 @@ export const PopupModal = ({
       textColor = "text-yellow-400";
       break;
   }
+
+  const [isBrowser, setIsBrowser] = useState(false);
+  useEffect(() => {
+    setIsBrowser(true);
+    return () => setIsBrowser(false);
+  }, []);
+
+  if (!isBrowser) return null;
 
   return (
     <Modal show={isVisible} size="md" popup={true} onClose={onClose}>
